@@ -37,7 +37,7 @@ body{font-family:"Outfit",sans-serif;background:var(--snow);color:var(--ink);ove
 nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:1rem 3rem;display:flex;align-items:center;justify-content:space-between;transition:all 0.3s}
 nav.scrolled{background:rgba(248,249,252,0.96);backdrop-filter:blur(20px);border-bottom:1px solid var(--ink-08)}
 .logo-svg-wrap{display:flex;align-items:center;gap:10px}
-.logo-tagline{font-size:0.65rem;color:var(--ink-40);letter-spacing:0.06em;font-weight:300;padding-left:10px;border-left:1px solid var(--ink-15);line-height:1.2}
+.logo-text{font-family:"Cormorant Garamond",Georgia,serif;font-size:1.55rem;letter-spacing:0.14em;color:var(--ink);font-weight:300;text-transform:uppercase;line-height:1}.logo-dot{color:var(--gb);font-weight:600}.logo-tagline{font-size:0.65rem;color:var(--ink-40);letter-spacing:0.06em;font-weight:300;padding-left:10px;border-left:1px solid var(--ink-15);line-height:1.2}
 nav ul{list-style:none;display:flex;gap:1.75rem;align-items:center}
 nav a{text-decoration:none;font-size:0.82rem;color:var(--ink-40);transition:color 0.2s}
 nav a:hover{color:var(--ink)}
@@ -308,35 +308,7 @@ footer{background:var(--ink);border-top:1px solid rgba(255,255,255,0.06);padding
 
 <nav id="nav">
   <div class="logo-svg-wrap">
-    <svg width="110" height="34" viewBox="0 0 110 34" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="lg1" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="#3D6B5E"/>
-          <stop offset="100%" stop-color="#5A9E8C"/>
-        </linearGradient>
-        <linearGradient id="lg2" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="#5A9E8C"/>
-          <stop offset="100%" stop-color="#3D6B5E"/>
-        </linearGradient>
-      </defs>
-      <rect x="0" y="6" width="3.5" height="22" rx="1.75" fill="#0D0F14"/>
-      <rect x="0" y="25" width="12" height="3.5" rx="1.75" fill="#0D0F14"/>
-      <rect x="16" y="6" width="3.5" height="22" rx="1.75" fill="#0D0F14"/>
-      <rect x="16" y="25" width="12" height="3.5" rx="1.75" fill="#0D0F14"/>
-      <rect x="32" y="6" width="3.5" height="22" rx="1.75" fill="#0D0F14"/>
-      <circle cx="43" cy="8.5" r="5" fill="url(#lg1)"/>
-      <circle cx="43" cy="8.5" r="2.5" fill="white" opacity="0.9"/>
-      <rect x="48" y="6" width="3.5" height="22" rx="1.75" fill="#0D0F14"/>
-      <rect x="48" y="6" width="15" height="3.5" rx="1.75" fill="#0D0F14"/>
-      <rect x="48" y="15.25" width="11" height="3" rx="1.5" fill="url(#lg2)" opacity="0.7"/>
-      <rect x="48" y="24.5" width="15" height="3.5" rx="1.75" fill="#0D0F14"/>
-      <rect x="67" y="6" width="3.5" height="22" rx="1.75" fill="#0D0F14"/>
-      <rect x="67" y="25" width="12" height="3.5" rx="1.75" fill="#0D0F14"/>
-      <circle cx="85" cy="25" r="5" fill="url(#lg1)" opacity="0.25"/>
-      <circle cx="85" cy="25" r="3" fill="url(#lg1)" opacity="0.5"/>
-      <circle cx="85" cy="25" r="1.5" fill="url(#lg1)"/>
-      <path d="M89 21 Q97 17 103 22 Q109 27 105 31" stroke="url(#lg2)" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.7"/>
-    </svg>
+    <div class="logo-text">LITT<span class="logo-dot">I</span>A</div>
     <div class="logo-tagline" data-t="logo_tagline"></div>
   </div>
   <ul>
@@ -423,15 +395,15 @@ footer{background:var(--ink);border-top:1px solid rgba(255,255,255,0.06);padding
 
 <div class="stats-bar">
   <div class="stats-inner">
-    <div class="stat-item"><div class="stat-v"><em>8 247</em>+</div><div class="stat-l" data-t="stat1"></div></div>
+    <div class="stat-item"><div class="stat-v">−<em>2h</em></div><div class="stat-l">de charge mentale / semaine</div></div>
     <div class="stat-sep"></div>
-    <div class="stat-item"><div class="stat-v">−<em>23</em>%</div><div class="stat-l" data-t="stat2"></div></div>
+    <div class="stat-item"><div class="stat-v"><em>0</em></div><div class="stat-l">oubli logistique</div></div>
     <div class="stat-sep"></div>
-    <div class="stat-item"><div class="stat-v"><em>2,3</em>h</div><div class="stat-l" data-t="stat3"></div></div>
+    <div class="stat-item"><div class="stat-v"><em>7</em></div><div class="stat-l">menus planifiés chaque semaine</div></div>
     <div class="stat-sep"></div>
-    <div class="stat-item"><div class="stat-v"><em>487</em>€</div><div class="stat-l" data-t="stat4"></div></div>
+    <div class="stat-item"><div class="stat-v"><em>1</em></div><div class="stat-l">liste de courses générée automatiquement</div></div>
     <div class="stat-sep"></div>
-    <div class="stat-item"><div class="stat-v"><em>4,8</em>★</div><div class="stat-l" data-t="stat5"></div></div>
+    <div class="stat-item"><div class="stat-v"><em>5</em></div><div class="stat-l">langues disponibles</div></div>
   </div>
 </div>
 
@@ -680,14 +652,14 @@ footer{background:var(--ink);border-top:1px solid rgba(255,255,255,0.06);padding
 const LANGS={
   fr:{
     flag:"🇫🇷",code:"FR",
-    banner_text:"✦ Offre limitée — Essai gratuit 14 jours pour tout nouvel abonnement",
+    banner_text:"✦ Essai gratuit 14 jours — sans carte bancaire",
     logo_tagline:"Intelligence domestique",
     nav_features:"Fonctionnalités",nav_simulator:"Simulateur",nav_pricing:"Tarifs",nav_app:"Application",nav_cta:"Essai gratuit",
     hero_eyebrow:"Intelligence domestique · v2.0",
-    hero_h1:"Votre maison.<br>Votre budget.<br><strong>Votre liberté.</strong>",
-    hero_sub:"LITTIA orchestre votre vie domestique — menus, courses, planning, budget, rappels — pour vous redonner du temps et de la sérénité.",
+    hero_h1:"Moins de stress.<br>Plus de temps.<br><strong>Une maison qui tourne.</strong>",
+    hero_sub:"Fini la charge mentale. LITTIA planifie vos menus, génère vos listes de courses, suit votre budget et vous rappelle tout — pour que vous puissiez enfin souffler.",
     hero_cta:"Commencer gratuitement",hero_ghost:"Calculer mes économies ↓",
-    hero_proof:"Déjà <strong>8 247 foyers</strong> font confiance à LITTIA",
+    hero_proof:"",
     ph_name:"Sophie",ph_date:"Dim. 17 mai",ph_eco_tag:"↓ −12% semaine",ph_budget_label:"BUDGET COURSES",ph_budget_sub:"Économie : 9€ vs semaine passée",
     ph_goal_label:"Objectif mensuel",ph_menus_ok:"Menus ok",ph_waste:"Gaspi évité",ph_today:"Aujourd'hui",
     ph_task1:"Lancer lessive couleurs",ph_task2:"Renouveler ordonnance",
@@ -710,10 +682,10 @@ const LANGS={
     sim_eyebrow:"Simulateur d'économies",sim_title:"Combien allez-vous<br><em>économiser avec LITTIA ?</em>",sim_desc:"Ajustez les curseurs. Basé sur les données réelles de nos 8 000+ abonnés.",
     sim_p1_t:"Adapté à votre foyer",sim_p1_d:"Célibataire, couple ou famille — l'algorithme s'ajuste.",
     sim_p2_t:"Basé sur vos habitudes réelles",sim_p2_d:"Fréquence des livraisons, gaspillage estimé.",
-    sim_p3_t:"Garantie satisfait ou remboursé",sim_p3_d:"Pas d'économies en 30 jours ? On vous rembourse.",
+    sim_p3_t:"Essai gratuit 14 jours",sim_p3_d:"Toutes les fonctionnalités sans carte bancaire. Aucun engagement.",
     sim_box_title:"Votre simulateur",sim_box_sub:"Ajustez pour voir vos économies",
     sim_l1:"Personnes dans le foyer",sim_l2:"Budget courses actuel",sim_l3:"Livraisons / semaine",
-    sim_result_label:"Économies estimées avec LITTIA",sim_result_ie:"soit",sim_result_roi:"l'abonnement se paie 88× seul",
+    sim_result_label:"Économies estimées avec LITTIA",sim_result_ie:"soit",sim_result_roi:"vos économies couvrent largement l'abonnement",
     sim_br1:"Anti-gaspillage",sim_br2:"Courses optimisées",sim_br3:"Moins de livraisons",sim_br4:"Abos oubliés",
     sim_cta:"Commencer et économiser dès maintenant →",
     price_eyebrow:"Tarifs",price_title:"Un abonnement simple.<br>Des <em>économies réelles.</em>",
@@ -742,25 +714,25 @@ const LANGS={
     app_ph_costs:"Postes de dépenses",cat_food:"Alimentaire",cat_hygiene:"Hygiène",cat_cleaning:"Entretien",
     faq_eyebrow:"FAQ",faq_title:"Questions <em>fréquentes</em>",
     faqs:[
-      ["Le simulateur est-il fiable ?","Oui. Basé sur les données réelles de 8 000+ abonnés. Garantie remboursement si pas d'économies sous 30 jours."],
+      ["Le simulateur est-il fiable ?","Oui. Les calculs se basent sur les habitudes moyennes de consommation des ménages français (sources INSEE). Les économies réelles varient selon votre situation personnelle."],
       ["LITTIA accède-t-il à mes données bancaires ?","Non. Les dépenses sont saisies manuellement. Données chiffrées, hébergées en France, RGPD."],
       ["L'application mobile est-elle incluse ?","Oui, dans tous les abonnements sans supplément. Synchronisation web/mobile en temps réel."],
       ["Comment fonctionne la garantie ?","Pas d'économies en 30 jours ? Remboursement intégral sur simple email à support@littia.fr."],
       ["Puis-je changer de plan ?","Oui, à tout moment depuis votre espace client. Le changement est immédiat et au prorata."]
     ],
-    cta_eyebrow:"Prêt à commencer ?",cta_title:"Libérez-vous de la charge<br>mentale de votre <em>maison.</em>",cta_desc:"14 jours gratuits, sans carte bancaire.<br>Garantie satisfait ou remboursé 30 jours.",cta_main:"Essayer gratuitement",cta_ghost:"Voir les tarifs",
+    cta_eyebrow:"Prêt à commencer ?",cta_title:"Libérez-vous de la charge<br>mentale de votre <em>maison.</em>",cta_desc:"14 jours gratuits, sans carte bancaire.<br>Sans engagement, résiliable à tout moment.",cta_main:"Essayer gratuitement",cta_ghost:"Voir les tarifs",
     foot_privacy:"Confidentialité",foot_terms:"CGU",foot_contact:"Contact",foot_blog:"Blog",foot_copy:"© 2025 LITTIA — Tous droits réservés"
   },
   en:{
     flag:"🇬🇧",code:"EN",
-    banner_text:"✦ Limited offer — 14-day free trial for all new subscriptions",
+    banner_text:"✦ 14-day free trial — no credit card required",
     logo_tagline:"Home intelligence",
     nav_features:"Features",nav_simulator:"Calculator",nav_pricing:"Pricing",nav_app:"App",nav_cta:"Free trial",
     hero_eyebrow:"Home intelligence · v2.0",
-    hero_h1:"Your home.<br>Your budget.<br><strong>Your freedom.</strong>",
-    hero_sub:"LITTIA orchestrates your domestic life — meals, groceries, planning, budget, reminders — to give you back time and peace of mind.",
+    hero_h1:"Less stress.<br>More time.<br><strong>A home that runs itself.</strong>",
+    hero_sub:"No more mental load. LITTIA plans your meals, generates your shopping list, tracks your budget and reminds you of everything — so you can finally breathe.",
     hero_cta:"Get started for free",hero_ghost:"Calculate my savings ↓",
-    hero_proof:"Already <strong>8,247 households</strong> trust LITTIA",
+    hero_proof:"",
     ph_name:"Sophie",ph_date:"Sun. May 17",ph_eco_tag:"↓ −12% this week",ph_budget_label:"GROCERY BUDGET",ph_budget_sub:"Saving: €9 vs last week",
     ph_goal_label:"Monthly goal",ph_menus_ok:"Menus set",ph_waste:"Waste avoided",ph_today:"Today",
     ph_task1:"Start colour wash",ph_task2:"Renew prescription",
@@ -783,10 +755,10 @@ const LANGS={
     sim_eyebrow:"Savings calculator",sim_title:"How much will you<br><em>save with LITTIA?</em>",sim_desc:"Adjust the sliders. Based on real data from 8,000+ subscribers.",
     sim_p1_t:"Tailored to your household",sim_p1_d:"Single, couple or large family — the algorithm adapts.",
     sim_p2_t:"Based on your real habits",sim_p2_d:"Delivery frequency, estimated waste, unplanned purchases.",
-    sim_p3_t:"Satisfaction guarantee",sim_p3_d:"No savings in 30 days? Full refund, no questions asked.",
+    sim_p3_t:"14-day free trial",sim_p3_d:"All features, no credit card. Cancel anytime.",
     sim_box_title:"Your calculator",sim_box_sub:"Adjust to see your personalised savings",
     sim_l1:"People in your household",sim_l2:"Current grocery budget",sim_l3:"Deliveries / week",
-    sim_result_label:"Estimated savings with LITTIA",sim_result_ie:"i.e.",sim_result_roi:"subscription pays for itself 88×",
+    sim_result_label:"Estimated savings with LITTIA",sim_result_ie:"i.e.",sim_result_roi:"your savings easily cover the subscription",
     sim_br1:"Waste reduction",sim_br2:"Smarter shopping",sim_br3:"Fewer deliveries",sim_br4:"Forgotten subs",
     sim_cta:"Start saving now →",
     price_eyebrow:"Pricing",price_title:"Simple subscription.<br><em>Real savings.</em>",
@@ -815,25 +787,25 @@ const LANGS={
     app_ph_costs:"Spending categories",cat_food:"Food",cat_hygiene:"Hygiene",cat_cleaning:"Cleaning",
     faq_eyebrow:"FAQ",faq_title:"Frequently asked <em>questions</em>",
     faqs:[
-      ["Is the savings calculator reliable?","Yes. Based on real data from 8,000+ active subscribers. Refund guarantee if no savings within 30 days."],
+      ["Is the savings calculator reliable?","Yes. Calculations are based on average household spending data. Actual savings will vary depending on your personal situation."],
       ["Does LITTIA access my bank data?","No. Spending is entered manually or via receipt photos. Data encrypted, hosted in Europe, GDPR compliant."],
       ["Is the mobile app included?","Yes, in all subscriptions at no extra cost. Real-time web/mobile sync."],
       ["How does the guarantee work?","No savings in 30 days? Full refund on a simple email to support@littia.com. No questions asked."],
       ["Can I change my plan?","Yes, at any time from your account. Instant change, prorated billing."]
     ],
-    cta_eyebrow:"Ready to start?",cta_title:"Free yourself from the mental<br>load of your <em>home.</em>",cta_desc:"14 days free, no credit card.<br>30-day money-back guarantee.",cta_main:"Try for free",cta_ghost:"See pricing",
+    cta_eyebrow:"Ready to start?",cta_title:"Free yourself from the mental<br>load of your <em>home.</em>",cta_desc:"14 days free, no credit card.<br>No commitment, cancel anytime.",cta_main:"Try for free",cta_ghost:"See pricing",
     foot_privacy:"Privacy",foot_terms:"Terms",foot_contact:"Contact",foot_blog:"Blog",foot_copy:"© 2025 LITTIA — All rights reserved"
   },
   es:{
     flag:"🇪🇸",code:"ES",
-    banner_text:"✦ Oferta limitada — Prueba gratuita de 14 días para nuevas suscripciones",
+    banner_text:"✦ Prueba gratuita 14 días — sin tarjeta bancaria",
     logo_tagline:"Inteligencia doméstica",
     nav_features:"Funciones",nav_simulator:"Simulador",nav_pricing:"Precios",nav_app:"App",nav_cta:"Prueba gratis",
     hero_eyebrow:"Inteligencia doméstica · v2.0",
-    hero_h1:"Tu hogar.<br>Tu presupuesto.<br><strong>Tu libertad.</strong>",
-    hero_sub:"LITTIA orquesta tu vida doméstica — menús, compras, planificación, presupuesto, recordatorios — para devolverte tiempo y tranquilidad.",
+    hero_h1:"Menos estrés.<br>Más tiempo.<br><strong>Una casa que funciona sola.</strong>",
+    hero_sub:"Adiós a la carga mental. LITTIA planifica tus menús, genera tu lista de la compra, controla tu presupuesto y te recuerda todo — para que puedas descansar.",
     hero_cta:"Empezar gratis",hero_ghost:"Calcular mis ahorros ↓",
-    hero_proof:"Ya <strong>8.247 hogares</strong> confían en LITTIA",
+    hero_proof:"",
     ph_name:"Sophie",ph_date:"Dom. 17 mayo",ph_eco_tag:"↓ −12% semana",ph_budget_label:"PRESUPUESTO COMPRAS",ph_budget_sub:"Ahorro: 9€ vs semana pasada",
     ph_goal_label:"Objetivo mensual",ph_menus_ok:"Menús ok",ph_waste:"Desperdicio evitado",ph_today:"Hoy",
     ph_task1:"Poner lavadora colores",ph_task2:"Renovar receta médica",
@@ -856,10 +828,10 @@ const LANGS={
     sim_eyebrow:"Simulador de ahorros",sim_title:"¿Cuánto vas a<br><em>ahorrar con LITTIA?</em>",sim_desc:"Ajusta los controles. Basado en datos reales de 8.000+ suscriptores.",
     sim_p1_t:"Adaptado a tu hogar",sim_p1_d:"Solo, pareja o familia numerosa — el algoritmo se ajusta.",
     sim_p2_t:"Basado en tus hábitos reales",sim_p2_d:"Frecuencia de pedidos, desperdicio estimado.",
-    sim_p3_t:"Garantía de satisfacción",sim_p3_d:"¿Sin ahorros en 30 días? Te devolvemos el dinero.",
+    sim_p3_t:"Prueba gratuita 14 días",sim_p3_d:"Todas las funciones, sin tarjeta. Cancela cuando quieras.",
     sim_box_title:"Tu simulador",sim_box_sub:"Ajusta para ver tus ahorros personalizados",
     sim_l1:"Personas en el hogar",sim_l2:"Presupuesto actual de compras",sim_l3:"Pedidos a domicilio / semana",
-    sim_result_label:"Ahorros estimados con LITTIA",sim_result_ie:"es decir",sim_result_roi:"la suscripción se paga sola 88×",
+    sim_result_label:"Ahorros estimados con LITTIA",sim_result_ie:"es decir",sim_result_roi:"tus ahorros cubren con creces la suscripción",
     sim_br1:"Anti-desperdicio",sim_br2:"Compras optimizadas",sim_br3:"Menos pedidos",sim_br4:"Suscr. olvidadas",
     sim_cta:"Empieza a ahorrar ahora →",
     price_eyebrow:"Precios",price_title:"Una suscripción simple.<br><em>Ahorros reales.</em>",
@@ -888,25 +860,25 @@ const LANGS={
     app_ph_costs:"Categorías de gasto",cat_food:"Alimentación",cat_hygiene:"Higiene",cat_cleaning:"Limpieza",
     faq_eyebrow:"FAQ",faq_title:"Preguntas <em>frecuentes</em>",
     faqs:[
-      ["¿Es fiable el simulador?","Sí. Basado en datos reales de 8.000+ suscriptores. Garantía de devolución si no hay ahorros en 30 días."],
+      ["¿Es fiable el simulador?","Sí. Los cálculos se basan en datos medios de consumo de los hogares. Los ahorros reales varían según tu situación personal."],
       ["¿LITTIA accede a mis datos bancarios?","No. Los gastos se introducen manualmente. Datos cifrados, alojados en Europa, conformes al RGPD."],
       ["¿La app móvil está incluida?","Sí, en todas las suscripciones sin coste adicional. Sincronización web/móvil en tiempo real."],
       ["¿Cómo funciona la garantía?","¿Sin ahorros en 30 días? Reembolso completo con un simple email a support@littia.com."],
       ["¿Puedo cambiar de plan?","Sí, en cualquier momento desde tu cuenta. Cambio inmediato y prorrateo automático."]
     ],
-    cta_eyebrow:"¿Listo para empezar?",cta_title:"Libérate de la carga<br>mental de tu <em>hogar.</em>",cta_desc:"14 días gratis, sin tarjeta.<br>Garantía de devolución 30 días.",cta_main:"Probar gratis",cta_ghost:"Ver precios",
+    cta_eyebrow:"¿Listo para empezar?",cta_title:"Libérate de la carga<br>mental de tu <em>hogar.</em>",cta_desc:"14 días gratis, sin tarjeta.<br>Sin compromiso, cancela cuando quieras.",cta_main:"Probar gratis",cta_ghost:"Ver precios",
     foot_privacy:"Privacidad",foot_terms:"T&C",foot_contact:"Contacto",foot_blog:"Blog",foot_copy:"© 2025 LITTIA — Todos los derechos reservados"
   },
   de:{
     flag:"🇩🇪",code:"DE",
-    banner_text:"✦ Begrenztes Angebot — 14 Tage kostenlos für alle neuen Abonnements",
+    banner_text:"✦ 14 Tage kostenlos testen — keine Kreditkarte",
     logo_tagline:"Heim-Intelligenz",
     nav_features:"Funktionen",nav_simulator:"Rechner",nav_pricing:"Preise",nav_app:"App",nav_cta:"Kostenlos testen",
     hero_eyebrow:"Heim-Intelligenz · v2.0",
-    hero_h1:"Ihr Zuhause.<br>Ihr Budget.<br><strong>Ihre Freiheit.</strong>",
-    hero_sub:"LITTIA orchestriert Ihren Haushalt — Menüs, Einkäufe, Planung, Budget, Erinnerungen — damit Sie mehr Zeit und Ruhe gewinnen.",
+    hero_h1:"Weniger Stress.<br>Mehr Zeit.<br><strong>Ein Haushalt, der läuft.</strong>",
+    hero_sub:"Schluss mit der mentalen Belastung. LITTIA plant Ihre Menüs, erstellt Einkaufslisten, verfolgt Ihr Budget und erinnert Sie an alles — damit Sie endlich durchatmen können.",
     hero_cta:"Kostenlos starten",hero_ghost:"Meine Ersparnisse berechnen ↓",
-    hero_proof:"Bereits <strong>8.247 Haushalte</strong> vertrauen LITTIA",
+    hero_proof:"",
     ph_name:"Sophie",ph_date:"So. 17. Mai",ph_eco_tag:"↓ −12% diese Woche",ph_budget_label:"EINKAUFSBUDGET",ph_budget_sub:"Ersparnis: 9€ vs. letzte Woche",
     ph_goal_label:"Monatsziel",ph_menus_ok:"Menüs OK",ph_waste:"Vermiedene Verschwendung",ph_today:"Heute",
     ph_task1:"Buntwäsche starten",ph_task2:"Rezept erneuern",
@@ -929,10 +901,10 @@ const LANGS={
     sim_eyebrow:"Sparrechner",sim_title:"Wie viel sparen Sie<br><em>mit LITTIA?</em>",sim_desc:"Regler anpassen. Basiert auf echten Daten von 8.000+ Abonnenten.",
     sim_p1_t:"Angepasst an Ihren Haushalt",sim_p1_d:"Single, Paar oder Familie — der Algorithmus passt sich an.",
     sim_p2_t:"Basiert auf Ihren echten Gewohnheiten",sim_p2_d:"Lieferfrequenz, geschätzte Verschwendung.",
-    sim_p3_t:"Zufriedenheitsgarantie",sim_p3_d:"Keine Ersparnisse in 30 Tagen? Volle Rückerstattung.",
+    sim_p3_t:"14 Tage kostenlos",sim_p3_d:"Alle Funktionen, keine Karte. Jederzeit kündbar.",
     sim_box_title:"Ihr Sparrechner",sim_box_sub:"Anpassen für personalisierte Ersparnisse",
     sim_l1:"Personen im Haushalt",sim_l2:"Aktuelles Einkaufsbudget",sim_l3:"Lieferungen / Woche",
-    sim_result_label:"Geschätzte Ersparnis mit LITTIA",sim_result_ie:"d.h.",sim_result_roi:"Abo zahlt sich 88× selbst",
+    sim_result_label:"Geschätzte Ersparnis mit LITTIA",sim_result_ie:"d.h.",sim_result_roi:"Ihre Ersparnisse decken das Abo locker",
     sim_br1:"Gegen Verschwendung",sim_br2:"Smartere Einkäufe",sim_br3:"Weniger Lieferungen",sim_br4:"Vergessene Abos",
     sim_cta:"Jetzt sparen →",
     price_eyebrow:"Preise",price_title:"Einfaches Abo.<br><em>Echte Ersparnisse.</em>",
@@ -961,25 +933,25 @@ const LANGS={
     app_ph_costs:"Ausgabenkategorien",cat_food:"Lebensmittel",cat_hygiene:"Hygiene",cat_cleaning:"Reinigung",
     faq_eyebrow:"FAQ",faq_title:"Häufig gestellte <em>Fragen</em>",
     faqs:[
-      ["Ist der Sparrechner zuverlässig?","Ja. Basiert auf echten Daten von 8.000+ aktiven Abonnenten. Erstattungsgarantie bei keinen Ersparnissen in 30 Tagen."],
+      ["Ist der Sparrechner zuverlässig?","Ja. Die Berechnungen basieren auf durchschnittlichen Haushaltsdaten. Die tatsächlichen Ersparnisse hängen von Ihrer persönlichen Situation ab."],
       ["Greift LITTIA auf meine Bankdaten zu?","Nein. Ausgaben werden manuell eingegeben. Verschlüsselte Daten, in Europa gehostet, DSGVO-konform."],
       ["Ist die mobile App inbegriffen?","Ja, in allen Abonnements ohne Aufpreis. Echtzeit-Web/Mobil-Synchronisation."],
       ["Wie funktioniert die Garantie?","Keine Ersparnisse in 30 Tagen? Volle Rückerstattung auf eine einfache E-Mail an support@littia.com."],
       ["Kann ich den Plan wechseln?","Ja, jederzeit aus Ihrem Konto. Sofortige Änderung, anteilige Abrechnung."]
     ],
-    cta_eyebrow:"Bereit anzufangen?",cta_title:"Befreien Sie sich von der mentalen<br>Last Ihres <em>Haushalts.</em>",cta_desc:"14 Tage kostenlos, keine Kreditkarte.<br>30 Tage Geld-zurück-Garantie.",cta_main:"Kostenlos testen",cta_ghost:"Preise ansehen",
+    cta_eyebrow:"Bereit anzufangen?",cta_title:"Befreien Sie sich von der mentalen<br>Last Ihres <em>Haushalts.</em>",cta_desc:"14 Tage kostenlos, keine Kreditkarte.<br>Keine Bindung, jederzeit kündbar.",cta_main:"Kostenlos testen",cta_ghost:"Preise ansehen",
     foot_privacy:"Datenschutz",foot_terms:"AGB",foot_contact:"Kontakt",foot_blog:"Blog",foot_copy:"© 2025 LITTIA — Alle Rechte vorbehalten"
   },
   it:{
     flag:"🇮🇹",code:"IT",
-    banner_text:"✦ Offerta limitata — Prova gratuita 14 giorni per ogni nuovo abbonamento",
+    banner_text:"✦ Prova gratuita 14 giorni — senza carta di credito",
     logo_tagline:"Intelligenza domestica",
     nav_features:"Funzionalità",nav_simulator:"Simulatore",nav_pricing:"Prezzi",nav_app:"App",nav_cta:"Prova gratuita",
     hero_eyebrow:"Intelligenza domestica · v2.0",
-    hero_h1:"La tua casa.<br>Il tuo budget.<br><strong>La tua libertà.</strong>",
-    hero_sub:"LITTIA orchestra la tua vita domestica — menù, spesa, pianificazione, budget, promemoria — per restituirti tempo e serenità.",
+    hero_h1:"Meno stress.<br>Più tempo.<br><strong>Una casa che si gestisce da sola.</strong>",
+    hero_sub:"Basta carico mentale. LITTIA pianifica i tuoi menù, genera la lista della spesa, monitora il budget e ti ricorda tutto — per farti finalmente respirare.",
     hero_cta:"Inizia gratuitamente",hero_ghost:"Calcola i miei risparmi ↓",
-    hero_proof:"Già <strong>8.247 famiglie</strong> si fidano di LITTIA",
+    hero_proof:"",
     ph_name:"Sophie",ph_date:"Dom. 17 maggio",ph_eco_tag:"↓ −12% settimana",ph_budget_label:"BUDGET SPESA",ph_budget_sub:"Risparmio: 9€ vs settimana scorsa",
     ph_goal_label:"Obiettivo mensile",ph_menus_ok:"Menù ok",ph_waste:"Spreco evitato",ph_today:"Oggi",
     ph_task1:"Mettere lavatrice colori",ph_task2:"Rinnovare ricetta medica",
@@ -1002,10 +974,10 @@ const LANGS={
     sim_eyebrow:"Simulatore di risparmio",sim_title:"Quanto risparmierai<br><em>con LITTIA?</em>",sim_desc:"Regola i cursori. Basato su dati reali di 8.000+ abbonati.",
     sim_p1_t:"Adattato alla tua famiglia",sim_p1_d:"Single, coppia o famiglia numerosa — l'algoritmo si adatta.",
     sim_p2_t:"Basato sulle tue abitudini reali",sim_p2_d:"Frequenza consegne, spreco stimato.",
-    sim_p3_t:"Garanzia soddisfatti",sim_p3_d:"Nessun risparmio in 30 giorni? Rimborso totale.",
+    sim_p3_t:"Prova gratuita 14 giorni",sim_p3_d:"Tutte le funzioni, senza carta. Cancella quando vuoi.",
     sim_box_title:"Il tuo simulatore",sim_box_sub:"Regola per vedere i tuoi risparmi personalizzati",
     sim_l1:"Persone in famiglia",sim_l2:"Budget spesa attuale",sim_l3:"Consegne a domicilio / settimana",
-    sim_result_label:"Risparmio stimato con LITTIA",sim_result_ie:"ovvero",sim_result_roi:"l'abbonamento si ripaga 88 volte",
+    sim_result_label:"Risparmio stimato con LITTIA",sim_result_ie:"ovvero",sim_result_roi:"i tuoi risparmi coprono ampiamente l'abbonamento",
     sim_br1:"Anti-spreco",sim_br2:"Spesa ottimizzata",sim_br3:"Meno consegne",sim_br4:"Abbonamenti dim.",
     sim_cta:"Inizia a risparmiare ora →",
     price_eyebrow:"Prezzi",price_title:"Un abbonamento semplice.<br><em>Risparmi reali.</em>",
@@ -1034,13 +1006,13 @@ const LANGS={
     app_ph_costs:"Categorie di spesa",cat_food:"Alimentari",cat_hygiene:"Igiene",cat_cleaning:"Pulizie",
     faq_eyebrow:"FAQ",faq_title:"Domande <em>frequenti</em>",
     faqs:[
-      ["Il simulatore è affidabile?","Sì. Basato su dati reali di 8.000+ abbonati. Garanzia rimborso se nessun risparmio entro 30 giorni."],
+      ["Il simulatore è affidabile?","Sì. I calcoli si basano su dati medi di consumo delle famiglie. I risparmi reali variano in base alla situazione personale."],
       ["LITTIA accede ai miei dati bancari?","No. Le spese vengono inserite manualmente. Dati cifrati, ospitati in Europa, conformi al GDPR."],
       ["L'app mobile è inclusa?","Sì, in tutti gli abbonamenti senza costi extra. Sincronizzazione web/mobile in tempo reale."],
       ["Come funziona la garanzia?","Nessun risparmio in 30 giorni? Rimborso completo su semplice email a support@littia.com."],
       ["Posso cambiare piano?","Sì, in qualsiasi momento dal tuo account. Cambio immediato e calcolo proporzionale."]
     ],
-    cta_eyebrow:"Pronto per iniziare?",cta_title:"Liberati dal peso mentale<br>della tua <em>casa.</em>",cta_desc:"14 giorni gratis, senza carta di credito.<br>Garanzia soddisfatti o rimborsati 30 giorni.",cta_main:"Prova gratis",cta_ghost:"Vedi i prezzi",
+    cta_eyebrow:"Pronto per iniziare?",cta_title:"Liberati dal peso mentale<br>della tua <em>casa.</em>",cta_desc:"14 giorni gratis, senza carta di credito.<br>Senza impegno, cancella quando vuoi.",cta_main:"Prova gratis",cta_ghost:"Vedi i prezzi",
     foot_privacy:"Privacy",foot_terms:"Termini",foot_contact:"Contatto",foot_blog:"Blog",foot_copy:"© 2025 LITTIA — Tutti i diritti riservati"
   }
 }
@@ -1099,8 +1071,7 @@ window.addEventListener("scroll",()=>{
 })
 document.getElementById("bannerClose").addEventListener("click",()=>document.getElementById("banner").classList.remove("show"))
 
-let count=8247
-setInterval(()=>{if(Math.random()<0.3){count++;document.getElementById("liveCount").textContent=count.toLocaleString("fr-FR")}},4000)
+
 
 const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add("in")}),{threshold:0.1,rootMargin:"0px 0px -40px 0px"})
 document.querySelectorAll(".reveal").forEach(el=>obs.observe(el))
