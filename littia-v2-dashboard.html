@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LITTIA — Dashboard v2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0D0F14;--s1:#13161E;--s2:#1A1E28;--s3:#20253200;
+  --b1:rgba(255,255,255,0.07);--b2:rgba(255,255,255,0.13);--b3:rgba(255,255,255,0.2);
+  --tx:#F0F2F8;--m1:rgba(240,242,248,0.45);--m2:rgba(240,242,248,0.22);--m3:rgba(240,242,248,0.1);
+  --g:#3D6B5E;--gl:rgba(61,107,94,0.15);--gb:#5A9E8C;--gb2:rgba(90,158,140,0.08);
+  --am:#C4824A;--aml:rgba(196,130,74,0.14);
+  --go:#B8963E;--gol:rgba(184,150,62,0.14);
+  --rd:#C44A4A;--rdl:rgba(196,74,74,0.12);
+  --bl:#4A7EC4;--bll:rgba(74,126,196,0.12);
+  --r:10px;--rl:14px;
+}
+html,body{height:100%;overflow:hidden}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--tx);display:flex;font-size:14px}
+
+/* ── SIDEBAR ── */
+.sb{width:216px;flex-shrink:0;background:var(--s1);border-right:1px solid var(--b1);display:flex;flex-direction:column}
+.sb-logo{padding:1.4rem 1.2rem 0.9rem;border-bottom:1px solid var(--b1)}
+.sb-logo-t{font-family:'Cormorant Garamond',serif;font-size:1.35rem;letter-spacing:0.12em;color:var(--tx);font-weight:300;text-transform:uppercase}
+.sb-logo-t em{color:var(--gb);font-style:normal;font-weight:600}
+.sb-user{display:flex;align-items:center;gap:0.55rem;padding:0.9rem 1.2rem;border-bottom:1px solid var(--b1)}
+.sb-av{width:28px;height:28px;border-radius:50%;background:var(--g);display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:600;color:#fff;flex-shrink:0}
+.sb-uname{font-size:0.8rem;color:var(--tx)}
+.sb-usub{font-size:0.65rem;color:var(--m1)}
+.sb-nav{padding:0.9rem 0.7rem;flex:1;display:flex;flex-direction:column;gap:1px}
+.sb-sec{font-size:0.58rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--m2);padding:0.6rem 0.5rem 0.2rem;margin-top:0.4rem}
+.sb-item{display:flex;align-items:center;gap:0.55rem;padding:0.5rem 0.7rem;border-radius:8px;cursor:pointer;transition:all 0.18s;color:var(--m1);font-size:0.8rem}
+.sb-item:hover{background:var(--s2);color:var(--tx)}
+.sb-item.on{background:var(--gl);color:var(--gb);border:1px solid rgba(90,158,140,0.18)}
+.sb-item-ic{font-size:0.95rem;width:17px;text-align:center}
+.sb-badge{margin-left:auto;background:var(--aml);color:var(--am);font-size:0.58rem;padding:1px 6px;border-radius:100px;border:1px solid rgba(196,130,74,0.2)}
+.sb-bottom{padding:0.7rem;border-top:1px solid var(--b1)}
+.sb-plan{background:linear-gradient(135deg,rgba(61,107,94,0.18),rgba(61,107,94,0.04));border:1px solid rgba(61,107,94,0.18);border-radius:8px;padding:0.7rem;text-align:center}
+.sb-plan-l{font-size:0.6rem;color:var(--m1);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:2px}
+.sb-plan-t{font-size:0.78rem;color:var(--gb);font-weight:500}
+
+/* ── MAIN ── */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+.topbar{padding:0.9rem 1.6rem;border-bottom:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between;background:var(--s1);flex-shrink:0;gap:1rem}
+.tb-left{min-width:0}
+.tb-title{font-family:'Cormorant Garamond',serif;font-size:1.25rem;color:var(--tx);font-weight:300;white-space:nowrap}
+.tb-sub{font-size:0.7rem;color:var(--m1);margin-top:1px}
+.tb-right{display:flex;align-items:center;gap:0.7rem;flex-shrink:0}
+.period-tabs{display:flex;gap:2px;background:var(--bg);border-radius:8px;padding:3px;border:1px solid var(--b1)}
+.ptab{padding:0.38rem 0.9rem;border-radius:6px;font-size:0.75rem;color:var(--m1);cursor:pointer;transition:all 0.18s;border:1px solid transparent;white-space:nowrap}
+.ptab:hover{color:var(--tx)}
+.ptab.on{background:var(--s2);color:var(--tx);border-color:var(--b2);font-weight:500}
+/* compare toggle */
+.cmp-toggle{display:flex;align-items:center;gap:0.5rem;padding:0.38rem 0.85rem;background:var(--s2);border:1px solid var(--b1);border-radius:8px;cursor:pointer;font-size:0.73rem;color:var(--m1);transition:all 0.18s;white-space:nowrap}
+.cmp-toggle:hover{color:var(--tx);border-color:var(--b2)}
+.cmp-toggle.on{color:var(--gb);border-color:rgba(90,158,140,0.3);background:var(--gl)}
+.notif-btn{width:30px;height:30px;border-radius:8px;background:var(--s2);border:1px solid var(--b1);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:0.85rem;position:relative;flex-shrink:0}
+.notif-dot{position:absolute;top:4px;right:4px;width:6px;height:6px;border-radius:50%;background:var(--am)}
+
+/* SCROLL */
+.content{flex:1;overflow-y:auto;padding:1.25rem 1.6rem;display:flex;flex-direction:column;gap:1.1rem}
+.content::-webkit-scrollbar{width:3px}
+.content::-webkit-scrollbar-thumb{background:var(--b2);border-radius:2px}
+
+/* ── ALERT BANNER ── */
+.alert-banner{background:linear-gradient(90deg,rgba(196,130,74,0.12),rgba(196,130,74,0.04));border:1px solid rgba(196,130,74,0.25);border-radius:var(--r);padding:0.7rem 1rem;display:flex;align-items:center;gap:0.75rem;font-size:0.78rem}
+.alert-icon{font-size:1.1rem}
+.alert-text{flex:1;color:var(--tx)}
+.alert-text strong{color:var(--am)}
+.alert-actions{display:flex;gap:0.5rem}
+.alert-btn{font-size:0.72rem;padding:0.3rem 0.75rem;border-radius:100px;cursor:pointer;transition:all 0.18s;border:1px solid}
+.alert-btn-main{background:var(--am);color:#fff;border-color:var(--am)}
+.alert-btn-ghost{background:transparent;color:var(--m1);border-color:var(--b2)}
+.alert-btn:hover{opacity:0.85}
+.alert-dismiss{color:var(--m2);cursor:pointer;font-size:1.1rem;line-height:1;padding:0 4px}
+
+/* ── KPI ROW ── */
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
+.kpi{background:var(--s1);border:1px solid var(--b1);border-radius:var(--rl);padding:1.1rem;position:relative;overflow:hidden;transition:border-color 0.18s;cursor:default}
+.kpi:hover{border-color:var(--b2)}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.kpi-g::before{background:var(--gb)}
+.kpi-a::before{background:var(--am)}
+.kpi-b::before{background:var(--bl)}
+.kpi-go::before{background:var(--go)}
+.kpi-label{font-size:0.65rem;color:var(--m1);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.4rem;display:flex;align-items:center;gap:0.35rem}
+.kpi-licon{font-size:0.8rem}
+.kpi-val{font-family:'Cormorant Garamond',serif;font-size:1.9rem;color:var(--tx);font-weight:300;line-height:1;margin-bottom:0.25rem}
+.kpi-delta{font-size:0.68rem;display:flex;align-items:center;gap:0.25rem;margin-bottom:0.4rem}
+.dp{color:var(--gb)}.dn{color:var(--rd)}.dn2{color:var(--m1)}
+/* sparkline */
+.sparkline{display:flex;align-items:flex-end;gap:2px;height:22px;margin-top:auto}
+.sp-bar{flex:1;border-radius:2px 2px 0 0;background:rgba(255,255,255,0.07);transition:background 0.18s}
+.sp-bar.hi{background:var(--gb)}
+.sp-bar.lo{background:var(--rd)}
+.sp-bar.cur{background:var(--gb);opacity:1}
+/* compare ghost values */
+.kpi-cmp{font-size:0.65rem;color:var(--m2);display:none}
+.kpi-cmp.show{display:flex;gap:0.4rem;align-items:center}
+
+/* ── CARDS ── */
+.card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--rl);overflow:hidden}
+.card-hd{padding:0.85rem 1.1rem;border-bottom:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between}
+.card-title{font-size:0.82rem;color:var(--tx);font-weight:500}
+.card-sub{font-size:0.65rem;color:var(--m1);margin-top:1px}
+.card-bd{padding:1.1rem}
+.badge{font-size:0.62rem;padding:0.18rem 0.6rem;border-radius:100px;font-weight:500;border:1px solid}
+.badge-g{background:var(--gl);color:var(--gb);border-color:rgba(90,158,140,0.25)}
+.badge-a{background:var(--aml);color:var(--am);border-color:rgba(196,130,74,0.2)}
+.badge-r{background:var(--rdl);color:var(--rd);border-color:rgba(196,74,74,0.2)}
+.badge-b{background:var(--bll);color:var(--bl);border-color:rgba(74,126,196,0.2)}
+
+/* GRIDS */
+.g2a{display:grid;grid-template-columns:2fr 1fr;gap:1.1rem}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.1rem}
+
+/* chart */
+.ch-wrap{position:relative;height:170px}
+
+/* ── OBJECTIFS ── */
+.goal-list{display:flex;flex-direction:column;gap:0.65rem}
+.goal-item{display:flex;flex-direction:column;gap:0.35rem}
+.goal-hdr{display:flex;align-items:center;justify-content:space-between}
+.goal-name{font-size:0.78rem;color:var(--tx);display:flex;align-items:center;gap:0.35rem}
+.goal-name-ic{font-size:0.85rem}
+.goal-pct{font-size:0.68rem;font-weight:500}
+.goal-track{height:5px;background:rgba(255,255,255,0.05);border-radius:3px;overflow:hidden}
+.goal-fill{height:100%;border-radius:3px;transition:width 0.8s cubic-bezier(0.4,0,0.2,1)}
+.goal-note{font-size:0.65rem;color:var(--m2)}
+
+/* ── HEATMAP ── */
+.heatmap-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.hm-day-label{font-size:0.58rem;color:var(--m2);text-align:center;padding-bottom:2px}
+.hm-cell{aspect-ratio:1;border-radius:3px;cursor:pointer;transition:transform 0.15s;position:relative}
+.hm-cell:hover{transform:scale(1.15);z-index:2}
+.hm-tooltip{position:absolute;bottom:calc(100% + 4px);left:50%;transform:translateX(-50%);background:var(--s2);border:1px solid var(--b2);border-radius:6px;padding:4px 8px;font-size:0.6rem;white-space:nowrap;pointer-events:none;z-index:10;color:var(--tx);display:none}
+.hm-cell:hover .hm-tooltip{display:block}
+.hm-legend{display:flex;align-items:center;gap:0.5rem;margin-top:0.5rem;justify-content:flex-end}
+.hm-leg-label{font-size:0.6rem;color:var(--m2)}
+.hm-leg-cells{display:flex;gap:2px}
+.hm-leg-c{width:10px;height:10px;border-radius:2px}
+
+/* ── BUDGET BARS ── */
+.bb-list{display:flex;flex-direction:column;gap:0.8rem}
+.bb-row{}
+.bb-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.3rem}
+.bb-name{font-size:0.78rem;color:var(--tx);display:flex;align-items:center;gap:0.35rem}
+.bb-amts{display:flex;align-items:center;gap:0.5rem;font-size:0.68rem}
+.bb-cur{color:var(--tx);font-weight:500}
+.bb-prev{color:var(--m2)}
+.bb-track{height:5px;background:rgba(255,255,255,0.04);border-radius:3px;overflow:hidden;position:relative}
+.bb-fill{height:100%;border-radius:3px;transition:width 0.7s ease}
+/* compare overlay */
+.bb-cmp-line{position:absolute;top:0;bottom:0;width:2px;background:rgba(255,255,255,0.25);border-radius:1px;transition:left 0.5s}
+
+/* ── SAVINGS ── */
+.sav-list{display:flex;flex-direction:column;gap:0.55rem}
+.sav-item{display:flex;align-items:center;justify-content:space-between;background:var(--s2);border-radius:8px;padding:0.6rem 0.85rem;border:1px solid var(--b1)}
+.sav-l{display:flex;align-items:center;gap:0.55rem}
+.sav-ic{font-size:0.85rem}
+.sav-name{font-size:0.78rem;color:var(--tx)}
+.sav-sub{font-size:0.65rem;color:var(--m1)}
+.sav-val{font-size:0.85rem;font-weight:500}
+.sav-pos{color:var(--gb)}.sav-neg{color:var(--rd)}
+/* trend arrow */
+.sav-trend{font-size:0.62rem;margin-left:4px}
+
+/* ── SCORE ── */
+.score-wrap{display:flex;flex-direction:column;align-items:center;gap:0.75rem}
+.score-canvas{position:relative}
+.score-canvas svg{width:100px;height:100px}
+.score-details{width:100%;display:flex;flex-direction:column;gap:0.45rem}
+.score-row{display:flex;align-items:center;justify-content:space-between;font-size:0.72rem}
+.score-rl{color:var(--m1);display:flex;align-items:center;gap:0.35rem}
+.score-rv{color:var(--tx);font-weight:500}
+.score-mini-bar{width:40px;height:3px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden;display:inline-block;margin:0 4px;vertical-align:middle}
+.score-mini-fill{height:100%;border-radius:2px}
+
+/* ── REMINDERS ── */
+.rem-list{display:flex;flex-direction:column;gap:0.45rem}
+.rem{display:flex;align-items:center;gap:0.55rem;padding:0.55rem 0.7rem;border-radius:8px;background:var(--s2);border:1px solid var(--b1);transition:border-color 0.18s}
+.rem:hover{border-color:var(--b2)}
+.rem-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.rem-t{font-size:0.78rem;color:var(--tx);flex:1}
+.rem-time{font-size:0.65rem;color:var(--m1)}
+.rem-done{opacity:0.3}
+.rem-done .rem-t{text-decoration:line-through}
+.rem-check{width:16px;height:16px;border-radius:4px;border:1px solid var(--b2);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:0.55rem;color:transparent;transition:all 0.2s}
+.rem-check.done{background:var(--g);border-color:var(--g);color:#fff}
+
+/* ── MENU WEEK ── */
+.menu-week{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.mday{background:var(--s2);border-radius:8px;padding:6px 4px;border:1px solid var(--b1);cursor:pointer;transition:all 0.18s;text-align:center}
+.mday:hover,.mday.cur{background:var(--gl);border-color:rgba(90,158,140,0.25)}
+.mday-n{font-size:0.58rem;color:var(--m1);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:3px}
+.mday-ic{font-size:1rem;margin-bottom:3px}
+.mday-l{font-size:0.62rem;color:var(--m1);line-height:1.35}
+
+/* ── AI INSIGHT ── */
+.ai-card{background:linear-gradient(135deg,rgba(61,107,94,0.1),rgba(61,107,94,0.03));border:1px solid rgba(61,107,94,0.2);border-radius:var(--r);padding:0.85rem 1rem;display:flex;gap:0.7rem}
+.ai-orb{width:26px;height:26px;border-radius:50%;background:var(--g);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:0.8rem;color:#fff;flex-shrink:0;font-style:italic}
+.ai-body{font-size:0.77rem;color:var(--m1);line-height:1.65}
+.ai-body strong{color:var(--tx)}
+
+/* ── CARBON ── */
+.carbon-card{background:linear-gradient(135deg,rgba(90,158,140,0.08),transparent);border:1px solid rgba(90,158,140,0.15);border-radius:var(--r);padding:0.85rem 1rem}
+.carbon-row{display:flex;align-items:center;justify-content:space-between}
+.carbon-left{display:flex;align-items:center;gap:0.6rem}
+.carbon-ic{font-size:1.2rem}
+.carbon-label{font-size:0.75rem;color:var(--tx);font-weight:500}
+.carbon-sub{font-size:0.65rem;color:var(--m1)}
+.carbon-val{font-family:'Cormorant Garamond',serif;font-size:1.5rem;color:var(--gb);font-weight:300}
+.carbon-bar{margin-top:0.6rem;height:4px;background:rgba(255,255,255,0.05);border-radius:2px;overflow:hidden}
+.carbon-fill{height:100%;background:linear-gradient(90deg,var(--g),var(--gb));border-radius:2px;width:62%}
+
+/* COMPARISON MODE styles */
+.cmp-mode .kpi-cmp.show{display:flex}
+.cmp-label{font-size:0.62rem;padding:0.15rem 0.5rem;border-radius:100px;border:1px solid var(--b2);color:var(--m2)}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sb">
+  <div class="sb-logo"><div class="sb-logo-t">LITT<em>I</em>A</div></div>
+  <div class="sb-user">
+    <div class="sb-av">S</div>
+    <div><div class="sb-uname">Sophie Martin</div><div class="sb-usub">Plan Foyer</div></div>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-sec">Principal</div>
+    <div class="sb-item on"><span class="sb-item-ic">📊</span>Dashboard</div>
+    <div class="sb-item"><span class="sb-item-ic">🍽️</span>Menus</div>
+    <div class="sb-item"><span class="sb-item-ic">🛒</span>Courses<span class="sb-badge">24</span></div>
+    <div class="sb-item"><span class="sb-item-ic">❄️</span>Mon frigo<span class="sb-badge">3</span></div>
+    <div class="sb-sec">Gestion</div>
+    <div class="sb-item"><span class="sb-item-ic">💰</span>Budget</div>
+    <div class="sb-item"><span class="sb-item-ic">🎯</span>Objectifs</div>
+    <div class="sb-item"><span class="sb-item-ic">🔔</span>Rappels</div>
+    <div class="sb-item"><span class="sb-item-ic">📅</span>Planning</div>
+    <div class="sb-item"><span class="sb-item-ic">🌿</span>Score carbone</div>
+    <div class="sb-sec">Compte</div>
+    <div class="sb-item"><span class="sb-item-ic">👥</span>Mon foyer</div>
+    <div class="sb-item"><span class="sb-item-ic">📤</span>Exporter PDF</div>
+    <div class="sb-item"><span class="sb-item-ic">⚙️</span>Paramètres</div>
+  </nav>
+  <div class="sb-bottom">
+    <div class="sb-plan"><div class="sb-plan-l">Abonnement actif</div><div class="sb-plan-t">Plan Foyer ✦</div></div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <header class="topbar">
+    <div class="tb-left">
+      <div class="tb-title">Tableau de bord</div>
+      <div class="tb-sub">Dimanche 17 mai 2026 · Mis à jour il y a 2 min</div>
+    </div>
+    <div class="tb-right">
+      <div class="period-tabs">
+        <div class="ptab on" data-p="day">Aujourd'hui</div>
+        <div class="ptab" data-p="week">Semaine</div>
+        <div class="ptab" data-p="month">Mois</div>
+        <div class="ptab" data-p="year">Année</div>
+      </div>
+      <div class="cmp-toggle" id="cmpToggle" title="Comparer à la période précédente">⇄ Comparer</div>
+      <div class="notif-btn">🔔<div class="notif-dot"></div></div>
+    </div>
+  </header>
+
+  <div class="content" id="content">
+
+    <!-- ALERT PRÉDICTIVE -->
+    <div class="alert-banner" id="alertBanner">
+      <div class="alert-icon">⚠️</div>
+      <div class="alert-text"><strong>Alerte budget :</strong> À ce rythme vous dépasserez votre objectif mensuel de <strong>28€</strong> d'ici le 28 mai. LITTIA vous propose 3 ajustements de menus pour rester dans l'enveloppe.</div>
+      <div class="alert-actions">
+        <div class="alert-btn alert-btn-main">Voir les ajustements</div>
+        <div class="alert-btn alert-btn-ghost">Ignorer</div>
+      </div>
+      <div class="alert-dismiss" id="alertDismiss">✕</div>
+    </div>
+
+    <!-- KPI -->
+    <div class="kpi-row" id="kpiRow"></div>
+
+    <!-- AI INSIGHT -->
+    <div class="ai-card">
+      <div class="ai-orb">L</div>
+      <div class="ai-body" id="aiText">Chargement…</div>
+    </div>
+
+    <!-- CHARTS -->
+    <div class="g2a">
+      <div class="card">
+        <div class="card-hd">
+          <div><div class="card-title">Évolution des dépenses</div><div class="card-sub" id="lineTitle">Dépenses vs Économies</div></div>
+          <span class="badge badge-g" id="chartBadge">Budget maîtrisé</span>
+        </div>
+        <div class="card-bd"><div class="ch-wrap"><canvas id="lineChart"></canvas></div></div>
+      </div>
+      <div class="card">
+        <div class="card-hd">
+          <div><div class="card-title">Score maison LITTIA</div><div class="card-sub">Indice global de performance</div></div>
+          <span class="badge badge-g" id="scoreBadge">Excellent</span>
+        </div>
+        <div class="card-bd">
+          <div class="score-wrap">
+            <svg viewBox="0 0 100 100" style="width:100px;height:100px">
+              <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="7"/>
+              <circle cx="50" cy="50" r="42" fill="none" stroke="var(--gb)" stroke-width="7" stroke-linecap="round"
+                stroke-dasharray="264" id="ringCircle" style="transform:rotate(-90deg);transform-origin:50px 50px;transition:stroke-dashoffset 1s ease"/>
+              <text x="50" y="47" text-anchor="middle" fill="var(--tx)" font-family="Cormorant Garamond,serif" font-size="17" font-weight="300" id="ringVal">87</text>
+              <text x="50" y="57" text-anchor="middle" fill="rgba(240,242,248,0.3)" font-family="Outfit,sans-serif" font-size="6.5">/100</text>
+            </svg>
+            <div class="score-details" id="scoreDetails"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DEPENSES + SAVINGS -->
+    <div class="g2">
+      <div class="card">
+        <div class="card-hd">
+          <div><div class="card-title">Postes de dépenses</div><div class="card-sub" id="bbSub">Cette semaine</div></div>
+          <span class="cmp-label" id="cmpLabel" style="display:none">vs sem. précédente</span>
+        </div>
+        <div class="card-bd"><div class="bb-list" id="bbList"></div></div>
+      </div>
+      <div class="card">
+        <div class="card-hd">
+          <div><div class="card-title">Économies réalisées</div><div class="card-sub">vs période précédente</div></div>
+          <span class="badge badge-g" id="savTotal">+43€</span>
+        </div>
+        <div class="card-bd"><div class="sav-list" id="savList"></div></div>
+      </div>
+    </div>
+
+    <!-- OBJECTIFS -->
+    <div class="card">
+      <div class="card-hd">
+        <div><div class="card-title">Objectifs personnalisés</div><div class="card-sub">Progression en temps réel</div></div>
+        <span class="badge badge-b">4 objectifs actifs</span>
+      </div>
+      <div class="card-bd">
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem">
+          <div class="goal-item"><div class="goal-hdr"><span class="goal-name"><span class="goal-name-ic">💰</span>Budget mensuel</span><span class="goal-pct" style="color:var(--gb)">61%</span></div><div class="goal-track"><div class="goal-fill" style="width:61%;background:var(--gb)"></div></div><div class="goal-note">171€ restants sur 280€</div></div>
+          <div class="goal-item"><div class="goal-hdr"><span class="goal-name"><span class="goal-name-ic">♻️</span>Gaspillage évité</span><span class="goal-pct" style="color:var(--gb)">78%</span></div><div class="goal-track"><div class="goal-fill" style="width:78%;background:var(--g)"></div></div><div class="goal-note">390g / 500g objectif</div></div>
+          <div class="goal-item"><div class="goal-hdr"><span class="goal-name"><span class="goal-name-ic">🍽️</span>Repas cuisinés</span><span class="goal-pct" style="color:var(--am)">52%</span></div><div class="goal-track"><div class="goal-fill" style="width:52%;background:var(--am)"></div></div><div class="goal-note">11/21 repas ce mois</div></div>
+          <div class="goal-item"><div class="goal-hdr"><span class="goal-name"><span class="goal-name-ic">🌿</span>Score carbone</span><span class="goal-pct" style="color:var(--gb)">85%</span></div><div class="goal-track"><div class="goal-fill" style="width:85%;background:var(--gb)"></div></div><div class="goal-note">4.2kg CO₂ / obj. 5kg</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HEATMAP + REMINDERS -->
+    <div class="g2">
+      <div class="card">
+        <div class="card-hd">
+          <div><div class="card-title">Carte thermique — Dépenses</div><div class="card-sub">Mai 2026 — intensité par jour</div></div>
+          <div class="hm-legend">
+            <span class="hm-leg-label">Moins</span>
+            <div class="hm-leg-cells">
+              <div class="hm-leg-c" style="background:rgba(61,107,94,0.1)"></div>
+              <div class="hm-leg-c" style="background:rgba(61,107,94,0.3)"></div>
+              <div class="hm-leg-c" style="background:rgba(61,107,94,0.55)"></div>
+              <div class="hm-leg-c" style="background:rgba(196,130,74,0.4)"></div>
+              <div class="hm-leg-c" style="background:rgba(196,130,74,0.75)"></div>
+            </div>
+            <span class="hm-leg-label">Plus</span>
+          </div>
+        </div>
+        <div class="card-bd" style="padding:0.75rem 1.1rem 1rem">
+          <div class="heatmap-grid" id="heatmapGrid"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-hd">
+          <div><div class="card-title">Rappels logistiques</div><div class="card-sub">Aujourd'hui & à venir</div></div>
+          <span class="badge badge-a">3 actifs</span>
+        </div>
+        <div class="card-bd">
+          <div class="rem-list">
+            <div class="rem rem-done"><div class="rem-dot" style="background:var(--gb)"></div><span class="rem-t">Commande courses passée</span><span class="rem-time">✓ 9h</span><div class="rem-check done">✓</div></div>
+            <div class="rem"><div class="rem-dot" style="background:var(--am)"></div><span class="rem-t">Lancer lessive couleurs</span><span class="rem-time">10h00</span><div class="rem-check" onclick="this.classList.toggle('done')"></div></div>
+            <div class="rem"><div class="rem-dot" style="background:var(--am)"></div><span class="rem-t">Renouveler ordonnance</span><span class="rem-time">14h00</span><div class="rem-check" onclick="this.classList.toggle('done')"></div></div>
+            <div class="rem"><div class="rem-dot" style="background:var(--go)"></div><span class="rem-t">Nettoyer salle de bain</span><span class="rem-time">17h00</span><div class="rem-check" onclick="this.classList.toggle('done')"></div></div>
+            <div class="rem"><div class="rem-dot" style="background:var(--bl)"></div><span class="rem-t">Contrôle technique voiture</span><span class="rem-time">Lun 19 mai</span><div class="rem-check"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MENUS + CARBON -->
+    <div class="g2">
+      <div class="card">
+        <div class="card-hd">
+          <div><div class="card-title">Menus de la semaine</div><div class="card-sub">7 jours planifiés</div></div>
+          <span class="badge badge-g">Complet</span>
+        </div>
+        <div class="card-bd" style="padding:0.75rem">
+          <div class="menu-week">
+            <div class="mday"><div class="mday-n">Lun</div><div class="mday-ic">🥗</div><div class="mday-l">Salade niçoise</div></div>
+            <div class="mday"><div class="mday-n">Mar</div><div class="mday-ic">🍝</div><div class="mday-l">Bolognaise</div></div>
+            <div class="mday"><div class="mday-n">Mer</div><div class="mday-ic">🐟</div><div class="mday-l">Saumon vapeur</div></div>
+            <div class="mday"><div class="mday-n">Jeu</div><div class="mday-ic">🥘</div><div class="mday-l">Gratin légumes</div></div>
+            <div class="mday"><div class="mday-n">Ven</div><div class="mday-ic">🍗</div><div class="mday-l">Poulet rôti</div></div>
+            <div class="mday cur"><div class="mday-n">Sam</div><div class="mday-ic">🥙</div><div class="mday-l">Wraps maison</div></div>
+            <div class="mday"><div class="mday-n">Dim</div><div class="mday-ic">🍲</div><div class="mday-l">Curry maison</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-hd">
+          <div><div class="card-title">Score carbone alimentaire</div><div class="card-sub">Empreinte CO₂ de vos menus</div></div>
+          <span class="badge badge-g">↓ −18% vs mois passé</span>
+        </div>
+        <div class="card-bd">
+          <div class="carbon-card">
+            <div class="carbon-row">
+              <div class="carbon-left"><span class="carbon-ic">🌿</span><div><div class="carbon-label">Empreinte semaine</div><div class="carbon-sub">Objectif : &lt; 5 kg CO₂</div></div></div>
+              <div class="carbon-val">4,2<span style="font-size:0.8rem;color:var(--m1)"> kg</span></div>
+            </div>
+            <div class="carbon-bar"><div class="carbon-fill"></div></div>
+          </div>
+          <div style="margin-top:0.75rem;display:flex;flex-direction:column;gap:0.45rem">
+            <div style="display:flex;align-items:center;justify-content:space-between;font-size:0.72rem"><span style="color:var(--m1)">🥩 Viande</span><span style="color:var(--am)">2,1 kg CO₂</span></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;font-size:0.72rem"><span style="color:var(--m1)">🐟 Poisson</span><span style="color:var(--go)">0,8 kg CO₂</span></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;font-size:0.72rem"><span style="color:var(--m1)">🥦 Légumes</span><span style="color:var(--gb)">0,4 kg CO₂</span></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;font-size:0.72rem"><span style="color:var(--m1)">🧀 Laitiers</span><span style="color:var(--go)">0,9 kg CO₂</span></div>
+          </div>
+          <div style="background:var(--gb2);border:1px solid rgba(90,158,140,0.15);border-radius:7px;padding:6px 8px;margin-top:0.75rem;font-size:0.7rem;color:var(--m1);">
+            💡 Remplacer le bœuf mercredi par des lentilles économiserait <strong style="color:var(--gb)">0,6 kg CO₂</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BAR CHART -->
+    <div class="card">
+      <div class="card-hd">
+        <div><div class="card-title">Répartition des dépenses</div><div class="card-sub" id="barSub">Comparatif par catégorie</div></div>
+      </div>
+      <div class="card-bd" style="height:150px"><canvas id="barChart"></canvas></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const DATA = {
+  day:{
+    kpis:[
+      {l:'Dépenses du jour',v:'12€',d:'+2€ vs hier',up:false,c:'kpi-a',ic:'💰',spark:[4,7,5,9,6,8,12]},
+      {l:'Économies du jour',v:'3,40€',d:'+1€ vs hier',up:true,c:'kpi-g',ic:'📉',spark:[1,2,1.5,3,2,2.8,3.4]},
+      {l:'Repas planifiés',v:'3/3',d:'Complet',up:true,c:'kpi-b',ic:'🍽️',spark:[2,3,2,3,3,3,3]},
+      {l:'Rappels restants',v:'3',d:'2 complétés',up:true,c:'kpi-go',ic:'🔔',spark:[5,4,3,4,3,4,3]},
+    ],
+    ai:`<strong>Aujourd'hui :</strong> Budget à 12€, légèrement au-dessus de votre moyenne journalière (10€). Le gratin du soir réutilise la courge restante — <strong>400g de gaspillage évité</strong>. 3 rappels vous attendent cet après-midi.`,
+    cats:[
+      {ic:'🥦',n:'Alimentaire',v:8.5,prev:9.2,pct:71,c:'var(--g)'},
+      {ic:'🧴',n:'Hygiène',v:2.2,prev:2.0,pct:18,c:'var(--am)'},
+      {ic:'🧹',n:'Entretien',v:1.3,prev:1.5,pct:11,c:'var(--bl)'},
+    ],
+    savings:[
+      {ic:'♻️',n:'Restes réutilisés',sub:'Courge + riz',v:'+2,80€',pos:true,trend:'↑'},
+      {ic:'🛒',n:'Promo utilisée',sub:'Yaourts x6',v:'+0,60€',pos:true,trend:'↑'},
+    ],
+    line:{labels:['8h','10h','12h','14h','16h','18h','20h'],dep:[0,2,5,7,9,10,12],eco:[0,0.5,1,2,2.5,3,3.4],prevDep:[0,3,6,8,10,11,14]},
+    score:87,scores:[{ic:'🍽️',l:'Nutrition',v:92},{ic:'💰',l:'Budget',v:85},{ic:'♻️',l:'Anti-gaspi',v:91},{ic:'🏠',l:'Organisation',v:78}],
+    savTotal:'+3,40€',barSub:'Dépenses du jour',bbSub:'Aujourd\'hui'
+  },
+  week:{
+    kpis:[
+      {l:'Budget semaine',v:'105€',d:'−12% vs sem. passée',up:true,c:'kpi-g',ic:'💰',spark:[130,118,125,112,119,108,105]},
+      {l:'Économies semaine',v:'43€',d:'+8€ vs sem. passée',up:true,c:'kpi-g',ic:'📉',spark:[28,31,35,38,36,40,43]},
+      {l:'Repas cuisinés',v:'14/21',d:'67% faits maison',up:true,c:'kpi-b',ic:'🍽️',spark:[8,10,11,12,13,13,14]},
+      {l:'Gaspillage évité',v:'−870g',d:'4 aliments réutilisés',up:true,c:'kpi-go',ic:'♻️',spark:[200,300,450,580,720,800,870]},
+    ],
+    ai:`<strong>Bilan semaine :</strong> Excellente performance — <strong>43€ économisés</strong> grâce à l'optimisation des menus et 4 aliments réutilisés. Budget courses en baisse de 12%. Score carbone : 4,2 kg CO₂ (-18% vs mois passé).`,
+    cats:[
+      {ic:'🥦',n:'Alimentaire',v:68,prev:75,pct:65,c:'var(--g)'},
+      {ic:'🧴',n:'Hygiène',v:22,prev:21,pct:21,c:'var(--am)'},
+      {ic:'🧹',n:'Entretien',v:15,prev:16,pct:14,c:'var(--bl)'},
+    ],
+    savings:[
+      {ic:'♻️',n:'Anti-gaspillage',sub:'4 aliments réutilisés',v:'+12€',pos:true,trend:'↑'},
+      {ic:'🛒',n:'Listes optimisées',sub:'vs achats spontanés',v:'+18€',pos:true,trend:'↑'},
+      {ic:'🍽️',n:'Menus planifiés',sub:'Moins de livraisons',v:'+13€',pos:true,trend:'↑'},
+    ],
+    line:{labels:['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'],dep:[28,14,19,16,12,10,6],eco:[5,8,6,9,7,5,3],prevDep:[35,18,22,20,15,12,8]},
+    score:87,scores:[{ic:'🍽️',l:'Nutrition',v:92},{ic:'💰',l:'Budget',v:85},{ic:'♻️',l:'Anti-gaspi',v:91},{ic:'🏠',l:'Organisation',v:78}],
+    savTotal:'+43€',barSub:'Cette semaine',bbSub:'Semaine en cours'
+  },
+  month:{
+    kpis:[
+      {l:'Budget mai',v:'380€',d:'−18% vs avril',up:true,c:'kpi-g',ic:'💰',spark:[460,430,410,395,388,382,380]},
+      {l:'Économies mai',v:'142€',d:'+34€ vs avril',up:true,c:'kpi-g',ic:'📉',spark:[60,75,90,108,120,135,142]},
+      {l:'Repas cuisinés',v:'52/90',d:'58% faits maison',up:true,c:'kpi-b',ic:'🍽️',spark:[30,36,42,45,48,50,52]},
+      {l:'Gaspillage évité',v:'−2,8kg',d:'14 aliments',up:true,c:'kpi-go',ic:'♻️',spark:[0.5,0.9,1.4,1.9,2.3,2.6,2.8]},
+    ],
+    ai:`<strong>Bilan mai (à mi-mois) :</strong> En avance sur tous vos objectifs. À ce rythme, mai sera votre meilleur mois depuis l'inscription. Les <strong>142€ d'économies</strong> couvrent déjà 10× votre abonnement.`,
+    cats:[
+      {ic:'🥦',n:'Alimentaire',v:248,prev:295,pct:65,c:'var(--g)'},
+      {ic:'🧴',n:'Hygiène',v:82,prev:78,pct:22,c:'var(--am)'},
+      {ic:'🧹',n:'Entretien',v:50,prev:56,pct:13,c:'var(--bl)'},
+    ],
+    savings:[
+      {ic:'♻️',n:'Anti-gaspillage',sub:'14 aliments',v:'+44€',pos:true,trend:'↑'},
+      {ic:'🛒',n:'Listes optimisées',sub:'vs budget libre',v:'+62€',pos:true,trend:'↑'},
+      {ic:'🍽️',n:'Moins de livraisons',sub:'52 repas cuisinés',v:'+36€',pos:true,trend:'↑'},
+    ],
+    line:{labels:['S1','S2','S3 (enc.)'],dep:[145,152,83],eco:[48,61,33],prevDep:[168,175,97]},
+    score:89,scores:[{ic:'🍽️',l:'Nutrition',v:93},{ic:'💰',l:'Budget',v:88},{ic:'♻️',l:'Anti-gaspi',v:90},{ic:'🏠',l:'Organisation',v:82}],
+    savTotal:'+142€',barSub:'Ce mois',bbSub:'Mai 2026'
+  },
+  year:{
+    kpis:[
+      {l:'Budget 2026',v:'1 820€',d:'−21% vs 2025',up:true,c:'kpi-g',ic:'💰',spark:[420,385,370,360,285]},
+      {l:'Économies 2026',v:'487€',d:'+120€ vs 2025',up:true,c:'kpi-g',ic:'📉',spark:[72,85,94,102,134]},
+      {l:'Repas cuisinés',v:'248',d:'71% faits maison',up:true,c:'kpi-b',ic:'🍽️',spark:[40,48,52,60,48]},
+      {l:'CO₂ alimentaire',v:'−18%',d:'vs 2025',up:true,c:'kpi-go',ic:'🌿',spark:[5.2,4.9,4.7,4.5,4.2]},
+    ],
+    ai:`<strong>Bilan 2026 :</strong> LITTIA vous a fait économiser <strong>487€</strong> depuis janvier — 120€ de plus qu'en 2025. Le poste alimentaire est en baisse de 21% et l'empreinte carbone de vos menus a diminué de 18%.`,
+    cats:[
+      {ic:'🥦',n:'Alimentaire',v:1190,prev:1505,pct:65,c:'var(--g)'},
+      {ic:'🧴',n:'Hygiène',v:390,prev:375,pct:21,c:'var(--am)'},
+      {ic:'🧹',n:'Entretien',v:240,prev:272,pct:13,c:'var(--bl)'},
+    ],
+    savings:[
+      {ic:'♻️',n:'Anti-gaspillage annuel',sub:'70+ aliments',v:'+187€',pos:true,trend:'↑'},
+      {ic:'🛒',n:'Courses optimisées',sub:'vs non planifié',v:'+180€',pos:true,trend:'↑'},
+      {ic:'🍽️',n:'Moins de livraisons',sub:'248 repas',v:'+120€',pos:true,trend:'↑'},
+    ],
+    line:{labels:['Jan','Fév','Mar','Avr','Mai'],dep:[420,385,370,360,285],eco:[72,85,94,102,134],prevDep:[520,480,460,440,360]},
+    score:91,scores:[{ic:'🍽️',l:'Nutrition',v:94},{ic:'💰',l:'Budget',v:90},{ic:'♻️',l:'Anti-gaspi',v:93},{ic:'🏠',l:'Organisation',v:85}],
+    savTotal:'+487€',barSub:'Année 2026',bbSub:'2026 en cours'
+  }
+}
+
+let cur='day',cmpMode=false
+let lineInst=null,barInst=null
+
+function renderKPIs(d){
+  document.getElementById('kpiRow').innerHTML=d.kpis.map(k=>`
+    <div class="kpi ${k.c}">
+      <div class="kpi-label"><span class="kpi-licon">${k.ic}</span>${k.l}</div>
+      <div class="kpi-val">${k.v}</div>
+      <div class="kpi-delta ${k.up?'dp':'dn'}">${k.up?'↓':'↑'} ${k.d}</div>
+      <div class="kpi-cmp ${cmpMode?'show':''}"><span style="color:var(--m2)">Préc.:</span> <span style="color:var(--m1)">${k.spark[0]}${k.v.includes('€')?'€':''}</span></div>
+      <div class="sparkline">${k.spark.map((v,i)=>{
+        const max=Math.max(...k.spark),pct=Math.round(v/max*100)
+        const cls=i===k.spark.length-1?'cur':v===max?'hi':v===Math.min(...k.spark)?'lo':''
+        return`<div class="sp-bar ${cls}" style="height:${pct}%"></div>`
+      }).join('')}</div>
+    </div>`).join('')
+}
+
+function renderAI(d){document.getElementById('aiText').innerHTML=d.ai}
+
+function renderBB(d){
+  document.getElementById('bbSub').textContent=d.bbSub
+  document.getElementById('bbList').innerHTML=d.cats.map(c=>{
+    const prevPct=Math.round(c.prev/(d.cats.reduce((a,x)=>a+x.prev,0))*100)
+    return`<div class="bb-row">
+      <div class="bb-hdr">
+        <span class="bb-name"><span>${c.ic}</span>${c.n}</span>
+        <div class="bb-amts">
+          ${cmpMode?`<span class="bb-prev">${c.prev}€</span><span style="color:var(--m2)">→</span>`:''}
+          <span class="bb-cur">${c.v}${typeof c.v==='number'?'€':''}</span>
+          <span class="${c.v<c.prev?'dp':'dn2'}" style="font-size:0.65rem">${c.v<c.prev?'↓':'↑'} ${Math.abs(Math.round((c.v-c.prev)/c.prev*100))}%</span>
+        </div>
+      </div>
+      <div class="bb-track">
+        <div class="bb-fill" style="width:${c.pct}%;background:${c.c}"></div>
+        ${cmpMode?`<div class="bb-cmp-line" style="left:${prevPct}%"></div>`:''}
+      </div>
+    </div>`}).join('')
+}
+
+function renderSavings(d){
+  document.getElementById('savTotal').textContent=d.savTotal
+  document.getElementById('savList').innerHTML=d.savings.map(s=>`
+    <div class="sav-item">
+      <div class="sav-l"><span class="sav-ic">${s.ic}</span><div><div class="sav-name">${s.n}</div><div class="sav-sub">${s.sub}</div></div></div>
+      <div class="sav-val ${s.pos?'sav-pos':'sav-neg'}">${s.v}<span class="sav-trend">${s.trend||''}</span></div>
+    </div>`).join('')
+}
+
+function renderScore(d){
+  const circ=2*Math.PI*42,offset=circ*(1-d.score/100)
+  document.getElementById('ringCircle').style.strokeDashoffset=offset
+  document.getElementById('ringVal').textContent=d.score
+  document.getElementById('scoreDetails').innerHTML=d.scores.map(s=>`
+    <div class="score-row">
+      <span class="score-rl"><span>${s.ic}</span>${s.l}</span>
+      <div style="display:flex;align-items:center;gap:6px">
+        <div class="score-mini-bar"><div class="score-mini-fill" style="width:${s.v}%;background:var(--gb)"></div></div>
+        <span class="score-rv">${s.v}/100</span>
+      </div>
+    </div>`).join('')
+}
+
+function renderCharts(d){
+  document.getElementById('lineTitle').textContent='Dépenses vs Économies'+(cmpMode?' (avec période précédente)':'')
+  document.getElementById('barSub').textContent=d.barSub
+  if(lineInst)lineInst.destroy()
+  const ctx=document.getElementById('lineChart').getContext('2d')
+  const datasets=[
+    {label:'Dépenses',data:d.line.dep,borderColor:'#C4824A',backgroundColor:'rgba(196,130,74,0.06)',fill:true,tension:0.4,pointRadius:3,pointBackgroundColor:'#C4824A',borderWidth:2},
+    {label:'Économies',data:d.line.eco,borderColor:'#5A9E8C',backgroundColor:'rgba(90,158,140,0.06)',fill:true,tension:0.4,pointRadius:3,pointBackgroundColor:'#5A9E8C',borderWidth:2}
+  ]
+  if(cmpMode)datasets.push({label:'Dép. période préc.',data:d.line.prevDep,borderColor:'rgba(255,255,255,0.2)',backgroundColor:'transparent',fill:false,tension:0.4,pointRadius:2,borderDash:[4,3],borderWidth:1.5,borderDashOffset:0})
+  lineInst=new Chart(ctx,{type:'line',data:{labels:d.line.labels,datasets},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'rgba(240,242,248,0.4)',font:{family:'Outfit',size:10},boxWidth:10,boxHeight:2}}},scales:{x:{grid:{color:'rgba(255,255,255,0.03)'},ticks:{color:'rgba(240,242,248,0.35)',font:{family:'Outfit',size:10}}},y:{grid:{color:'rgba(255,255,255,0.03)'},ticks:{color:'rgba(240,242,248,0.35)',font:{family:'Outfit',size:10},callback:v=>v+'€'},beginAtZero:true}}}})
+  if(barInst)barInst.destroy()
+  const bctx=document.getElementById('barChart').getContext('2d')
+  barInst=new Chart(bctx,{type:'bar',data:{labels:d.cats.map(c=>c.n),datasets:[{data:d.cats.map(c=>c.v),backgroundColor:d.cats.map(c=>c.c+'CC'),borderColor:d.cats.map(c=>c.c),borderWidth:1,borderRadius:5,borderSkipped:false},{data:cmpMode?d.cats.map(c=>c.prev):[],label:'Précédente',backgroundColor:'rgba(255,255,255,0.06)',borderColor:'rgba(255,255,255,0.12)',borderWidth:1,borderRadius:5,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,0.03)'},ticks:{color:'rgba(240,242,248,0.35)',font:{family:'Outfit',size:11}}},y:{grid:{color:'rgba(255,255,255,0.03)'},ticks:{color:'rgba(240,242,248,0.35)',font:{family:'Outfit',size:11},callback:v=>v+'€'},beginAtZero:true}}}})
+}
+
+function renderHeatmap(){
+  const days=['L','M','M','J','V','S','D']
+  const vals=[0,0,3,8,12,18,5,22,14,7,3,0,15,28,6,19,11,0,0,8,14,25,7,3,0,12,16,18,10,5,0,19]
+  const max=Math.max(...vals.filter(v=>v>0))
+  const g=document.getElementById('heatmapGrid')
+  g.innerHTML=days.map(d=>`<div class="hm-day-label">${d}</div>`).join('')
+  // pad start (May 2026 starts on Friday = index 4)
+  for(let i=0;i<4;i++) g.innerHTML+=`<div></div>`
+  vals.slice(0,28).forEach((v,i)=>{
+    const day=i+1
+    let bg
+    if(v===0) bg='rgba(255,255,255,0.03)'
+    else if(v<max*0.25) bg='rgba(61,107,94,0.15)'
+    else if(v<max*0.5) bg='rgba(61,107,94,0.35)'
+    else if(v<max*0.75) bg='rgba(61,107,94,0.6)'
+    else if(v<max*0.9) bg='rgba(196,130,74,0.4)'
+    else bg='rgba(196,130,74,0.75)'
+    const isToday=day===17
+    g.innerHTML+=`<div class="hm-cell" style="background:${bg};${isToday?'box-shadow:0 0 0 1.5px var(--gb);':''}"><div class="hm-tooltip">${day} mai · ${v>0?v+'€':'Aucune dépense'}</div></div>`
+  })
+}
+
+function render(){
+  const d=DATA[cur]
+  renderKPIs(d);renderAI(d);renderBB(d);renderSavings(d);renderScore(d);renderCharts(d)
+  document.getElementById('cmpLabel').style.display=cmpMode?'inline-block':'none'
+  document.getElementById('content').classList.toggle('cmp-mode',cmpMode)
+}
+
+// PERIOD TABS
+document.querySelectorAll('.ptab').forEach(t=>{
+  t.addEventListener('click',()=>{
+    document.querySelectorAll('.ptab').forEach(x=>x.classList.remove('on'))
+    t.classList.add('on');cur=t.dataset.p;render()
+  })
+})
+
+// COMPARE TOGGLE
+document.getElementById('cmpToggle').addEventListener('click',function(){
+  cmpMode=!cmpMode;this.classList.toggle('on',cmpMode);render()
+})
+
+// SIDEBAR NAV
+document.querySelectorAll('.sb-item').forEach(i=>i.addEventListener('click',()=>{
+  document.querySelectorAll('.sb-item').forEach(x=>x.classList.remove('on'));i.classList.add('on')
+}))
+
+// ALERT
+document.getElementById('alertDismiss').addEventListener('click',()=>document.getElementById('alertBanner').style.display='none')
+document.querySelectorAll('.alert-btn').forEach(b=>b.addEventListener('click',()=>document.getElementById('alertBanner').style.display='none'))
+
+renderHeatmap()
+render()
+</script>
+</body>
+</html>
