@@ -1,0 +1,1494 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LITTIA — L'IA qui organise ton foyer</title>
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
+<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+<meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=()">
+<meta name="robots" content="index, follow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#0D0F14;--ink-60:rgba(13,15,20,0.6);--ink-40:rgba(13,15,20,0.4);--ink-15:rgba(13,15,20,0.15);--ink-08:rgba(13,15,20,0.06);
+  --snow:#F8F9FC;--surface:#FFF;--mist:#EEF0F5;--mist2:#F4F5F9;
+  --g:#3D6B5E;--gl:#E8F0EE;--gb:#5A9E8C;
+  --a:#C4824A;--al:#FAF0E8;
+  --gold:#B8963E;--red:#C44A4A;--r:12px;--rl:20px;
+}
+html{scroll-behavior:smooth}
+body{font-family:"Outfit",sans-serif;background:var(--snow);color:var(--ink);overflow-x:hidden}
+
+/* ── LANG ── */
+.lang-wrap{position:relative;display:inline-block}
+.lang-btn{display:flex;align-items:center;gap:6px;padding:0.42rem 0.9rem;border-radius:100px;border:1px solid var(--ink-15);background:transparent;cursor:pointer;font-size:0.78rem;color:var(--ink-40);font-family:"Outfit",sans-serif;transition:all 0.2s}
+.lang-btn:hover{background:var(--mist);color:var(--ink)}
+.lang-btn .chevron{font-size:0.6rem;transition:transform 0.2s;opacity:0.5}
+.lang-wrap.open .chevron{transform:rotate(180deg)}
+.lang-drop{position:absolute;top:calc(100% + 6px);right:0;background:var(--surface);border:1px solid var(--ink-15);border-radius:10px;padding:4px;min-width:130px;opacity:0;transform:translateY(-6px);pointer-events:none;transition:all 0.2s;z-index:999;box-shadow:0 8px 24px rgba(13,15,20,0.1)}
+.lang-wrap.open .lang-drop{opacity:1;transform:translateY(0);pointer-events:all}
+.lang-opt{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:7px;cursor:pointer;font-size:0.8rem;color:var(--ink-40);transition:all 0.15s}
+.lang-opt:hover{background:var(--mist);color:var(--ink)}
+.lang-opt.active{color:var(--g);background:var(--gl);font-weight:500}
+.lang-code{font-size:0.68rem;color:var(--ink-40);margin-left:auto}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:1rem 3rem;display:flex;align-items:center;justify-content:space-between;transition:all 0.3s}
+nav.scrolled{background:rgba(248,249,252,0.96);backdrop-filter:blur(20px);border-bottom:1px solid var(--ink-08)}
+.nav-logo{display:flex;align-items:center;flex-shrink:0}
+.nav-logo a{display:flex;align-items:center;text-decoration:none}
+.nav-logo svg{display:block}
+.nav-logo img{height:44px;width:auto;object-fit:contain}
+nav ul{list-style:none;display:flex;gap:1.75rem;align-items:center}
+nav a{text-decoration:none;font-size:0.82rem;color:var(--ink-40);transition:color 0.2s}
+nav a:hover{color:var(--ink)}
+.nav-login{border:1.5px solid var(--ink-15);color:var(--ink-40)!important;padding:0.42rem 1rem;border-radius:100px;transition:all 0.2s!important;font-size:0.82rem}
+.nav-login:hover{border-color:var(--g)!important;color:var(--g)!important;background:var(--gl)}
+.nav-cta{background:var(--ink)!important;color:var(--snow)!important;padding:0.45rem 1.25rem;border-radius:100px;transition:background 0.2s!important}
+.nav-cta:hover{background:var(--g)!important}
+
+/* ── BANNER ── */
+
+/* ── HERO ── */
+.hero{min-height:100vh;display:grid;place-items:center;padding:6rem 3rem 5rem;position:relative;overflow:hidden}
+.hero-bg{position:absolute;inset:0;pointer-events:none}
+.blob{position:absolute;border-radius:50%;filter:blur(90px);opacity:0.1}
+.b1{width:650px;height:650px;background:var(--g);top:-180px;right:-120px;animation:drift 9s ease-in-out infinite alternate}
+.b2{width:450px;height:450px;background:var(--a);bottom:-100px;left:-100px;animation:drift 11s ease-in-out infinite alternate-reverse}
+.b3{width:320px;height:320px;background:var(--gold);top:45%;left:38%;animation:drift 14s ease-in-out infinite alternate}
+@keyframes drift{0%{transform:scale(1)}100%{transform:scale(1.15) translate(18px,22px)}}
+.hero-grid{max-width:1200px;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center;position:relative;z-index:2}
+.eyebrow{display:inline-flex;align-items:center;gap:0.6rem;font-size:0.7rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--g);background:var(--gl);padding:0.35rem 1rem;border-radius:100px;margin-bottom:1.75rem}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--g);animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.25}}
+h1{font-family:"Cormorant Garamond",serif;font-size:clamp(2.8rem,4.5vw,4.5rem);line-height:1.06;color:var(--ink);margin-bottom:1.5rem;font-weight:300;letter-spacing:-0.01em}
+h1 strong{font-weight:600;font-style:italic;color:var(--g)}
+.hero-sub{font-size:1rem;color:var(--ink-40);line-height:1.8;max-width:440px;font-weight:300;margin-bottom:2.5rem}
+.cta-row{display:flex;gap:1rem;flex-wrap:wrap;align-items:center}
+.btn-main{background:var(--ink);color:var(--snow);padding:0.9rem 2.25rem;border-radius:100px;text-decoration:none;font-weight:500;font-size:0.88rem;transition:all 0.25s;display:inline-flex;align-items:center;gap:0.5rem}
+.btn-main:hover{background:var(--g);transform:translateY(-2px)}
+.btn-ghost{font-size:0.83rem;color:var(--ink-40);text-decoration:none;transition:color 0.2s}
+.btn-ghost:hover{color:var(--g)}
+
+/* PHONE MOCKUP */
+.phone-wrap{position:relative;display:flex;justify-content:center;align-items:flex-end;gap:1rem}
+.phone{width:228px;height:468px;border-radius:38px;background:var(--ink);border:7px solid var(--ink);box-shadow:0 50px 90px rgba(13,15,20,0.22);overflow:hidden;flex-shrink:0;position:relative;z-index:2}
+.ph-inner{position:absolute;inset:0;background:linear-gradient(160deg,#131820,#0d1117);overflow:hidden}
+.ph-notch{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:78px;height:6px;background:rgba(0,0,0,0.5);border-radius:3px;z-index:10}
+.ph-screen{padding:28px 13px 60px;height:100%;display:flex;flex-direction:column;gap:8px;overflow:hidden}
+.ph-hdr{display:flex;justify-content:space-between;align-items:center}
+.ph-name{font-family:"Cormorant Garamond",serif;font-size:12px;color:#fff;font-style:italic}
+.ph-date{font-size:7px;color:rgba(255,255,255,0.3)}
+.ph-card{background:linear-gradient(135deg,#2d5048,#1f3a32);border-radius:14px;padding:12px;position:relative;overflow:hidden}
+.ph-card::after{content:"";position:absolute;top:-25px;right:-25px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,0.04)}
+.ph-tag{position:absolute;top:9px;right:9px;background:rgba(90,158,140,0.25);border:1px solid rgba(90,158,140,0.3);border-radius:6px;padding:2px 6px;font-size:6.5px;color:#5A9E8C}
+.ph-lbl{font-size:6.5px;color:rgba(255,255,255,0.45);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:3px}
+.ph-big{font-family:"Cormorant Garamond",serif;font-size:22px;color:#fff;font-weight:600;line-height:1}
+.ph-sub{font-size:6.5px;color:rgba(255,255,255,0.4);margin-top:3px}
+.ph-tabs{display:flex;gap:3px;background:rgba(255,255,255,0.04);border-radius:7px;padding:3px}
+.ph-tab{flex:1;text-align:center;font-size:6.5px;color:rgba(255,255,255,0.35);padding:3px;border-radius:5px;cursor:pointer}
+.ph-tab.on{background:rgba(90,158,140,0.25);color:#5A9E8C}
+.ph-g2{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.ph-mini{background:rgba(255,255,255,0.04);border-radius:9px;padding:8px;border:0.5px solid rgba(255,255,255,0.06)}
+.ph-mini-i{font-size:10px;margin-bottom:3px}
+.ph-mini-v{font-size:11px;color:#fff;font-weight:500}
+.ph-mini-l{font-size:6px;color:rgba(255,255,255,0.3);margin-top:1px}
+.ph-tasks{display:flex;flex-direction:column;gap:4px}
+.ph-task{background:rgba(255,255,255,0.03);border-radius:7px;padding:5px 8px;display:flex;align-items:center;gap:5px;border:0.5px solid rgba(255,255,255,0.05)}
+.ph-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.ph-task-t{font-size:7.5px;color:rgba(255,255,255,0.65);flex:1}
+.ph-task-ti{font-size:6.5px;color:rgba(255,255,255,0.25)}
+.ph-nav{position:absolute;bottom:0;left:0;right:0;background:rgba(13,15,20,0.97);border-top:0.5px solid rgba(255,255,255,0.07);display:flex;justify-content:space-around;padding:7px 0 14px}
+.ph-nav-i{display:flex;flex-direction:column;align-items:center;gap:2px;opacity:0.3}
+.ph-nav-i.on{opacity:1}
+.ph-nav-ic{font-size:13px}
+.ph-nav-lb{font-size:5.5px;color:rgba(255,255,255,0.5)}
+.phone-back{width:182px;height:380px;border-radius:28px;background:var(--ink);border:5px solid rgba(255,255,255,0.06);overflow:hidden;margin-bottom:24px;opacity:0.55}
+.phone-back-inner{background:linear-gradient(160deg,#131820,#0d1117);height:100%;padding:20px 10px;display:flex;flex-direction:column;gap:7px}
+.pb-bar{background:var(--g);height:3px;border-radius:2px;width:55%;opacity:0.6;margin-bottom:5px}
+.pb-r{background:rgba(255,255,255,0.04);border-radius:6px}
+
+/* ── BENEFIT BAR ── */
+.benefit-bar{background:var(--ink);padding:1.75rem 3rem}
+.benefit-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1.5rem}
+.benefit-item{text-align:center}
+.benefit-v{font-family:"Cormorant Garamond",serif;font-size:2rem;color:var(--snow);font-weight:300}
+.benefit-v em{color:var(--gb);font-style:normal}
+.benefit-l{font-size:0.7rem;color:rgba(248,249,252,0.3);text-transform:uppercase;letter-spacing:0.08em;margin-top:3px}
+.benefit-sep{width:1px;height:40px;background:rgba(248,249,252,0.08)}
+
+/* ── SECTIONS ── */
+section{padding:6rem 3rem}
+.s{max-width:1200px;margin:0 auto}
+.eyebrow2{font-size:0.7rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--a);margin-bottom:0.75rem}
+.s-title{font-family:"Cormorant Garamond",serif;font-size:clamp(2rem,3.5vw,3rem);color:var(--ink);line-height:1.15;font-weight:300;margin-bottom:1rem}
+.s-title em{font-style:italic;color:var(--g)}
+.s-desc{font-size:0.95rem;color:var(--ink-40);line-height:1.8;font-weight:300;max-width:560px;margin-bottom:3rem}
+
+/* ── 3 PILLARS + COCKPIT ── */
+.pillars-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin-bottom:1.25rem}
+.pillar{background:var(--surface);border:1px solid var(--ink-15);border-radius:var(--rl);padding:2rem;transition:all 0.3s;position:relative;overflow:hidden}
+.pillar::after{content:"";position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--g),var(--gb));transform:scaleX(0);transform-origin:left;transition:transform 0.3s}
+.pillar:hover{transform:translateY(-4px);box-shadow:0 16px 40px rgba(13,15,20,0.07)}
+.pillar:hover::after{transform:scaleX(1)}
+.pillar-icon{font-size:2rem;margin-bottom:1rem;display:block}
+.pillar h3{font-family:"Cormorant Garamond",serif;font-size:1.4rem;color:var(--ink);font-weight:300;margin-bottom:0.75rem}
+.pillar-list{list-style:none;display:flex;flex-direction:column;gap:0.5rem}
+.pillar-list li{font-size:0.83rem;color:var(--ink-40);display:flex;align-items:flex-start;gap:0.5rem;line-height:1.55}
+.pillar-list li::before{content:"·";color:var(--gb);font-size:1.1rem;line-height:1.2;flex-shrink:0}
+.pillar-note{margin-top:1rem;font-size:0.75rem;color:var(--gb);background:var(--gl);padding:0.4rem 0.75rem;border-radius:100px;display:inline-block}
+
+/* COCKPIT CARD */
+.cockpit{background:var(--ink);border-radius:var(--rl);padding:2.5rem;display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center}
+.cockpit-left .eyebrow2{color:var(--gb)}
+.cockpit-title{font-family:"Cormorant Garamond",serif;font-size:2rem;color:var(--snow);font-weight:300;line-height:1.15;margin-bottom:1rem}
+.cockpit-title em{font-style:italic;color:rgba(248,249,252,0.45)}
+.cockpit-desc{font-size:0.9rem;color:rgba(248,249,252,0.45);line-height:1.8;font-weight:300;margin-bottom:1.5rem}
+.cockpit-horizons{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem}
+.horizon{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:0.85rem 1rem}
+.horizon-icon{font-size:1rem;margin-bottom:0.35rem}
+.horizon-title{font-size:0.82rem;color:var(--snow);font-weight:500;margin-bottom:0.3rem}
+.horizon-items{font-size:0.72rem;color:rgba(248,249,252,0.4);line-height:1.7}
+/* dashboard mockup inside cockpit */
+.dash-mockup{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:1.25rem;display:flex;flex-direction:column;gap:0.75rem}
+.dm-hdr{display:flex;align-items:center;justify-content:space-between}
+.dm-title{font-size:0.82rem;color:var(--snow);font-weight:500}
+.dm-tabs{display:flex;gap:3px;background:rgba(255,255,255,0.04);border-radius:6px;padding:2px}
+.dm-tab{padding:3px 8px;border-radius:5px;font-size:0.65rem;color:rgba(255,255,255,0.3);cursor:pointer;transition:all 0.15s}
+.dm-tab.on{background:rgba(90,158,140,0.25);color:#5A9E8C}
+.dm-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.dm-kpi{background:rgba(255,255,255,0.05);border-radius:7px;padding:8px;border:0.5px solid rgba(255,255,255,0.07)}
+.dm-kpi-v{font-size:13px;color:#fff;font-weight:500;margin-bottom:2px}
+.dm-kpi-l{font-size:8px;color:rgba(255,255,255,0.3)}
+.dm-bars{display:flex;flex-direction:column;gap:6px}
+.dm-bar-row{display:flex;align-items:center;gap:8px}
+.dm-bar-label{font-size:9px;color:rgba(255,255,255,0.4);width:60px;flex-shrink:0}
+.dm-bar-track{flex:1;height:4px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden}
+.dm-bar-fill{height:100%;border-radius:2px}
+.dm-bar-val{font-size:9px;color:rgba(255,255,255,0.4);width:28px;text-align:right;flex-shrink:0}
+.dm-insight{background:rgba(61,107,94,0.15);border:1px solid rgba(61,107,94,0.25);border-radius:8px;padding:8px 10px;font-size:10px;color:rgba(248,249,252,0.6);line-height:1.5}
+.dm-insight strong{color:rgba(248,249,252,0.9)}
+
+/* ── BEFORE/AFTER ── */
+.ba-grid{display:grid;grid-template-columns:1fr auto 1fr;border-radius:var(--rl);overflow:hidden;border:1px solid var(--ink-15)}
+.ba-col{padding:2.5rem}
+.ba-before{background:var(--mist2)}
+.ba-after{background:var(--ink)}
+.ba-label{font-size:0.7rem;text-transform:uppercase;letter-spacing:0.12em;font-weight:600;margin-bottom:1.25rem;display:flex;align-items:center;gap:0.5rem}
+.ba-before .ba-label{color:var(--red)}
+.ba-after .ba-label{color:var(--gb)}
+.ba-items{display:flex;flex-direction:column;gap:0.6rem}
+.ba-item{display:flex;align-items:flex-start;gap:0.7rem;padding:0.7rem 0.9rem;border-radius:8px;font-size:0.83rem;line-height:1.5}
+.ba-before .ba-item{background:rgba(196,74,74,0.06);color:var(--ink-60);border:1px solid rgba(196,74,74,0.1)}
+.ba-after .ba-item{background:rgba(61,107,94,0.12);color:rgba(248,249,252,0.75);border:1px solid rgba(61,107,94,0.15)}
+.ba-before .ba-item::before{content:"✕";color:var(--red);font-size:0.75rem;flex-shrink:0;margin-top:1px}
+.ba-after .ba-item::before{content:"✓";color:var(--gb);font-size:0.75rem;flex-shrink:0;font-weight:600;margin-top:1px}
+.ba-divider{width:1px;background:var(--ink-15);display:flex;align-items:center;justify-content:center}
+.ba-vs{width:36px;height:36px;border-radius:50%;background:var(--ink);color:var(--snow);display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:600;border:2px solid var(--ink-15)}
+
+/* ── SIMULATOR ── */
+.sim-section{background:var(--ink);overflow:hidden}
+.sim-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center}
+.sim-box{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:2rem}
+.sim-title-text{font-family:"Cormorant Garamond",serif;font-size:1.3rem;color:#fff;font-weight:300;margin-bottom:0.35rem}
+.sim-sub-text{font-size:0.8rem;color:rgba(255,255,255,0.4);margin-bottom:1.75rem}
+.sim-field{margin-bottom:1.4rem}
+.sim-label{font-size:0.75rem;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.6rem;display:flex;justify-content:space-between}
+.sim-label span{color:var(--gb);font-weight:500}
+input[type=range]{width:100%;height:4px;background:rgba(255,255,255,0.1);border-radius:2px;outline:none;-webkit-appearance:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--gb);cursor:pointer}
+.sim-result{background:linear-gradient(135deg,rgba(61,107,94,0.2),rgba(61,107,94,0.05));border:1px solid rgba(61,107,94,0.3);border-radius:14px;padding:1.5rem;text-align:center}
+.sim-result-label{font-size:0.72rem;color:rgba(255,255,255,0.45);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.5rem}
+.sim-result-val{font-family:"Cormorant Garamond",serif;font-size:3.2rem;color:#fff;font-weight:300;line-height:1}
+.sim-result-val em{color:var(--gb);font-style:normal}
+.sim-result-sub{font-size:0.8rem;color:rgba(255,255,255,0.4);margin-top:0.5rem}
+.sim-breakdown{display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;margin-top:1rem}
+.sim-br-item{background:rgba(255,255,255,0.04);border-radius:8px;padding:0.6rem;text-align:center}
+.sim-br-val{font-size:1rem;color:var(--gb);font-weight:500}
+.sim-br-label{font-size:0.67rem;color:rgba(255,255,255,0.35);margin-top:2px}
+.sim-cta{display:block;text-align:center;margin-top:1.5rem;background:var(--g);color:#fff;padding:0.85rem;border-radius:100px;text-decoration:none;font-size:0.88rem;font-weight:500;transition:all 0.25s}
+.sim-cta:hover{background:#2d5048}
+.sim-text-eyebrow{font-size:0.7rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--gb);margin-bottom:1rem}
+.sim-text-title{font-family:"Cormorant Garamond",serif;font-size:clamp(1.8rem,3vw,2.6rem);color:#fff;font-weight:300;line-height:1.15;margin-bottom:1.25rem}
+.sim-text-title em{font-style:italic;color:rgba(248,249,252,0.45)}
+.sim-text-desc{font-size:0.9rem;color:rgba(255,255,255,0.4);line-height:1.8;font-weight:300;margin-bottom:2rem}
+.sim-points{display:flex;flex-direction:column;gap:0.8rem}
+.sim-point{display:flex;align-items:flex-start;gap:0.75rem}
+.sim-pt-icon{width:30px;height:30px;border-radius:8px;background:rgba(61,107,94,0.2);display:flex;align-items:center;justify-content:center;font-size:0.85rem;flex-shrink:0}
+.sim-pt-text h4{font-size:0.85rem;color:#fff;font-weight:500;margin-bottom:0.15rem}
+.sim-pt-text p{font-size:0.78rem;color:rgba(255,255,255,0.35);line-height:1.5}
+
+/* ── PRICING ── */
+.price-section{background:var(--mist2)}
+.billing-toggle-row{display:flex;align-items:center;justify-content:center;gap:1rem;margin-bottom:3rem}
+.tog-label{font-size:0.85rem;color:var(--ink-40)}
+.tog-label.active{color:var(--ink);font-weight:500}
+.toggle-wrap{width:46px;height:26px;background:var(--g);border-radius:100px;cursor:pointer;position:relative}
+.toggle-thumb{width:20px;height:20px;border-radius:50%;background:#fff;position:absolute;top:3px;left:3px;transition:transform 0.25s;box-shadow:0 1px 4px rgba(0,0,0,0.2)}
+.toggle-wrap.monthly .toggle-thumb{transform:translateX(20px)}
+.save-badge{background:var(--gl);color:var(--g);font-size:0.68rem;padding:0.2rem 0.6rem;border-radius:100px;font-weight:500;border:1px solid rgba(61,107,94,0.2)}
+.plans{display:grid;grid-template-columns:repeat(2,1fr);gap:1.25rem;align-items:start}
+.plan{background:var(--surface);border:1px solid var(--ink-15);border-radius:var(--rl);padding:2.25rem;position:relative;transition:all 0.3s}
+.plan:hover{transform:translateY(-4px);box-shadow:0 20px 50px rgba(13,15,20,0.08)}
+.plan.hero{border:2px solid var(--g);box-shadow:0 12px 40px rgba(61,107,94,0.1)}
+.plan-badge{position:absolute;top:-1px;left:50%;transform:translateX(-50%);white-space:nowrap;background:var(--g);color:#fff;font-size:0.63rem;text-transform:uppercase;letter-spacing:0.1em;padding:0.28rem 0.9rem;border-radius:0 0 8px 8px}
+.plan-tier{font-size:0.68rem;text-transform:uppercase;letter-spacing:0.12em;color:var(--ink-40);margin-bottom:0.4rem}
+.plan-name{font-family:"Cormorant Garamond",serif;font-size:1.6rem;color:var(--ink);font-weight:300;margin-bottom:0.3rem}
+.plan-line{font-size:0.8rem;color:var(--ink-40);margin-bottom:1.5rem;min-height:2.4rem}
+.plan-price-wrap{margin-bottom:1.5rem;padding-bottom:1.5rem;border-bottom:1px solid var(--mist)}
+.price-main{display:flex;align-items:baseline;gap:2px}
+.price-cur{font-size:1.1rem;color:var(--ink);font-family:"Cormorant Garamond",serif}
+.price-num{font-family:"Cormorant Garamond",serif;font-size:2.8rem;color:var(--ink);font-weight:300;line-height:1;transition:all 0.3s}
+.price-period{font-size:0.78rem;color:var(--ink-40);margin-left:4px}
+.price-note{font-size:0.7rem;color:var(--g);margin-top:4px;min-height:1.2rem}
+.plan-feats{list-style:none;display:flex;flex-direction:column;gap:0.6rem;margin-bottom:2rem}
+.plan-feats li{font-size:0.82rem;color:var(--ink-40);display:flex;align-items:flex-start;gap:0.55rem;line-height:1.5}
+.pf-ok{color:var(--g);font-weight:600;flex-shrink:0}
+.pf-no{opacity:0.3}
+.pf-no .pf-ok{color:var(--ink-40);font-weight:400}
+.btn-p{display:block;text-align:center;padding:0.85rem;border-radius:100px;text-decoration:none;font-weight:500;font-size:0.85rem;transition:all 0.25s}
+.btn-outline{border:1.5px solid var(--ink);color:var(--ink)}
+.btn-outline:hover{background:var(--ink);color:var(--snow)}
+.btn-fill{background:var(--g);color:#fff}
+.btn-fill:hover{background:var(--ink)}
+.price-footer{text-align:center;margin-top:2rem;font-size:0.78rem;color:var(--ink-40)}
+
+/* ── APP ── */
+.app-sec{background:var(--ink);position:relative;overflow:hidden}
+.app-sec::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 65% 50%,rgba(61,107,94,0.12),transparent 60%)}
+.app-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;position:relative;z-index:2}
+.app-eyebrow{font-size:0.7rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--gb);margin-bottom:1rem}
+.app-title{font-family:"Cormorant Garamond",serif;font-size:clamp(1.8rem,3vw,2.6rem);color:var(--snow);font-weight:300;line-height:1.15;margin-bottom:1rem}
+.app-title em{font-style:italic;color:rgba(248,249,252,0.4)}
+.app-desc{font-size:0.9rem;color:rgba(255,255,255,0.4);line-height:1.8;font-weight:300;margin-bottom:1.75rem;max-width:400px}
+.store-btns{display:flex;gap:0.75rem;flex-wrap:wrap;margin-bottom:2rem}
+.store-btn{display:flex;align-items:center;gap:0.75rem;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:0.65rem 1.2rem;text-decoration:none;transition:all 0.25s;cursor:pointer}
+.store-btn:hover{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.22)}
+.store-ic{font-size:1.2rem}
+.store-sup{font-size:0.6rem;color:rgba(255,255,255,0.35);line-height:1}
+.store-name{font-size:0.85rem;color:var(--snow);font-weight:500}
+.app-feats{display:grid;grid-template-columns:1fr 1fr;gap:0.85rem}
+.app-feat{display:flex;align-items:flex-start;gap:0.65rem}
+.app-feat-ic{width:30px;height:30px;border-radius:8px;background:rgba(61,107,94,0.18);display:flex;align-items:center;justify-content:center;font-size:0.85rem;flex-shrink:0}
+.app-feat h4{font-size:0.82rem;color:var(--snow);font-weight:500;margin-bottom:0.15rem}
+.app-feat p{font-size:0.74rem;color:rgba(255,255,255,0.3);line-height:1.5}
+
+/* ── FAQ ── */
+.faq-list{max-width:700px;margin:0 auto}
+.faq-item{border-bottom:1px solid var(--ink-15)}
+.faq-q{display:flex;justify-content:space-between;align-items:center;padding:1.2rem 0;cursor:pointer;gap:1rem}
+.faq-q span{font-size:0.9rem;color:var(--ink)}
+.faq-tog{width:24px;height:24px;border-radius:50%;border:1px solid var(--ink-15);display:flex;align-items:center;justify-content:center;color:var(--ink-40);font-size:1.1rem;flex-shrink:0;transition:transform 0.25s}
+.faq-item.open .faq-tog{transform:rotate(45deg)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height 0.35s ease}
+.faq-a p{font-size:0.86rem;color:var(--ink-40);line-height:1.8;padding-bottom:1.2rem}
+
+/* ── FINAL CTA ── */
+.final{background:var(--ink);text-align:center;padding:7rem 3rem;position:relative;overflow:hidden}
+.final::before{content:"LITTIA";font-family:"Cormorant Garamond",serif;font-size:20vw;color:rgba(255,255,255,0.02);position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;white-space:nowrap}
+.final .s-title{color:var(--snow);max-width:700px;margin:0 auto 1.25rem}
+.final .s-desc{color:rgba(248,249,252,0.4);margin:0 auto 3rem}
+.final-btns{display:flex;justify-content:center;gap:1rem;flex-wrap:wrap}
+.btn-snow{background:var(--snow);color:var(--ink);padding:0.9rem 2.25rem;border-radius:100px;text-decoration:none;font-weight:500;font-size:0.88rem;transition:all 0.25s;display:inline-flex;align-items:center;gap:0.5rem}
+.btn-snow:hover{background:var(--gb);color:#fff;transform:translateY(-2px)}
+.btn-ghost-w{border:1px solid rgba(248,249,252,0.2);color:var(--snow);padding:0.9rem 2rem;border-radius:100px;text-decoration:none;font-size:0.85rem;transition:all 0.25s}
+.btn-ghost-w:hover{border-color:rgba(248,249,252,0.45)}
+
+/* ── FOOTER ── */
+footer{background:var(--ink);border-top:1px solid rgba(255,255,255,0.06);padding:1.75rem 3rem}
+.foot{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+.foot-logo img{height:36px;width:auto;opacity:0.7}
+.foot-links{display:flex;gap:1.75rem}
+.foot-links a{font-size:0.75rem;color:rgba(255,255,255,0.25);text-decoration:none;transition:color 0.2s}
+.foot-links a:hover{color:var(--gb)}
+.foot-copy{font-size:0.72rem;color:rgba(255,255,255,0.18)}
+
+/* ── REVEAL ── */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity 0.65s ease,transform 0.65s ease}
+.reveal.in{opacity:1;transform:none}
+.d1{transition-delay:0.1s}.d2{transition-delay:0.2s}.d3{transition-delay:0.3s}
+
+
+/* ── TABLET 960px ── */
+@media(max-width:960px){
+  nav ul{display:none}
+  nav{padding:0.9rem 1.5rem}
+  .hero{padding:6rem 1.5rem 3rem}
+  .hero-grid{grid-template-columns:1fr;gap:3rem;text-align:center}
+  .hero-sub{max-width:100%}
+  .cta-row{justify-content:center}
+  .phone-wrap{justify-content:center}
+  section{padding:4rem 1.5rem}
+  .sim-grid,.app-grid,.cockpit{grid-template-columns:1fr;gap:2rem}
+  .plans{grid-template-columns:1fr}
+  .pillars-grid{grid-template-columns:1fr}
+  .ba-grid{grid-template-columns:1fr}
+  .ba-divider{display:none}
+  .benefit-sep{display:none}
+  .benefit-inner{justify-content:center;gap:1.25rem;flex-wrap:wrap}
+  .cockpit-horizons{grid-template-columns:1fr 1fr}
+  .s-title{font-size:clamp(1.6rem,4vw,2.4rem)}
+}
+
+/* ── MOBILE 640px ── */
+@media(max-width:640px){
+  html{font-size:15px}
+  nav{padding:0.8rem 1rem}
+  .nav-logo svg{width:150px;height:39px}
+  .hero{padding:5.5rem 1rem 3rem;min-height:auto}
+  h1{font-size:clamp(2rem,8vw,3rem);letter-spacing:-0.02em}
+  .hero-sub{font-size:0.92rem}
+  .btn-main{padding:0.8rem 1.75rem;font-size:0.85rem}
+  .phone{width:200px;height:410px;border-radius:32px;border-width:6px}
+  .phone-back{display:none}
+  section{padding:3rem 1rem}
+  .s-title{font-size:clamp(1.5rem,6vw,2.2rem)}
+  .s-desc{font-size:0.88rem}
+  .eyebrow2{font-size:0.65rem}
+  .benefit-bar{padding:1.25rem 1rem}
+  .benefit-item .benefit-v{font-size:1.6rem}
+  .benefit-item .benefit-l{font-size:0.62rem}
+  .pillars-grid{grid-template-columns:1fr;gap:1rem}
+  .pillar{padding:1.5rem}
+  .cockpit{padding:2rem 1.25rem;gap:2rem}
+  .cockpit-horizons{grid-template-columns:1fr 1fr;gap:0.6rem}
+  .horizon{padding:0.7rem}
+  .horizon-title{font-size:0.78rem}
+  .horizon-items{font-size:0.68rem}
+  .dash-mockup{padding:1rem}
+  .dm-kpis{grid-template-columns:1fr 1fr;gap:5px}
+  .dm-kpi-v{font-size:11px}
+  .dm-kpi-l{font-size:7px}
+  .ba-col{padding:1.5rem 1rem}
+  .ba-item{font-size:0.78rem;padding:0.5rem 0.75rem}
+  .sim-grid{grid-template-columns:1fr;gap:2rem}
+  .sim-box{padding:1.5rem}
+  .sim-text-title{font-size:clamp(1.4rem,5vw,2rem)}
+  .sim-result-val{font-size:2.4rem}
+  .sim-breakdown{grid-template-columns:1fr 1fr;gap:0.5rem}
+  .sim-br-item{padding:0.5rem}
+  .plans{grid-template-columns:1fr;gap:1rem}
+  .plan{padding:1.75rem}
+  .plan-name{font-size:1.4rem}
+  .price-num{font-size:2.2rem}
+  .app-grid{grid-template-columns:1fr;gap:2rem}
+  .app-feats{grid-template-columns:1fr;gap:0.75rem}
+  .app-title{font-size:clamp(1.5rem,5vw,2rem)}
+  .store-btns{flex-direction:column;gap:0.6rem}
+  .store-btn{justify-content:center}
+  .cockpit-title{font-size:clamp(1.4rem,5vw,2rem)}
+  .faq-list{padding:0}
+  .faq-q span{font-size:0.85rem}
+  .final{padding:4rem 1rem}
+  .final .s-title{font-size:clamp(1.6rem,6vw,2.4rem)}
+  .final-btns{flex-direction:column;align-items:center;gap:0.75rem}
+  .btn-snow,.btn-ghost-w{width:100%;text-align:center;justify-content:center}
+  footer{padding:1.25rem 1rem}
+  .foot{flex-direction:column;align-items:flex-start;gap:0.75rem}
+  .foot-links{flex-wrap:wrap;gap:1rem}
+  .benefit-inner{gap:1rem}
+}
+
+/* ── SMALL MOBILE 380px ── */
+@media(max-width:380px){
+  h1{font-size:1.9rem}
+  .phone{width:175px;height:360px;border-radius:28px}
+  .nav-logo svg{width:130px;height:33px}
+  .cockpit-horizons{grid-template-columns:1fr}
+  .dm-kpis{grid-template-columns:1fr 1fr}
+  .billing-toggle-row{flex-wrap:wrap;justify-content:center;gap:0.6rem}
+}
+
+/* ── HAMBURGER + MOBILE MENU ── */
+.hamburger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:4px}
+.hamburger span{display:block;width:22px;height:2px;background:var(--ink);border-radius:2px;transition:all 0.25s}
+.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.hamburger.open span:nth-child(2){opacity:0}
+.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.mobile-menu{position:fixed;inset:0;background:var(--ink);z-index:500;display:flex;flex-direction:column;padding:1.25rem 1.5rem;transform:translateX(100%);transition:transform 0.3s cubic-bezier(0.4,0,0.2,1)}
+.mobile-menu.open{transform:translateX(0)}
+.mm-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:2.5rem;padding-bottom:1.25rem;border-bottom:1px solid rgba(255,255,255,0.08)}
+.mm-close{background:rgba(255,255,255,0.08);border:none;color:var(--snow);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:0.85rem}
+.mm-nav{display:flex;flex-direction:column;gap:0.25rem;flex:1}
+.mm-link{color:rgba(248,249,252,0.55);text-decoration:none;font-size:1.15rem;font-weight:300;padding:0.85rem 0;border-bottom:1px solid rgba(255,255,255,0.05);transition:color 0.2s;font-family:"Cormorant Garamond",serif;letter-spacing:0.02em}
+.mm-link:hover{color:var(--snow)}
+.mm-actions{display:flex;flex-direction:column;gap:0.75rem;margin:2rem 0 1.5rem}
+.mm-btn-main{background:var(--g);color:#fff;padding:0.9rem;border-radius:100px;text-decoration:none;text-align:center;font-weight:500;font-size:0.9rem;transition:background 0.2s}
+.mm-btn-ghost{border:1px solid rgba(248,249,252,0.2);color:var(--snow);padding:0.85rem;border-radius:100px;text-decoration:none;text-align:center;font-size:0.9rem;transition:all 0.2s}
+.mm-lang{display:flex;flex-wrap:wrap;gap:0.5rem}
+.mm-lang-opt{font-size:0.78rem;color:rgba(248,249,252,0.35);cursor:pointer;padding:0.3rem 0.65rem;border-radius:100px;border:1px solid rgba(255,255,255,0.1);transition:all 0.2s}
+.mm-lang-opt:hover,.mm-lang-opt.active{color:var(--gb);border-color:rgba(90,158,140,0.3);background:rgba(61,107,94,0.15)}
+@media(max-width:960px){.hamburger{display:flex}}
+@media(min-width:961px){.mobile-menu{display:none!important}}
+</style>
+</head>
+<body>
+
+
+<nav id="nav">
+  <div class="nav-logo"><a href="/">
+<svg width="184" height="48" viewBox="0 0 340 72" xmlns="http://www.w3.org/2000/svg" aria-label="LITTIA" style="display:block">
+<defs>
+<style>
+.nh{stroke:#B8903A;fill:none}
+.nf1{fill:#3D6B5E}.nf2{fill:#5A9E8C}
+.nt{fill:var(--ink,#0D0F14)}
+.nl{stroke:#B8903A}
+nav:not(.scrolled) .nt{fill:#0D0F14}
+</style>
+</defs>
+<!-- HOUSE compact left -->
+<polyline class="nh" points="38,6 12,28 64,28" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>
+<line class="nh" x1="14" y1="27" x2="14" y2="62" stroke-width="2.2" stroke-linecap="round"/>
+<line class="nh" x1="62" y1="27" x2="62" y2="62" stroke-width="2.2" stroke-linecap="round"/>
+<line class="nh" x1="14" y1="62" x2="62" y2="62" stroke-width="2.2" stroke-linecap="round"/>
+<line class="nh" x1="14" y1="45" x2="62" y2="45" stroke-width="1.6" stroke-linecap="round"/>
+<line class="nh" x1="38" y1="28" x2="38" y2="62" stroke-width="1.6" stroke-linecap="round"/>
+<!-- Window pane subtle fill -->
+<rect x="16" y="29" width="20" height="14" fill="#B8903A" fill-opacity="0.09" rx="1"/>
+<!-- Leaf bottom right -->
+<path class="nf1" d="M44 56 Q49 47 56 45 Q54 53 46 58 Z" opacity="0.95"/>
+<path class="nf2" d="M45 58 Q51 49 59 48 Q56 56 48 61 Z" opacity="0.8"/>
+<path d="M45 59 Q43 62 41 65" fill="none" stroke="#3D6B5E" stroke-width="1.2" stroke-linecap="round"/>
+<!-- SEPARATOR -->
+<line x1="82" y1="14" x2="82" y2="58" stroke="var(--ink-15,rgba(13,15,20,0.15))" stroke-width="1"/>
+<!-- LITTIA text large -->
+<text x="102" y="46" class="nt"
+  font-family="Georgia,'Times New Roman','Palatino Linotype',serif"
+  font-size="32" font-weight="400" letter-spacing="8">LITTIA</text>
+<!-- Gold underline accent -->
+<line class="nl" x1="102" y1="54" x2="248" y2="54" stroke-width="1.2" stroke-linecap="round"/>
+</svg>
+</a></div>
+  <ul>
+    <li><a href="#piliers" data-t="nav_features"></a></li>
+    <li><a href="#cockpit" data-t="nav_cockpit"></a></li>
+    <li><a href="#simulator" data-t="nav_simulator"></a></li>
+    <li><a href="#tarifs" data-t="nav_pricing"></a></li>
+    <li><a href="/login" class="nav-login" data-t="nav_login"></a></li>
+    <li>
+      <div class="lang-wrap" id="langWrap">
+        <button class="lang-btn" id="langBtn">
+          <span id="curFlag">🇫🇷</span>
+          <span id="curLang">FR</span>
+          <span class="chevron">▾</span>
+        </button>
+        <div class="lang-drop" id="langDrop">
+          <div class="lang-opt active" data-lang="fr">🇫🇷 Français <span class="lang-code">FR</span></div>
+          <div class="lang-opt" data-lang="en">🇬🇧 English <span class="lang-code">EN</span></div>
+          <div class="lang-opt" data-lang="es">🇪🇸 Español <span class="lang-code">ES</span></div>
+          <div class="lang-opt" data-lang="de">🇩🇪 Deutsch <span class="lang-code">DE</span></div>
+          <div class="lang-opt" data-lang="it">🇮🇹 Italiano <span class="lang-code">IT</span></div>
+        </div>
+      </div>
+    </li>
+    <li><a href="/login" class="nav-cta" data-t="nav_cta"></a></li>
+  </ul>
+  <!-- MOBILE MENU BUTTON -->
+  <button class="hamburger" id="hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- MOBILE MENU OVERLAY -->
+<div class="mobile-menu" id="mobileMenu">
+  <div class="mm-head">
+    <svg width="90" height="39" viewBox="0 0 220 96" xmlns="http://www.w3.org/2000/svg" aria-label="LITTIA">
+      <polyline points="110,4 74,36 146,36" fill="none" stroke="#C9A84C" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+      <line x1="75.5" y1="35" x2="75.5" y2="72" stroke="#C9A84C" stroke-width="2" stroke-linecap="round"/>
+      <line x1="144.5" y1="35" x2="144.5" y2="72" stroke="#C9A84C" stroke-width="2" stroke-linecap="round"/>
+      <line x1="75.5" y1="72" x2="144.5" y2="72" stroke="#C9A84C" stroke-width="2" stroke-linecap="round"/>
+      <line x1="75.5" y1="53" x2="144.5" y2="53" stroke="#C9A84C" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="110" y1="36" x2="110" y2="72" stroke="#C9A84C" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M118 64 Q123 55 131 53 Q129 62 120 66 Z" fill="#5A9E8C" opacity="0.9"/>
+      <path d="M119 66 Q126 57 134 56 Q131 64 122 68 Z" fill="#5A9E8C" opacity="0.8"/>
+      <text x="110" y="87" text-anchor="middle" font-family="Georgia,serif" font-size="15" letter-spacing="5" fill="#F8F9FC">LITTIA</text>
+    </svg>
+    <button class="mm-close" id="mmClose">✕</button>
+  </div>
+  <nav class="mm-nav">
+    <a href="#piliers" class="mm-link" data-t="nav_features"></a>
+    <a href="#cockpit" class="mm-link" data-t="nav_cockpit"></a>
+    <a href="#simulator" class="mm-link" data-t="nav_simulator"></a>
+    <a href="#tarifs" class="mm-link" data-t="nav_pricing"></a>
+  </nav>
+  <div class="mm-actions">
+    <a href="/login" class="mm-btn-ghost" data-t="nav_login"></a>
+    <a href="/login" class="mm-btn-main" data-t="nav_cta"></a>
+  </div>
+  <div class="mm-lang">
+    <div class="mm-lang-opt" data-lang="fr">🇫🇷 Français</div>
+    <div class="mm-lang-opt" data-lang="en">🇬🇧 English</div>
+    <div class="mm-lang-opt" data-lang="es">🇪🇸 Español</div>
+    <div class="mm-lang-opt" data-lang="de">🇩🇪 Deutsch</div>
+    <div class="mm-lang-opt" data-lang="it">🇮🇹 Italiano</div>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
+  <div class="hero-grid">
+    <div>
+      <div class="eyebrow"><span class="live-dot"></span><span data-t="hero_eyebrow"></span></div>
+      <h1 data-t="hero_h1"></h1>
+      <p class="hero-sub" data-t="hero_sub"></p>
+      <div class="cta-row">
+        <a href="/login" class="btn-main" data-t="hero_cta"></a>
+        <a href="#cockpit" class="btn-ghost" data-t="hero_ghost"></a>
+      </div>
+    </div>
+    <div class="phone-wrap reveal">
+      <div class="phone-back"><div class="phone-back-inner"><div class="pb-bar"></div><div class="pb-r" style="height:28px;margin-bottom:5px"></div><div class="pb-r" style="height:70px;margin-bottom:5px"></div><div class="pb-r" style="height:20px;width:75%"></div></div></div>
+      <div class="phone">
+        <div class="ph-inner">
+          <div class="ph-notch"></div>
+          <div class="ph-screen">
+            <div class="ph-hdr"><div class="ph-name">Mon foyer</div><div class="ph-date" data-t="ph_date"></div></div>
+            <div class="ph-tabs">
+              <div class="ph-tab on" data-t="ph_tab1"></div>
+              <div class="ph-tab" data-t="ph_tab2"></div>
+              <div class="ph-tab" data-t="ph_tab3"></div>
+              <div class="ph-tab" data-t="ph_tab4"></div>
+            </div>
+            <div class="ph-card">
+              <div class="ph-tag" data-t="ph_tag"></div>
+              <div class="ph-lbl" data-t="ph_lbl"></div>
+              <div class="ph-big" data-t="ph_big"></div>
+              <div class="ph-sub" data-t="ph_sub"></div>
+            </div>
+            <div class="ph-g2">
+              <div class="ph-mini"><div class="ph-mini-i">🍽️</div><div class="ph-mini-v">7/7</div><div class="ph-mini-l" data-t="ph_m1"></div></div>
+              <div class="ph-mini"><div class="ph-mini-i">🧹</div><div class="ph-mini-v">4</div><div class="ph-mini-l" data-t="ph_m2"></div></div>
+            </div>
+            <div style="font-size:6.5px;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px" data-t="ph_tasks_title"></div>
+            <div class="ph-tasks">
+              <div class="ph-task"><div class="ph-dot" style="background:#5A9E8C"></div><span class="ph-task-t" data-t="ph_t1"></span><span class="ph-task-ti">10h</span></div>
+              <div class="ph-task"><div class="ph-dot" style="background:#C4824A"></div><span class="ph-task-t" data-t="ph_t2"></span><span class="ph-task-ti">14h</span></div>
+              <div class="ph-task"><div class="ph-dot" style="background:#B8963E"></div><span class="ph-task-t" data-t="ph_t3"></span><span class="ph-task-ti">18h</span></div>
+            </div>
+          </div>
+          <div class="ph-nav">
+            <div class="ph-nav-i on"><div class="ph-nav-ic">📊</div><div class="ph-nav-lb" data-t="phn1"></div></div>
+            <div class="ph-nav-i"><div class="ph-nav-ic">🍽️</div><div class="ph-nav-lb" data-t="phn2"></div></div>
+            <div class="ph-nav-i"><div class="ph-nav-ic">🛒</div><div class="ph-nav-lb" data-t="phn3"></div></div>
+            <div class="ph-nav-i"><div class="ph-nav-ic">💰</div><div class="ph-nav-lb" data-t="phn4"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BENEFIT BAR -->
+<div class="benefit-bar">
+  <div class="benefit-inner">
+    <div class="benefit-item"><div class="benefit-v">−<em>2h</em></div><div class="benefit-l" data-t="b1"></div></div>
+    <div class="benefit-sep"></div>
+    <div class="benefit-item"><div class="benefit-v"><em>0</em></div><div class="benefit-l" data-t="b2"></div></div>
+    <div class="benefit-sep"></div>
+    <div class="benefit-item"><div class="benefit-v"><em>7</em></div><div class="benefit-l" data-t="b3"></div></div>
+    <div class="benefit-sep"></div>
+    <div class="benefit-item"><div class="benefit-v"><em>4</em></div><div class="benefit-l" data-t="b4"></div></div>
+    <div class="benefit-sep"></div>
+    <div class="benefit-item"><div class="benefit-v"><em>1</em></div><div class="benefit-l" data-t="b5"></div></div>
+  </div>
+</div>
+
+<!-- 3 PILLARS -->
+<section id="piliers" style="background:var(--mist2)">
+  <div class="s">
+    <div class="eyebrow2" data-t="piliers_eyebrow"></div>
+    <h2 class="s-title" data-t="piliers_title"></h2>
+    <p class="s-desc" data-t="piliers_desc"></p>
+    <div class="pillars-grid reveal">
+      <div class="pillar">
+        <span class="pillar-icon">🍽️</span>
+        <h3 data-t="p1_title"></h3>
+        <ul class="pillar-list" id="pl1"></ul>
+        <span class="pillar-note" data-t="p1_note"></span>
+      </div>
+      <div class="pillar">
+        <span class="pillar-icon">🧹</span>
+        <h3 data-t="p2_title"></h3>
+        <ul class="pillar-list" id="pl2"></ul>
+        <span class="pillar-note" data-t="p2_note"></span>
+      </div>
+      <div class="pillar">
+        <span class="pillar-icon">💰</span>
+        <h3 data-t="p3_title"></h3>
+        <ul class="pillar-list" id="pl3"></ul>
+        <span class="pillar-note" data-t="p3_note"></span>
+      </div>
+    </div>
+    <!-- COCKPIT -->
+    <div class="cockpit reveal" id="cockpit">
+      <div class="cockpit-left">
+        <div class="eyebrow2" data-t="cockpit_eyebrow"></div>
+        <div class="cockpit-title" data-t="cockpit_title"></div>
+        <div class="cockpit-desc" data-t="cockpit_desc"></div>
+        <div class="cockpit-horizons" id="horizons"></div>
+      </div>
+      <div class="dash-mockup">
+        <div class="dm-hdr">
+          <div class="dm-title" data-t="dm_title"></div>
+          <div class="dm-tabs">
+            <div class="dm-tab on" data-t="dm_t1"></div>
+            <div class="dm-tab" data-t="dm_t2"></div>
+            <div class="dm-tab" data-t="dm_t3"></div>
+            <div class="dm-tab" data-t="dm_t4"></div>
+          </div>
+        </div>
+        <div class="dm-kpis" id="dmKpis"></div>
+        <div class="dm-bars" id="dmBars"></div>
+        <div class="dm-insight" id="dmInsight"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BEFORE / AFTER -->
+<section>
+  <div class="s">
+    <div class="eyebrow2" data-t="ba_eyebrow"></div>
+    <h2 class="s-title" data-t="ba_title"></h2>
+    <div class="ba-grid reveal">
+      <div class="ba-col ba-before">
+        <div class="ba-label" data-t="ba_before_label"></div>
+        <div class="ba-items" id="baBeforeItems"></div>
+      </div>
+      <div class="ba-divider"><div class="ba-vs">VS</div></div>
+      <div class="ba-col ba-after">
+        <div class="ba-label" data-t="ba_after_label"></div>
+        <div class="ba-items" id="baAfterItems"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SIMULATOR -->
+<section id="simulator" class="sim-section">
+  <div class="s">
+    <div class="sim-grid reveal">
+      <div>
+        <div class="sim-text-eyebrow" data-t="sim_eyebrow"></div>
+        <div class="sim-text-title" data-t="sim_title"></div>
+        <p class="sim-text-desc" data-t="sim_desc"></p>
+        <div class="sim-points">
+          <div class="sim-point"><div class="sim-pt-icon">🏠</div><div class="sim-pt-text"><h4 data-t="sim_p1_t"></h4><p data-t="sim_p1_d"></p></div></div>
+          <div class="sim-point"><div class="sim-pt-icon">🛒</div><div class="sim-pt-text"><h4 data-t="sim_p2_t"></h4><p data-t="sim_p2_d"></p></div></div>
+          <div class="sim-point"><div class="sim-pt-icon">✦</div><div class="sim-pt-text"><h4 data-t="sim_p3_t"></h4><p data-t="sim_p3_d"></p></div></div>
+        </div>
+      </div>
+      <div class="sim-box">
+        <div class="sim-title-text" data-t="sim_box_title"></div>
+        <div class="sim-sub-text" data-t="sim_box_sub"></div>
+        <div class="sim-field">
+          <div class="sim-label"><span data-t="sim_l1"></span><span id="personnesVal">3</span></div>
+          <input type="range" min="1" max="6" value="3" id="personnes">
+        </div>
+        <div class="sim-field">
+          <div class="sim-label"><span data-t="sim_l2"></span><span id="budgetVal">450€/mois</span></div>
+          <input type="range" min="100" max="1200" value="450" step="10" id="budget">
+        </div>
+        <div class="sim-field">
+          <div class="sim-label"><span data-t="sim_l3"></span><span id="livraisonsVal">2×</span></div>
+          <input type="range" min="0" max="7" value="2" id="livraisons">
+        </div>
+        <div class="sim-result">
+          <div class="sim-result-label" data-t="sim_result_label"></div>
+          <div class="sim-result-val"><em id="ecoVal">124</em>€<span style="font-size:1.2rem;color:rgba(255,255,255,0.4)">/mois</span></div>
+          <div class="sim-result-sub"><span data-t="sim_result_ie"></span> <strong id="ecoAn" style="color:#5A9E8C">1488€/an</strong> — <span data-t="sim_result_roi"></span></div>
+          <div class="sim-breakdown">
+            <div class="sim-br-item"><div class="sim-br-val" id="brGaspi">−38€</div><div class="sim-br-label" data-t="sim_br1"></div></div>
+            <div class="sim-br-item"><div class="sim-br-val" id="brCourses">−46€</div><div class="sim-br-label" data-t="sim_br2"></div></div>
+            <div class="sim-br-item"><div class="sim-br-val" id="brLivraison">−28€</div><div class="sim-br-label" data-t="sim_br3"></div></div>
+            <div class="sim-br-item"><div class="sim-br-val" id="brAbo">−12€</div><div class="sim-br-label" data-t="sim_br4"></div></div>
+          </div>
+        </div>
+        <a href="/login" class="sim-cta" data-t="sim_cta"></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="tarifs" class="price-section">
+  <div class="s">
+    <div class="eyebrow2" style="text-align:center" data-t="price_eyebrow"></div>
+    <h2 class="s-title" style="text-align:center" data-t="price_title"></h2>
+    <div class="billing-toggle-row">
+      <span class="tog-label active" id="labelMensuel" data-t="price_monthly"></span>
+      <div class="toggle-wrap" id="billingToggle"><div class="toggle-thumb"></div></div>
+      <span class="tog-label" id="labelAnnuel" data-t="price_annual"></span>
+      <span class="save-badge" id="saveBadge" style="opacity:0.4" data-t="price_save_badge"></span>
+    </div>
+    <div class="plans reveal" style="grid-template-columns:1fr 1fr;max-width:780px;margin:0 auto">
+      <!-- GRATUIT -->
+      <div class="plan">
+        <div class="plan-tier" data-t="p1_tier"></div>
+        <div class="plan-name" data-t="p1_name"></div>
+        <div class="plan-line" data-t="p1_line"></div>
+        <div class="plan-price-wrap">
+          <div class="price-main"><span class="price-num" id="pp1" style="font-size:2.2rem" data-t="p1_price_label"></span></div>
+          <div class="price-note" id="pn1" data-t="p1_note"></div>
+        </div>
+        <ul class="plan-feats" id="pf1"></ul>
+        <a href="/login" class="btn-p btn-outline" data-t="plan_start"></a>
+      </div>
+      <!-- FAMILLE -->
+      <div class="plan hero">
+        <div class="plan-badge" data-t="plan_popular"></div>
+        <div class="plan-tier" data-t="p2_tier"></div>
+        <div class="plan-name" data-t="p2_name"></div>
+        <div class="plan-line" data-t="p2_line"></div>
+        <div class="plan-price-wrap">
+          <div class="price-main"><span class="price-cur">€</span><span class="price-num" id="pp2">9</span><span class="price-period" data-t="price_per_month"></span></div>
+          <div class="price-note" id="pn2" style="opacity:0" data-t="p2_note_annual"></div>
+        </div>
+        <ul class="plan-feats" id="pf2"></ul>
+        <a href="/login" class="btn-p btn-fill" data-t="plan_choose"></a>
+      </div>
+    </div>
+    <div class="price-footer" data-t="price_footer"></div>
+  </div>
+</section>
+
+<!-- APP -->
+<section id="app" class="app-sec">
+  <div class="s">
+    <div class="app-grid reveal">
+      <div>
+        <div class="app-eyebrow" data-t="app_eyebrow"></div>
+        <h2 class="app-title" data-t="app_title"></h2>
+        <p class="app-desc" data-t="app_desc"></p>
+        <div class="store-btns">
+          <div class="store-btn"><span class="store-ic">🍎</span><div><div class="store-sup" data-t="app_ios_sup"></div><div class="store-name">App Store</div></div></div>
+          <div class="store-btn"><span class="store-ic">▶</span><div><div class="store-sup" data-t="app_android_sup"></div><div class="store-name">Google Play</div></div></div>
+        </div>
+        <div class="app-feats">
+          <div class="app-feat"><div class="app-feat-ic">📊</div><div><h4 data-t="af1t"></h4><p data-t="af1d"></p></div></div>
+          <div class="app-feat"><div class="app-feat-ic">🛒</div><div><h4 data-t="af2t"></h4><p data-t="af2d"></p></div></div>
+          <div class="app-feat"><div class="app-feat-ic">🔔</div><div><h4 data-t="af3t"></h4><p data-t="af3d"></p></div></div>
+          <div class="app-feat"><div class="app-feat-ic">👥</div><div><h4 data-t="af4t"></h4><p data-t="af4d"></p></div></div>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:center">
+        <div class="phone" style="border-color:rgba(255,255,255,0.1)">
+          <div class="ph-inner">
+            <div class="ph-notch"></div>
+            <div class="ph-screen">
+              <div class="ph-hdr"><div class="ph-name" style="font-size:13px">LITTIA</div><div class="ph-date" data-t="app_ph_date"></div></div>
+              <div class="ph-card">
+                <div class="ph-lbl" data-t="app_ph_lbl"></div>
+                <div class="ph-big" data-t="app_ph_big"></div>
+                <div class="ph-sub" data-t="app_ph_sub"></div>
+              </div>
+              <div style="font-size:6.5px;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px" data-t="app_ph_costs"></div>
+              <div style="display:flex;flex-direction:column;gap:5px">
+                <div style="display:flex;align-items:center;gap:6px"><div style="font-size:7.5px;color:rgba(255,255,255,0.45);width:52px" data-t="cat_food"></div><div style="flex:1;height:5px;background:rgba(255,255,255,0.07);border-radius:2px"><div style="width:67%;height:100%;background:#3D6B5E;border-radius:2px"></div></div><div style="font-size:7px;color:rgba(255,255,255,0.4)">248€</div></div>
+                <div style="display:flex;align-items:center;gap:6px"><div style="font-size:7.5px;color:rgba(255,255,255,0.45);width:52px" data-t="cat_hygiene"></div><div style="flex:1;height:5px;background:rgba(255,255,255,0.07);border-radius:2px"><div style="width:22%;height:100%;background:#C4824A;border-radius:2px"></div></div><div style="font-size:7px;color:rgba(255,255,255,0.4)">82€</div></div>
+                <div style="display:flex;align-items:center;gap:6px"><div style="font-size:7.5px;color:rgba(255,255,255,0.45);width:52px" data-t="cat_cleaning"></div><div style="flex:1;height:5px;background:rgba(255,255,255,0.07);border-radius:2px"><div style="width:14%;height:100%;background:#4A7EC4;border-radius:2px"></div></div><div style="font-size:7px;color:rgba(255,255,255,0.4)">50€</div></div>
+              </div>
+            </div>
+            <div class="ph-nav">
+              <div class="ph-nav-i"><div class="ph-nav-ic">📊</div></div>
+              <div class="ph-nav-i on"><div class="ph-nav-ic">💰</div></div>
+              <div class="ph-nav-i"><div class="ph-nav-ic">🍽️</div></div>
+              <div class="ph-nav-i"><div class="ph-nav-ic">🔔</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" style="background:var(--mist2)">
+  <div class="s">
+    <div class="eyebrow2" style="text-align:center" data-t="faq_eyebrow"></div>
+    <h2 class="s-title" style="text-align:center;margin-bottom:3rem" data-t="faq_title"></h2>
+    <div class="faq-list" id="faqList"></div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section id="essai" class="final">
+  <div class="eyebrow2" style="text-align:center;margin-bottom:1rem" data-t="cta_eyebrow"></div>
+  <h2 class="s-title" data-t="cta_title"></h2>
+  <p class="s-desc" data-t="cta_desc"></p>
+  <div class="final-btns">
+    <a href="/login" class="btn-snow" data-t="cta_main"></a>
+    <a href="#tarifs" class="btn-ghost-w" data-t="cta_ghost"></a>
+  </div>
+</section>
+
+<footer>
+  <div class="foot">
+    <div class="foot-logo"><a href="/"><svg width="80" height="35" viewBox="0 0 220 96" xmlns="http://www.w3.org/2000/svg" aria-label="LITTIA" style="opacity:0.7">
+<polyline points="110,4 74,36 146,36" fill="none" stroke="#C9A84C" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<line x1="75.5" y1="35" x2="75.5" y2="72" stroke="#C9A84C" stroke-width="2" stroke-linecap="round"/>
+<line x1="144.5" y1="35" x2="144.5" y2="72" stroke="#C9A84C" stroke-width="2" stroke-linecap="round"/>
+<line x1="75.5" y1="72" x2="144.5" y2="72" stroke="#C9A84C" stroke-width="2" stroke-linecap="round"/>
+<line x1="75.5" y1="53" x2="144.5" y2="53" stroke="#C9A84C" stroke-width="1.5" stroke-linecap="round"/>
+<line x1="110" y1="36" x2="110" y2="72" stroke="#C9A84C" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M118 64 Q123 55 131 53 Q129 62 120 66 Z" fill="#5A9E8C" opacity="0.9"/>
+<path d="M119 66 Q126 57 134 56 Q131 64 122 68 Z" fill="#5A9E8C" opacity="0.7"/>
+<text x="110" y="87" text-anchor="middle" font-family="Georgia,'Times New Roman',serif" font-size="15" letter-spacing="5" fill="rgba(248,249,252,0.8)">LITTIA</text>
+<line x1="92" y1="90" x2="128" y2="90" stroke="#C9A84C" stroke-width="0.8" stroke-linecap="round"/>
+</svg></a></div>
+    <div class="foot-links">
+      <a href="#" data-t="foot_privacy"></a>
+      <a href="#" data-t="foot_terms"></a>
+      <a href="mailto:contact@littia.fr" data-t="foot_contact"></a>
+      <a href="#" data-t="foot_blog"></a>
+    </div>
+    <div class="foot-copy" data-t="foot_copy"></div>
+  </div>
+</footer>
+
+<script>
+const T={
+fr:{
+  flag:"🇫🇷",code:"FR",
+  nav_features:"Les 3 piliers",nav_cockpit:"Cockpit",nav_simulator:"Simulateur",nav_pricing:"Tarifs",nav_login:"Connexion",nav_cta:"Créer mon foyer",
+  hero_eyebrow:"Pilotage du foyer · IA",
+  hero_h1:"Moins de charge mentale.<br><strong>Plus de contrôle sur ta maison.</strong>",
+  hero_sub:"Menus, tâches, budget et planning — centralisés intelligemment. LITTIA prépare, toi tu valides et tu agis.",
+  hero_cta:"Créer mon foyer",hero_ghost:"Voir le cockpit ↓",
+  ph_date:"Dim. 17 mai",ph_tab1:"Jour",ph_tab2:"Semaine",ph_tab3:"Mois",ph_tab4:"Année",
+  ph_tag:"Aujourd'hui",ph_lbl:"ACTIONS PRIORITAIRES",ph_big:"3 tâches",ph_sub:"Toutes planifiées pour aujourd'hui",
+  ph_m1:"Menus planifiés",ph_m2:"Tâches ménage",ph_tasks_title:"À faire aujourd'hui",
+  ph_t1:"Préparer liste de courses",ph_t2:"Lancer lessive",ph_t3:"Cuisiner le dîner",
+  phn1:"Cockpit",phn2:"Menus",phn3:"Courses",phn4:"Budget",
+  b1:"de charge mentale / semaine",b2:"oubli logistique",b3:"menus planifiés / semaine",b4:"piliers organisés",b5:"cockpit central",
+  piliers_eyebrow:"3 piliers + 1 cockpit",
+  piliers_title:"Tout le foyer,<br><em>organisé simplement</em>",
+  piliers_desc:"LITTIA ne fait pas à ta place — il prépare, suggère et centralise. Toi tu gardes le contrôle.",
+  p1_title:"Repas & menus",
+  p1_items:["Menus intelligents adaptés au foyer","Génération automatique des ingrédients","Liste de courses prête à valider","Adaptée aux contraintes alimentaires"],
+  p1_note:"Tu valides avant d'acheter",
+  p2_title:"Organisation du foyer",
+  p2_items:["Planning des tâches ménagères","Rappels intelligents au bon moment","Routines familiales personnalisées","Répartition entre les membres"],
+  p2_note:"Chaque membre sait quoi faire",
+  p3_title:"Budget maison",
+  p3_items:["Dépenses catégorisées simplement","Suivi mensuel visuel","Alertes avant dépassement","Tendances et évolution annuelle"],
+  p3_note:"Vision claire, pas de surprise",
+  cockpit_eyebrow:"Le cockpit central",
+  cockpit_title:"Vision jour, semaine,<br><em>mois et année.</em>",
+  cockpit_desc:"Le tableau de bord LITTIA centralise toute la vie du foyer. Un seul endroit pour tout piloter.",
+  horizons_data:[
+    {icon:"📅",title:"Aujourd'hui",items:"Tâches du jour · Repas du soir · Actions prioritaires"},
+    {icon:"📆",title:"Cette semaine",items:"Menus · Planning ménage · Liste de courses · Événements"},
+    {icon:"🗓️",title:"Ce mois",items:"Suivi budget · Habitudes · Récurrences"},
+    {icon:"📊",title:"Cette année",items:"Tendances · Évolution budget · Objectifs long terme"}
+  ],
+  dm_title:"Dashboard foyer",dm_t1:"Jour",dm_t2:"Sem.",dm_t3:"Mois",dm_t4:"An",
+  dm_kpis:[{v:"3",l:"Tâches aujourd'hui"},{v:"7/7",l:"Menus planifiés"},{v:"68€",l:"Budget semaine"},{v:"−2h",l:"Temps libéré"}],
+  dm_bars:[{l:"Alimentaire",pct:67,c:"#3D6B5E",v:"68€"},{l:"Hygiène",pct:22,c:"#C4824A",v:"22€"},{l:"Entretien",pct:14,c:"#4A7EC4",v:"15€"}],
+  dm_insight:"💡 <strong>LITTIA :</strong> Menu de demain planifié. Liste de courses générée — 24 articles à valider.",
+  ba_eyebrow:"Avant / Après LITTIA",
+  ba_title:"La différence <em>concrète</em>",
+  ba_before_label:"😓 Sans LITTIA",ba_after_label:"✦ Avec LITTIA",
+  ba_before:["Question quotidienne : qu'est-ce qu'on mange ?","Courses improvisées et oublis fréquents","Budget alimentaire flou, dépassements","Tâches ménagères désorganisées","Charge mentale répartie inégalement","Aucune vision globale du foyer"],
+  ba_after:["7 menus planifiés chaque semaine par l'IA","Liste de courses générée et prête à valider","Budget suivi en temps réel, alertes proactives","Planning ménage clair pour chaque membre","Rappels au bon moment, rien n'est oublié","Cockpit global : jour / semaine / mois / année"],
+  sim_eyebrow:"Simulateur de temps gagné",
+  sim_title:"Combien de temps<br><em>récupères-tu avec LITTIA ?</em>",
+  sim_desc:"Ajuste les curseurs selon ta situation. LITTIA réduit le temps passé à planifier et les dépenses non maîtrisées.",
+  sim_p1_t:"Adapté à ton foyer",sim_p1_d:"Célibataire, couple ou famille — LITTIA s'ajuste.",
+  sim_p2_t:"Basé sur tes habitudes",sim_p2_d:"Fréquence des repas livrés, budget actuel.",
+  sim_p3_t:"Essai gratuit 7 jours",sim_p3_d:"Toutes les fonctionnalités sans carte bancaire.",
+  sim_box_title:"Ton simulateur",sim_box_sub:"Ajuste pour voir tes économies estimées",
+  sim_l1:"Personnes dans le foyer",sim_l2:"Budget courses actuel",sim_l3:"Repas livrés / takeaway par semaine",
+  sim_result_label:"Économies estimées avec LITTIA",sim_result_ie:"soit",sim_result_roi:"vos économies couvrent largement l'abonnement",
+  sim_br1:"Anti-gaspillage",sim_br2:"Courses optimisées",sim_br3:"Moins de livraisons",sim_br4:"Abos oubliés",
+  sim_cta:"Commencer gratuitement →",
+  price_eyebrow:"Tarifs",
+  price_title:"Simple et transparent.<br><em>Sans surprise.</em>",
+  price_monthly:"Mensuel",price_annual:"Annuel",price_save_badge:"Économisez 17%",price_per_month:"/ mois",
+  p1_tier:"Gratuit",p1_name:"Découverte",p1_line:"Pour tester LITTIA sans engagement",
+  p1_price_label:"Gratuit",p1_note:"Accès à vie · Aucune carte requise",
+  p1_feats:["Cockpit du jour uniquement","3 menus par semaine","Liste de courses (5 articles max)","3 rappels logistiques","Application mobile"],
+  p1_feats_no:["Planning ménage complet","Budget & statistiques","Membres multiples","Anti-gaspillage avancé"],
+  p2_tier:"Complet",p2_name:"Famille",p2_line:"Tout inclus pour toute la famille",
+  p2_note_annual:"86€ / an — économisez 22€",
+  p2_feats:["Cockpit complet jour/sem/mois/an","Menus 7 jours personnalisés","Courses intelligentes + anti-gaspi","Rappels illimités","Budget & alertes proactives","Gestion du frigo & péremptions","Score carbone alimentaire","Jusqu'à 6 membres","Application mobile iOS & Android","Export PDF mensuel"],
+  p2_feats_no:[],
+  plan_popular:"Le plus populaire",plan_start:"Commencer gratuitement",plan_choose:"Choisir Famille",
+  price_footer:"🔒 Paiement sécurisé · Sans engagement · Résiliable à tout moment · 7 jours gratuits",
+  app_eyebrow:"Application mobile",
+  app_title:"Le cockpit dans<br>ta poche. <em>Toujours.</em>",
+  app_desc:"Accès au dashboard, courses, menus et rappels depuis l'app iOS et Android. Synchronisé en temps réel.",
+  app_ios_sup:"Télécharger sur",app_android_sup:"Disponible sur",
+  af1t:"Cockpit mobile",af1d:"Dashboard jour/semaine/mois/an",
+  af2t:"Courses live",af2d:"Liste à valider en 1 tap",
+  af3t:"Rappels smart",af3d:"Au bon moment, jamais intrusifs",
+  af4t:"Multi-membres",af4d:"Chaque membre voit ses tâches",
+  app_ph_date:"Budget · Mai",app_ph_lbl:"DÉPENSES CE MOIS",app_ph_big:"380€",app_ph_sub:"Objectif : 420€ · 90% utilisé",
+  app_ph_costs:"Postes de dépenses",cat_food:"Alimentaire",cat_hygiene:"Hygiène",cat_cleaning:"Entretien",
+  faq_eyebrow:"FAQ",faq_title:"Questions <em>fréquentes</em>",
+  faqs:[
+    ["LITTIA fait-il les courses à ma place ?","Non — et c'est voulu. LITTIA génère la liste de courses basée sur tes menus et tes habitudes. Tu la valides, tu la modifies si besoin, puis tu fais tes courses normalement ou via le service de ton choix. Tu gardes le contrôle."],
+    ["Est-ce que l'IA planifie tout automatiquement ?","LITTIA prépare et suggère — tu valides et décides. C'est la différence entre un assistant utile et un autopilote que tu ne contrôles plus. Chaque suggestion peut être modifiée en un tap."],
+    ["L'application mobile est-elle incluse ?","Oui, dans tous les abonnements. iOS et Android, synchronisation web/mobile en temps réel."],
+    ["Puis-je inviter d'autres membres du foyer ?","Oui dès le plan Foyer, jusqu'à 6 membres. Chaque membre a ses propres tâches, rappels et accès au cockpit commun."],
+    ["Comment résilier ?","En 2 clics depuis ton espace compte, à tout moment. L'accès reste actif jusqu'à la fin de la période payée."]
+  ],
+  cta_eyebrow:"Prêt à reprendre le contrôle ?",
+  cta_title:"Moins de stress.<br>Plus de temps.<br><em>Un foyer qui tourne.</em>",
+  cta_desc:"7 jours gratuits, sans carte bancaire.<br>Sans engagement, résiliable à tout moment.",
+  cta_main:"Créer mon foyer",cta_ghost:"Voir les tarifs",
+  foot_privacy:"Confidentialité",foot_terms:"CGU",foot_contact:"Contact",foot_blog:"Blog",
+  foot_copy:"© 2025 LITTIA — Tous droits réservés"
+},
+en:{
+  flag:"🇬🇧",code:"EN",
+  nav_features:"3 Pillars",nav_cockpit:"Cockpit",nav_simulator:"Calculator",nav_pricing:"Pricing",nav_login:"Login",nav_cta:"Create my home",
+  hero_eyebrow:"Home management · AI",
+  hero_h1:"Less mental load.<br><strong>More control over your home.</strong>",
+  hero_sub:"Meals, tasks, budget and planning — intelligently centralised. LITTIA prepares, you validate and act.",
+  hero_cta:"Create my home",hero_ghost:"See the cockpit ↓",
+  ph_date:"Sun. May 17",ph_tab1:"Day",ph_tab2:"Week",ph_tab3:"Month",ph_tab4:"Year",
+  ph_tag:"Today",ph_lbl:"PRIORITY ACTIONS",ph_big:"3 tasks",ph_sub:"All planned for today",
+  ph_m1:"Meals planned",ph_m2:"Cleaning tasks",ph_tasks_title:"To do today",
+  ph_t1:"Prepare shopping list",ph_t2:"Start laundry",ph_t3:"Cook dinner",
+  phn1:"Cockpit",phn2:"Meals",phn3:"Shopping",phn4:"Budget",
+  b1:"of mental load / week",b2:"missed reminder",b3:"meals planned / week",b4:"pillars organised",b5:"central cockpit",
+  piliers_eyebrow:"3 pillars + 1 cockpit",
+  piliers_title:"The whole home,<br><em>simply organised</em>",
+  piliers_desc:"LITTIA doesn't do it for you — it prepares, suggests and centralises. You stay in control.",
+  p1_title:"Meals & menus",
+  p1_items:["Smart menus adapted to your household","Automatic ingredient generation","Shopping list ready to validate","Adapted to dietary requirements"],
+  p1_note:"You validate before buying",
+  p2_title:"Home organisation",
+  p2_items:["Cleaning task planning","Smart reminders at the right time","Personalised family routines","Task distribution among members"],
+  p2_note:"Everyone knows what to do",
+  p3_title:"Home budget",
+  p3_items:["Simply categorised spending","Visual monthly tracking","Alerts before overspending","Trends and annual evolution"],
+  p3_note:"Clear vision, no surprises",
+  cockpit_eyebrow:"The central cockpit",
+  cockpit_title:"Day, week,<br><em>month and year view.</em>",
+  cockpit_desc:"The LITTIA dashboard centralises your entire home life. One place to manage everything.",
+  horizons_data:[
+    {icon:"📅",title:"Today",items:"Today's tasks · Tonight's dinner · Priority actions"},
+    {icon:"📆",title:"This week",items:"Menus · Cleaning plan · Shopping list · Events"},
+    {icon:"🗓️",title:"This month",items:"Budget tracking · Habits · Recurring tasks"},
+    {icon:"📊",title:"This year",items:"Trends · Budget evolution · Long-term goals"}
+  ],
+  dm_title:"Home dashboard",dm_t1:"Day",dm_t2:"Week",dm_t3:"Month",dm_t4:"Year",
+  dm_kpis:[{v:"3",l:"Tasks today"},{v:"7/7",l:"Meals planned"},{v:"€68",l:"Weekly budget"},{v:"−2h",l:"Time saved"}],
+  dm_bars:[{l:"Food",pct:67,c:"#3D6B5E",v:"€68"},{l:"Hygiene",pct:22,c:"#C4824A",v:"€22"},{l:"Cleaning",pct:14,c:"#4A7EC4",v:"€15"}],
+  dm_insight:"💡 <strong>LITTIA:</strong> Tomorrow's menu planned. Shopping list generated — 24 items to validate.",
+  ba_eyebrow:"Before / After LITTIA",
+  ba_title:"The <em>real difference</em>",
+  ba_before_label:"😓 Without LITTIA",ba_after_label:"✦ With LITTIA",
+  ba_before:["Daily question: what do we eat tonight?","Improvised shopping with frequent forgetting","Unclear food budget, frequent overspending","Disorganised household tasks","Mental load unevenly distributed","No global view of the household"],
+  ba_after:["7 meals planned every week by AI","Shopping list generated and ready to validate","Budget tracked in real time, proactive alerts","Clear cleaning plan for each member","Reminders at the right time, nothing forgotten","Global cockpit: day / week / month / year"],
+  sim_eyebrow:"Time savings calculator",
+  sim_title:"How much time do you<br><em>get back with LITTIA?</em>",
+  sim_desc:"Adjust the sliders for your situation. LITTIA reduces planning time and uncontrolled spending.",
+  sim_p1_t:"Tailored to your household",sim_p1_d:"Single, couple or family — LITTIA adapts.",
+  sim_p2_t:"Based on your habits",sim_p2_d:"Delivery frequency, current budget.",
+  sim_p3_t:"7-day free trial",sim_p3_d:"All features, no credit card.",
+  sim_box_title:"Your calculator",sim_box_sub:"Adjust to see your estimated savings",
+  sim_l1:"People in the household",sim_l2:"Current grocery budget",sim_l3:"Delivered meals / takeaway per week",
+  sim_result_label:"Estimated savings with LITTIA",sim_result_ie:"i.e.",sim_result_roi:"your savings easily cover the subscription",
+  sim_br1:"Waste reduction",sim_br2:"Smarter shopping",sim_br3:"Fewer deliveries",sim_br4:"Forgotten subs",
+  sim_cta:"Create my home for free →",
+  price_eyebrow:"Pricing",
+  price_title:"Simple and transparent.<br><em>No surprises.</em>",
+  price_monthly:"Monthly",price_annual:"Annual",price_save_badge:"Save 17%",price_per_month:"/ month",
+  p1_tier:"Free",p1_name:"Discovery",p1_line:"Try LITTIA with no commitment",
+  p1_price_label:"Free",p1_note:"Forever free · No card required",
+  p1_feats:["Today's cockpit only","3 menus per week","Shopping list (5 items max)","3 logistical reminders","Mobile app"],
+  p1_feats_no:["Full cleaning plan","Budget & statistics","Multiple members","Advanced waste prevention"],
+  p2_tier:"Full access",p2_name:"Family",p2_line:"Everything included for the whole family",
+  p2_note_annual:"€86 / year — save €22",
+  p2_feats:["Full cockpit day/week/month/year","7-day personalised menus","Smart shopping + waste prevention","Unlimited reminders","Budget & proactive alerts","Fridge & expiry management","Food carbon score","Up to 6 members","iOS & Android app","Monthly PDF export"],
+  p2_feats_no:[],
+  plan_popular:"Most popular",plan_start:"Start for free",plan_choose:"Choose Family",
+  price_footer:"🔒 Secure payment · No commitment · Cancel anytime · 7-day free trial",
+  app_eyebrow:"Mobile app",
+  app_title:"The cockpit in<br>your pocket. <em>Always.</em>",
+  app_desc:"Dashboard, shopping, meals and reminders from the iOS and Android app. Real-time sync.",
+  app_ios_sup:"Download on",app_android_sup:"Get it on",
+  af1t:"Mobile cockpit",af1d:"Day/week/month/year dashboard",
+  af2t:"Live shopping",af2d:"List to validate in 1 tap",
+  af3t:"Smart reminders",af3d:"Right time, never intrusive",
+  af4t:"Multi-members",af4d:"Each member sees their tasks",
+  app_ph_date:"Budget · May",app_ph_lbl:"SPENDING THIS MONTH",app_ph_big:"€380",app_ph_sub:"Goal: €420 · 90% used",
+  app_ph_costs:"Spending categories",cat_food:"Food",cat_hygiene:"Hygiene",cat_cleaning:"Cleaning",
+  faq_eyebrow:"FAQ",faq_title:"Frequently asked <em>questions</em>",
+  faqs:[
+    ["Does LITTIA do the shopping for me?","No — and that's intentional. LITTIA generates the shopping list based on your menus and habits. You validate it, adjust if needed, then shop normally or via your preferred service. You stay in control."],
+    ["Does the AI plan everything automatically?","LITTIA prepares and suggests — you validate and decide. That's the difference between a useful assistant and an autopilot you no longer control. Every suggestion can be changed in one tap."],
+    ["Is the mobile app included?","Yes, in all subscriptions. iOS and Android, real-time web/mobile sync."],
+    ["Can I invite other household members?","Yes from the Household plan, up to 6 members. Each member has their own tasks, reminders and access to the shared cockpit."],
+    ["How do I cancel?","2 clicks from your account settings, at any time. Access remains active until the end of the paid period."]
+  ],
+  cta_eyebrow:"Ready to take back control?",
+  cta_title:"Less stress.<br>More time.<br><em>A home that runs.</em>",
+  cta_desc:"7 days free, no credit card.<br>No commitment, cancel anytime.",
+  cta_main:"Create my home",cta_ghost:"See pricing",
+  foot_privacy:"Privacy",foot_terms:"Terms",foot_contact:"Contact",foot_blog:"Blog",
+  foot_copy:"© 2025 LITTIA — All rights reserved"
+},
+es:{
+  flag:"🇪🇸",code:"ES",
+  nav_features:"3 pilares",nav_cockpit:"Cockpit",nav_simulator:"Simulador",nav_pricing:"Precios",nav_login:"Acceder",nav_cta:"Crear mi hogar",
+  hero_eyebrow:"Gestión del hogar · IA",
+  hero_h1:"Menos carga mental.<br><strong>Más control sobre tu casa.</strong>",
+  hero_sub:"Menús, tareas, presupuesto y planificación — centralizados inteligentemente. LITTIA prepara, tú validas y actúas.",
+  hero_cta:"Crear mi hogar",hero_ghost:"Ver el cockpit ↓",
+  ph_date:"Dom. 17 mayo",ph_tab1:"Día",ph_tab2:"Semana",ph_tab3:"Mes",ph_tab4:"Año",
+  ph_tag:"Hoy",ph_lbl:"ACCIONES PRIORITARIAS",ph_big:"3 tareas",ph_sub:"Todas planificadas para hoy",
+  ph_m1:"Menús planificados",ph_m2:"Tareas limpieza",ph_tasks_title:"Por hacer hoy",
+  ph_t1:"Preparar lista de compra",ph_t2:"Poner lavadora",ph_t3:"Cocinar la cena",
+  phn1:"Cockpit",phn2:"Menús",phn3:"Compra",phn4:"Presup.",
+  b1:"de carga mental / semana",b2:"recordatorio olvidado",b3:"menús planificados / semana",b4:"pilares organizados",b5:"cockpit central",
+  piliers_eyebrow:"3 pilares + 1 cockpit",
+  piliers_title:"Todo el hogar,<br><em>organizado con sencillez</em>",
+  piliers_desc:"LITTIA no lo hace por ti — prepara, sugiere y centraliza. Tú mantienes el control.",
+  p1_title:"Comidas y menús",
+  p1_items:["Menús inteligentes adaptados al hogar","Generación automática de ingredientes","Lista de la compra lista para validar","Adaptada a restricciones alimentarias"],
+  p1_note:"Tú validas antes de comprar",
+  p2_title:"Organización del hogar",
+  p2_items:["Planificación de tareas domésticas","Recordatorios inteligentes a tiempo","Rutinas familiares personalizadas","Reparto entre los miembros"],
+  p2_note:"Cada miembro sabe qué hacer",
+  p3_title:"Presupuesto doméstico",
+  p3_items:["Gastos categorizados simplemente","Seguimiento mensual visual","Alertas antes de sobrepasarse","Tendencias y evolución anual"],
+  p3_note:"Visión clara, sin sorpresas",
+  cockpit_eyebrow:"El cockpit central",
+  cockpit_title:"Visión día, semana,<br><em>mes y año.</em>",
+  cockpit_desc:"El panel LITTIA centraliza toda la vida del hogar. Un solo lugar para gestionarlo todo.",
+  horizons_data:[
+    {icon:"📅",title:"Hoy",items:"Tareas del día · Cena · Acciones prioritarias"},
+    {icon:"📆",title:"Esta semana",items:"Menús · Limpieza · Lista de compra · Eventos"},
+    {icon:"🗓️",title:"Este mes",items:"Presupuesto · Hábitos · Recurrencias"},
+    {icon:"📊",title:"Este año",items:"Tendencias · Evolución presupuesto · Objetivos"}
+  ],
+  dm_title:"Panel del hogar",dm_t1:"Día",dm_t2:"Sem.",dm_t3:"Mes",dm_t4:"Año",
+  dm_kpis:[{v:"3",l:"Tareas hoy"},{v:"7/7",l:"Menús planificados"},{v:"68€",l:"Presupuesto semana"},{v:"−2h",l:"Tiempo ganado"}],
+  dm_bars:[{l:"Alimentación",pct:67,c:"#3D6B5E",v:"68€"},{l:"Higiene",pct:22,c:"#C4824A",v:"22€"},{l:"Limpieza",pct:14,c:"#4A7EC4",v:"15€"}],
+  dm_insight:"💡 <strong>LITTIA:</strong> Menú de mañana planificado. Lista de compra generada — 24 artículos a validar.",
+  ba_eyebrow:"Antes / Después de LITTIA",
+  ba_title:"La diferencia <em>concreta</em>",
+  ba_before_label:"😓 Sin LITTIA",ba_after_label:"✦ Con LITTIA",
+  ba_before:["Pregunta diaria: ¿qué comemos?","Compras improvisadas y olvidos frecuentes","Presupuesto alimentario difuso","Tareas domésticas desorganizadas","Carga mental repartida desigualmente","Sin visión global del hogar"],
+  ba_after:["7 menús planificados cada semana por IA","Lista de compra generada y lista para validar","Presupuesto en tiempo real, alertas proactivas","Planning de limpieza claro para cada miembro","Recordatorios a tiempo, nada se olvida","Cockpit global: día / semana / mes / año"],
+  sim_eyebrow:"Simulador de tiempo ganado",
+  sim_title:"¿Cuánto tiempo<br><em>recuperas con LITTIA?</em>",
+  sim_desc:"Ajusta los controles según tu situación.",
+  sim_p1_t:"Adaptado a tu hogar",sim_p1_d:"Solo, pareja o familia — LITTIA se ajusta.",
+  sim_p2_t:"Basado en tus hábitos",sim_p2_d:"Frecuencia de pedidos, presupuesto actual.",
+  sim_p3_t:"Prueba gratuita 7 días",sim_p3_d:"Todas las funciones, sin tarjeta bancaria.",
+  sim_box_title:"Tu simulador",sim_box_sub:"Ajusta para ver tus ahorros estimados",
+  sim_l1:"Personas en el hogar",sim_l2:"Presupuesto actual de compras",sim_l3:"Comidas a domicilio / takeaway por semana",
+  sim_result_label:"Ahorros estimados con LITTIA",sim_result_ie:"es decir",sim_result_roi:"tus ahorros cubren con creces la suscripción",
+  sim_br1:"Anti-desperdicio",sim_br2:"Compra optimizada",sim_br3:"Menos pedidos",sim_br4:"Suscr. olvidadas",
+  sim_cta:"Crear mi hogar gratis →",
+  price_eyebrow:"Precios",price_title:"Simple y transparente.<br><em>Sin sorpresas.</em>",
+  price_monthly:"Mensual",price_annual:"Anual",price_save_badge:"Ahorra 17%",price_per_month:"/ mes",
+  p1_tier:"Gratuito",p1_name:"Descubrimiento",p1_line:"Prueba LITTIA sin compromiso",
+  p1_price_label:"Gratis",p1_note:"Para siempre · Sin tarjeta",
+  p1_feats:["Cockpit del día únicamente","3 menús por semana","Lista de compra (5 artículos máx.)","3 recordatorios","App móvil"],
+  p1_feats_no:["Planning de limpieza completo","Presupuesto y estadísticas","Varios miembros","Anti-desperdicio avanzado"],
+  p2_tier:"Completo",p2_name:"Familia",p2_line:"Todo incluido para toda la familia",
+  p2_note_annual:"86€ / año — ahorra 22€",
+  p2_feats:["Cockpit completo día/sem/mes/año","Menús 7 días personalizados","Compra inteligente + anti-desperdicio","Recordatorios ilimitados","Presupuesto y alertas proactivas","Gestión nevera y caducidades","Score carbono alimentario","Hasta 6 miembros","App iOS y Android","Export PDF mensual"],
+  p2_feats_no:[],
+  plan_popular:"El más popular",plan_start:"Empezar gratis",plan_choose:"Elegir Familia",
+  price_footer:"🔒 Pago seguro · Sin compromiso · Cancela cuando quieras · 7 días gratis",
+  app_eyebrow:"App móvil",app_title:"El cockpit en<br>tu bolsillo. <em>Siempre.</em>",app_desc:"Panel, compras, menús y recordatorios desde la app iOS y Android.",
+  app_ios_sup:"Descargar en",app_android_sup:"Disponible en",
+  af1t:"Cockpit móvil",af1d:"Panel día/semana/mes/año",af2t:"Compra live",af2d:"Lista a validar en 1 tap",af3t:"Recordatorios smart",af3d:"A tiempo, sin ser intrusivos",af4t:"Multi-miembros",af4d:"Cada uno ve sus tareas",
+  app_ph_date:"Presup. · Mayo",app_ph_lbl:"GASTOS ESTE MES",app_ph_big:"380€",app_ph_sub:"Objetivo: 420€ · 90% usado",
+  app_ph_costs:"Categorías de gasto",cat_food:"Alimentación",cat_hygiene:"Higiene",cat_cleaning:"Limpieza",
+  faq_eyebrow:"FAQ",faq_title:"Preguntas <em>frecuentes</em>",
+  faqs:[
+    ["¿LITTIA hace la compra por mí?","No, y es intencional. LITTIA genera la lista basándose en tus menús y hábitos. Tú la validas y haces la compra donde prefieras."],
+    ["¿La IA lo planifica todo automáticamente?","LITTIA prepara y sugiere — tú validas y decides. Cada sugerencia se puede cambiar en un tap."],
+    ["¿La app móvil está incluida?","Sí, en todos los planes. iOS y Android, sincronización en tiempo real."],
+    ["¿Puedo invitar a otros miembros del hogar?","Sí desde el plan Hogar, hasta 6 miembros."],
+    ["¿Cómo cancelo?","2 clics desde tu cuenta, en cualquier momento."]
+  ],
+  cta_eyebrow:"¿Listo para retomar el control?",cta_title:"Menos estrés.<br>Más tiempo.<br><em>Una casa que funciona.</em>",
+  cta_desc:"7 días gratis, sin tarjeta.<br>Sin compromiso, cancela cuando quieras.",
+  cta_main:"Crear mi hogar",cta_ghost:"Ver precios",
+  foot_privacy:"Privacidad",foot_terms:"T&C",foot_contact:"Contacto",foot_blog:"Blog",foot_copy:"© 2025 LITTIA — Todos los derechos reservados"
+},
+de:{
+  flag:"🇩🇪",code:"DE",
+  nav_features:"3 Säulen",nav_cockpit:"Cockpit",nav_simulator:"Rechner",nav_pricing:"Preise",nav_login:"Anmelden",nav_cta:"Mein Haushalt",
+  hero_eyebrow:"Haushaltsmanagement · KI",
+  hero_h1:"Weniger mentale Last.<br><strong>Mehr Kontrolle über Ihr Zuhause.</strong>",
+  hero_sub:"Menüs, Aufgaben, Budget und Planung — intelligent zentralisiert. LITTIA bereitet vor, Sie validieren und handeln.",
+  hero_cta:"Meinen Haushalt erstellen",hero_ghost:"Cockpit ansehen ↓",
+  ph_date:"So. 17. Mai",ph_tab1:"Tag",ph_tab2:"Woche",ph_tab3:"Monat",ph_tab4:"Jahr",
+  ph_tag:"Heute",ph_lbl:"PRIORITÄTEN",ph_big:"3 Aufgaben",ph_sub:"Alle für heute geplant",
+  ph_m1:"Menüs geplant",ph_m2:"Putzaufgaben",ph_tasks_title:"Heute erledigen",
+  ph_t1:"Einkaufsliste vorbereiten",ph_t2:"Wäsche starten",ph_t3:"Abendessen kochen",
+  phn1:"Cockpit",phn2:"Menüs",phn3:"Einkauf",phn4:"Budget",
+  b1:"mentale Last / Woche",b2:"vergessene Erinnerung",b3:"Menüs geplant / Woche",b4:"Säulen organisiert",b5:"zentrales Cockpit",
+  piliers_eyebrow:"3 Säulen + 1 Cockpit",
+  piliers_title:"Der ganze Haushalt,<br><em>einfach organisiert</em>",
+  piliers_desc:"LITTIA erledigt es nicht für Sie — es bereitet vor, schlägt vor und zentralisiert. Sie behalten die Kontrolle.",
+  p1_title:"Mahlzeiten & Menüs",
+  p1_items:["Intelligente Menüs für Ihren Haushalt","Automatische Zutatengenerierung","Einkaufsliste zur Validierung bereit","An Ernährungsbedürfnisse angepasst"],
+  p1_note:"Sie validieren vor dem Kauf",
+  p2_title:"Haushaltsorganisation",
+  p2_items:["Putzplan","Intelligente Erinnerungen","Personalisierte Familienroutinen","Aufgabenverteilung"],
+  p2_note:"Jeder weiß, was zu tun ist",
+  p3_title:"Haushaltsbudget",
+  p3_items:["Einfach kategorisierte Ausgaben","Visuelles Monatscontrolling","Warnungen vor Überschreitungen","Trends und Jahresentwicklung"],
+  p3_note:"Klare Übersicht, keine Überraschungen",
+  cockpit_eyebrow:"Das zentrale Cockpit",
+  cockpit_title:"Tag-, Wochen-,<br><em>Monats- und Jahresansicht.</em>",
+  cockpit_desc:"Das LITTIA Dashboard zentralisiert das gesamte Haushaltsleben. Ein Ort für alles.",
+  horizons_data:[
+    {icon:"📅",title:"Heute",items:"Heutige Aufgaben · Abendessen · Prioritäten"},
+    {icon:"📆",title:"Diese Woche",items:"Menüs · Putzplan · Einkaufsliste · Termine"},
+    {icon:"🗓️",title:"Diesen Monat",items:"Budget · Gewohnheiten · Wiederkehrendes"},
+    {icon:"📊",title:"Dieses Jahr",items:"Trends · Budgetentwicklung · Ziele"}
+  ],
+  dm_title:"Haushalt-Dashboard",dm_t1:"Tag",dm_t2:"Woche",dm_t3:"Monat",dm_t4:"Jahr",
+  dm_kpis:[{v:"3",l:"Aufgaben heute"},{v:"7/7",l:"Menüs geplant"},{v:"68€",l:"Wochenbudget"},{v:"−2h",l:"Zeit gespart"}],
+  dm_bars:[{l:"Lebensmittel",pct:67,c:"#3D6B5E",v:"68€"},{l:"Hygiene",pct:22,c:"#C4824A",v:"22€"},{l:"Reinigung",pct:14,c:"#4A7EC4",v:"15€"}],
+  dm_insight:"💡 <strong>LITTIA:</strong> Morgenmenü geplant. Einkaufsliste generiert — 24 Artikel zu validieren.",
+  ba_eyebrow:"Vorher / Nachher LITTIA",
+  ba_title:"Der <em>konkrete Unterschied</em>",
+  ba_before_label:"😓 Ohne LITTIA",ba_after_label:"✦ Mit LITTIA",
+  ba_before:["Tägliche Frage: Was essen wir heute?","Improvisierte Einkäufe, häufige Vergessen","Unklares Ernährungsbudget","Unorganisierte Haushaltsaufgaben","Ungleich verteilte mentale Last","Keine Gesamtübersicht des Haushalts"],
+  ba_after:["7 Menüs jede Woche von KI geplant","Einkaufsliste generiert, zur Validierung bereit","Budget in Echtzeit, proaktive Warnungen","Klarer Putzplan für jedes Mitglied","Erinnerungen zur richtigen Zeit","Globales Cockpit: Tag / Woche / Monat / Jahr"],
+  sim_eyebrow:"Zeitgewinn-Rechner",
+  sim_title:"Wie viel Zeit<br><em>gewinnen Sie mit LITTIA?</em>",
+  sim_desc:"Passen Sie die Regler an Ihre Situation an.",
+  sim_p1_t:"Angepasst an Ihren Haushalt",sim_p1_d:"Single, Paar oder Familie — LITTIA passt sich an.",
+  sim_p2_t:"Basiert auf Ihren Gewohnheiten",sim_p2_d:"Lieferfrequenz, aktuelles Budget.",
+  sim_p3_t:"7 Tage kostenlos",sim_p3_d:"Alle Funktionen, keine Kreditkarte.",
+  sim_box_title:"Ihr Rechner",sim_box_sub:"Anpassen für geschätzte Ersparnisse",
+  sim_l1:"Personen im Haushalt",sim_l2:"Aktuelles Einkaufsbudget",sim_l3:"Liefermahlzeiten / Takeaway pro Woche",
+  sim_result_label:"Geschätzte Ersparnis mit LITTIA",sim_result_ie:"d.h.",sim_result_roi:"Ihre Ersparnisse decken das Abo locker",
+  sim_br1:"Gegen Verschwendung",sim_br2:"Smartere Einkäufe",sim_br3:"Weniger Lieferungen",sim_br4:"Vergessene Abos",
+  sim_cta:"Meinen Haushalt kostenlos erstellen →",
+  price_eyebrow:"Preise",price_title:"Einfach und transparent.<br><em>Keine Überraschungen.</em>",
+  price_monthly:"Monatlich",price_annual:"Jährlich",price_save_badge:"17% sparen",price_per_month:"/ Monat",
+  p1_tier:"Kostenlos",p1_name:"Entdeckung",p1_line:"LITTIA ohne Risiko ausprobieren",
+  p1_price_label:"Kostenlos",p1_note:"Für immer · Keine Karte nötig",
+  p1_feats:["Nur Tages-Cockpit","3 Menüs pro Woche","Einkaufsliste (max. 5 Artikel)","3 Erinnerungen","Mobile App"],
+  p1_feats_no:["Vollständiger Putzplan","Budget & Statistiken","Mehrere Mitglieder","Erweiterte Null-Verschwendung"],
+  p2_tier:"Vollständig",p2_name:"Familie",p2_line:"Alles inklusive für die ganze Familie",
+  p2_note_annual:"86€ / Jahr — 22€ sparen",
+  p2_feats:["Volles Cockpit Tag/Wo/Mo/Jahr","7-Tage-Menüs personalisiert","Smartes Einkaufen + Null-Verschwendung","Unbegrenzte Erinnerungen","Budget & proaktive Warnungen","Kühlschrank & Ablaufmanagement","Lebensmittel-Carbon-Score","Bis zu 6 Mitglieder","iOS & Android App","Monatlicher PDF-Export"],
+  p2_feats_no:[],
+  plan_popular:"Am beliebtesten",plan_start:"Kostenlos starten",plan_choose:"Familie wählen",
+  price_footer:"🔒 Sichere Zahlung · Keine Bindung · Jederzeit kündbar · 7 Tage gratis",
+  app_eyebrow:"Mobile App",app_title:"Das Cockpit in<br>Ihrer Tasche. <em>Immer.</em>",app_desc:"Dashboard, Einkauf, Menüs und Erinnerungen aus der iOS- und Android-App.",
+  app_ios_sup:"Laden im",app_android_sup:"Erhältlich bei",
+  af1t:"Mobiles Cockpit",af1d:"Tag/Woche/Monat/Jahr-Dashboard",af2t:"Live-Einkauf",af2d:"Liste in 1 Tap validieren",af3t:"Intelligente Erinnerungen",af3d:"Zur richtigen Zeit",af4t:"Multi-Mitglieder",af4d:"Jeder sieht seine Aufgaben",
+  app_ph_date:"Budget · Mai",app_ph_lbl:"AUSGABEN DIESEN MONAT",app_ph_big:"380€",app_ph_sub:"Ziel: 420€ · 90% genutzt",
+  app_ph_costs:"Ausgabenkategorien",cat_food:"Lebensmittel",cat_hygiene:"Hygiene",cat_cleaning:"Reinigung",
+  faq_eyebrow:"FAQ",faq_title:"Häufige <em>Fragen</em>",
+  faqs:[
+    ["Erledigt LITTIA den Einkauf für mich?","Nein — und das ist gewollt. LITTIA generiert die Einkaufsliste basierend auf Ihren Menüs. Sie validieren sie und kaufen normal ein."],
+    ["Plant die KI alles automatisch?","LITTIA bereitet vor und schlägt vor — Sie validieren und entscheiden. Jeder Vorschlag kann mit einem Tap geändert werden."],
+    ["Ist die mobile App inbegriffen?","Ja, in allen Abonnements. iOS und Android, Echtzeit-Synchronisation."],
+    ["Kann ich andere Haushaltsmitglieder einladen?","Ja ab dem Haushalt-Plan, bis zu 6 Mitglieder."],
+    ["Wie kündige ich?","2 Klicks aus Ihren Kontoeinstellungen, jederzeit."]
+  ],
+  cta_eyebrow:"Bereit, die Kontrolle zurückzugewinnen?",cta_title:"Weniger Stress.<br>Mehr Zeit.<br><em>Ein Haushalt, der läuft.</em>",
+  cta_desc:"7 Tage kostenlos, keine Kreditkarte.<br>Keine Bindung, jederzeit kündbar.",
+  cta_main:"Meinen Haushalt erstellen",cta_ghost:"Preise ansehen",
+  foot_privacy:"Datenschutz",foot_terms:"AGB",foot_contact:"Kontakt",foot_blog:"Blog",foot_copy:"© 2025 LITTIA — Alle Rechte vorbehalten"
+},
+it:{
+  flag:"🇮🇹",code:"IT",
+  nav_features:"3 pilastri",nav_cockpit:"Cockpit",nav_simulator:"Simulatore",nav_pricing:"Prezzi",nav_login:"Accedi",nav_cta:"Crea la mia casa",
+  hero_eyebrow:"Gestione della casa · IA",
+  hero_h1:"Meno carico mentale.<br><strong>Più controllo sulla tua casa.</strong>",
+  hero_sub:"Menù, compiti, budget e pianificazione — centralizzati in modo intelligente. LITTIA prepara, tu validi e agisci.",
+  hero_cta:"Crea la mia casa",hero_ghost:"Vedi il cockpit ↓",
+  ph_date:"Dom. 17 maggio",ph_tab1:"Giorno",ph_tab2:"Settimana",ph_tab3:"Mese",ph_tab4:"Anno",
+  ph_tag:"Oggi",ph_lbl:"AZIONI PRIORITARIE",ph_big:"3 compiti",ph_sub:"Tutti pianificati per oggi",
+  ph_m1:"Menù pianificati",ph_m2:"Pulizie",ph_tasks_title:"Da fare oggi",
+  ph_t1:"Preparare lista della spesa",ph_t2:"Mettere lavatrice",ph_t3:"Cucinare la cena",
+  phn1:"Cockpit",phn2:"Menù",phn3:"Spesa",phn4:"Budget",
+  b1:"di carico mentale / settimana",b2:"promemoria dimenticato",b3:"menù pianificati / settimana",b4:"pilastri organizzati",b5:"cockpit centrale",
+  piliers_eyebrow:"3 pilastri + 1 cockpit",
+  piliers_title:"Tutta la casa,<br><em>organizzata semplicemente</em>",
+  piliers_desc:"LITTIA non lo fa al posto tuo — prepara, suggerisce e centralizza. Tu mantieni il controllo.",
+  p1_title:"Pasti e menù",
+  p1_items:["Menù intelligenti adattati alla famiglia","Generazione automatica degli ingredienti","Lista della spesa pronta da validare","Adattata alle esigenze alimentari"],
+  p1_note:"Tu validi prima di comprare",
+  p2_title:"Organizzazione della casa",
+  p2_items:["Pianificazione delle pulizie","Promemoria intelligenti al momento giusto","Routine familiari personalizzate","Distribuzione dei compiti tra i membri"],
+  p2_note:"Ognuno sa cosa fare",
+  p3_title:"Budget domestico",
+  p3_items:["Spese categorizzate semplicemente","Monitoraggio mensile visivo","Alert prima di sforare","Tendenze ed evoluzione annuale"],
+  p3_note:"Visione chiara, nessuna sorpresa",
+  cockpit_eyebrow:"Il cockpit centrale",
+  cockpit_title:"Visione giorno, settimana,<br><em>mese e anno.</em>",
+  cockpit_desc:"Il dashboard LITTIA centralizza tutta la vita domestica. Un solo posto per gestire tutto.",
+  horizons_data:[
+    {icon:"📅",title:"Oggi",items:"Compiti del giorno · Cena · Azioni prioritarie"},
+    {icon:"📆",title:"Questa settimana",items:"Menù · Pulizie · Lista spesa · Eventi"},
+    {icon:"🗓️",title:"Questo mese",items:"Budget · Abitudini · Ricorrenze"},
+    {icon:"📊",title:"Quest'anno",items:"Tendenze · Evoluzione budget · Obiettivi"}
+  ],
+  dm_title:"Dashboard casa",dm_t1:"Giorno",dm_t2:"Sett.",dm_t3:"Mese",dm_t4:"Anno",
+  dm_kpis:[{v:"3",l:"Compiti oggi"},{v:"7/7",l:"Menù pianificati"},{v:"68€",l:"Budget settimana"},{v:"−2h",l:"Tempo guadagnato"}],
+  dm_bars:[{l:"Alimentari",pct:67,c:"#3D6B5E",v:"68€"},{l:"Igiene",pct:22,c:"#C4824A",v:"22€"},{l:"Pulizie",pct:14,c:"#4A7EC4",v:"15€"}],
+  dm_insight:"💡 <strong>LITTIA:</strong> Menù di domani pianificato. Lista spesa generata — 24 articoli da validare.",
+  ba_eyebrow:"Prima / Dopo LITTIA",
+  ba_title:"La differenza <em>concreta</em>",
+  ba_before_label:"😓 Senza LITTIA",ba_after_label:"✦ Con LITTIA",
+  ba_before:["Domanda quotidiana: cosa mangiamo stasera?","Spesa improvvisata e dimenticanze frequenti","Budget alimentare confuso, sforamenti","Pulizie disorganizzate","Carico mentale distribuito male","Nessuna visione globale della casa"],
+  ba_after:["7 menù pianificati ogni settimana dall'IA","Lista spesa generata e pronta da validare","Budget in tempo reale, alert proattivi","Planning pulizie chiaro per ogni membro","Promemoria al momento giusto, niente dimenticato","Cockpit globale: giorno / settimana / mese / anno"],
+  sim_eyebrow:"Simulatore di tempo guadagnato",
+  sim_title:"Quanto tempo<br><em>recuperi con LITTIA?</em>",
+  sim_desc:"Regola i cursori in base alla tua situazione.",
+  sim_p1_t:"Adattato alla tua famiglia",sim_p1_d:"Single, coppia o famiglia — LITTIA si adatta.",
+  sim_p2_t:"Basato sulle tue abitudini",sim_p2_d:"Frequenza consegne, budget attuale.",
+  sim_p3_t:"Prova gratuita 7 giorni",sim_p3_d:"Tutte le funzioni, senza carta di credito.",
+  sim_box_title:"Il tuo simulatore",sim_box_sub:"Regola per vedere i tuoi risparmi stimati",
+  sim_l1:"Persone in famiglia",sim_l2:"Budget spesa attuale",sim_l3:"Pasti a domicilio / takeaway a settimana",
+  sim_result_label:"Risparmi stimati con LITTIA",sim_result_ie:"ovvero",sim_result_roi:"i tuoi risparmi coprono ampiamente l'abbonamento",
+  sim_br1:"Anti-spreco",sim_br2:"Spesa ottimizzata",sim_br3:"Meno consegne",sim_br4:"Abbonamenti dim.",
+  sim_cta:"Crea la mia casa gratis →",
+  price_eyebrow:"Prezzi",price_title:"Semplice e trasparente.<br><em>Senza sorprese.</em>",
+  price_monthly:"Mensile",price_annual:"Annuale",price_save_badge:"Risparmia 17%",price_per_month:"/ mese",
+  p1_tier:"Gratuito",p1_name:"Scoperta",p1_line:"Prova LITTIA senza impegno",
+  p1_price_label:"Gratuito",p1_note:"Per sempre · Senza carta",
+  p1_feats:["Cockpit del giorno soltanto","3 menù a settimana","Lista spesa (max 5 articoli)","3 promemoria","App mobile"],
+  p1_feats_no:["Planning pulizie completo","Budget e statistiche","Più membri","Anti-spreco avanzato"],
+  p2_tier:"Completo",p2_name:"Famiglia",p2_line:"Tutto incluso per tutta la famiglia",
+  p2_note_annual:"86€ / anno — risparmia 22€",
+  p2_feats:["Cockpit completo giorno/sett/mese/anno","Menù 7 giorni personalizzati","Spesa intelligente + anti-spreco","Promemoria illimitati","Budget e alert proattivi","Gestione frigo e scadenze","Score carbonio alimentare","Fino a 6 membri","App iOS e Android","Export PDF mensile"],
+  p2_feats_no:[],
+  plan_popular:"Il più popolare",plan_start:"Inizia gratis",plan_choose:"Scegli Famiglia",
+  price_footer:"🔒 Pagamento sicuro · Senza impegno · Cancella quando vuoi · 7 giorni gratis",
+  app_eyebrow:"App mobile",app_title:"Il cockpit in<br>tasca. <em>Sempre.</em>",app_desc:"Dashboard, spesa, menù e promemoria dall'app iOS e Android.",
+  app_ios_sup:"Scarica su",app_android_sup:"Disponibile su",
+  af1t:"Cockpit mobile",af1d:"Dashboard giorno/settimana/mese/anno",af2t:"Spesa live",af2d:"Lista da validare in 1 tap",af3t:"Promemoria smart",af3d:"Al momento giusto",af4t:"Multi-membri",af4d:"Ognuno vede i suoi compiti",
+  app_ph_date:"Budget · Maggio",app_ph_lbl:"SPESE QUESTO MESE",app_ph_big:"380€",app_ph_sub:"Obiettivo: 420€ · 90% usato",
+  app_ph_costs:"Categorie di spesa",cat_food:"Alimentari",cat_hygiene:"Igiene",cat_cleaning:"Pulizie",
+  faq_eyebrow:"FAQ",faq_title:"Domande <em>frequenti</em>",
+  faqs:[
+    ["LITTIA fa la spesa al posto mio?","No — ed è intenzionale. LITTIA genera la lista in base ai tuoi menù. Tu la validi e fai la spesa dove preferisci."],
+    ["L'IA pianifica tutto automaticamente?","LITTIA prepara e suggerisce — tu validi e decidi. Ogni suggerimento si può cambiare in un tap."],
+    ["L'app mobile è inclusa?","Sì, in tutti i piani. iOS e Android, sincronizzazione in tempo reale."],
+    ["Posso invitare altri membri della famiglia?","Sì dal piano Casa, fino a 6 membri."],
+    ["Come cancello?","2 clic dalle impostazioni del tuo account, in qualsiasi momento."]
+  ],
+  cta_eyebrow:"Pronto a riprendere il controllo?",cta_title:"Meno stress.<br>Più tempo.<br><em>Una casa che gira.</em>",
+  cta_desc:"7 giorni gratis, senza carta.<br>Senza impegno, cancella quando vuoi.",
+  cta_main:"Crea la mia casa",cta_ghost:"Vedi i prezzi",
+  foot_privacy:"Privacy",foot_terms:"Termini",foot_contact:"Contatto",foot_blog:"Blog",foot_copy:"© 2025 LITTIA — Tutti i diritti riservati"
+}
+}
+
+let curLang="fr"
+function L(k){return T[curLang][k]||T.fr[k]||""}
+
+function setLang(lang){
+  curLang=lang
+  document.documentElement.lang=lang
+  // simple text nodes
+  document.querySelectorAll("[data-t]").forEach(el=>{
+    const v=L(el.dataset.t)
+    if(v!==undefined) el.innerHTML=v
+  })
+  document.getElementById("curFlag").textContent=T[lang].flag
+  document.getElementById("curLang").textContent=T[lang].code
+  document.querySelectorAll(".lang-opt").forEach(o=>o.classList.toggle("active",o.dataset.lang===lang))
+  buildPillars()
+  buildCockpit()
+  buildBA()
+  buildPricing()
+  buildFAQ()
+}
+
+function buildPillars(){
+  [1,2,3].forEach(n=>{
+    const items=L("p"+n+"_items")||[]
+    document.getElementById("pl"+n).innerHTML=items.map(i=>`<li>${i}</li>`).join("")
+  })
+}
+
+function buildCockpit(){
+  const h=L("horizons_data")||[]
+  document.getElementById("horizons").innerHTML=h.map(x=>`
+    <div class="horizon">
+      <div class="horizon-icon">${x.icon}</div>
+      <div class="horizon-title">${x.title}</div>
+      <div class="horizon-items">${x.items}</div>
+    </div>`).join("")
+  const kpis=L("dm_kpis")||[]
+  document.getElementById("dmKpis").innerHTML=kpis.map(k=>`
+    <div class="dm-kpi"><div class="dm-kpi-v">${k.v}</div><div class="dm-kpi-l">${k.l}</div></div>`).join("")
+  const bars=L("dm_bars")||[]
+  document.getElementById("dmBars").innerHTML=bars.map(b=>`
+    <div class="dm-bar-row">
+      <div class="dm-bar-label">${b.l}</div>
+      <div class="dm-bar-track"><div class="dm-bar-fill" style="width:${b.pct}%;background:${b.c}"></div></div>
+      <div class="dm-bar-val">${b.v}</div>
+    </div>`).join("")
+  document.getElementById("dmInsight").innerHTML=L("dm_insight")
+}
+
+function buildBA(){
+  const before=L("ba_before")||[]
+  const after=L("ba_after")||[]
+  document.getElementById("baBeforeItems").innerHTML=before.map(i=>`<div class="ba-item">${i}</div>`).join("")
+  document.getElementById("baAfterItems").innerHTML=after.map(i=>`<div class="ba-item">${i}</div>`).join("")
+}
+
+function buildPricing(){
+  for(let n=1;n<=2;n++){
+    const feats=L("p"+n+"_feats")||[]
+    const no=L("p"+n+"_feats_no")||[]
+    const pf=document.getElementById("pf"+n)
+    if(pf) pf.innerHTML=
+      feats.map(f=>`<li><span class="pf-ok">✓</span>${f}</li>`).join("")+
+      no.map(f=>`<li class="pf-no"><span class="pf-ok">—</span>${f}</li>`).join("")
+  }
+  // p1 price label (free, no currency)
+  const pp1=document.getElementById("pp1")
+  const pl=L("p1_price_label")
+  if(pp1&&pl){ pp1.closest('.price-main').innerHTML=`<span class="price-num" id="pp1" style="font-size:1.8rem">${pl}</span>`}
+  const pn1=document.getElementById("pn1")
+  if(pn1){ pn1.style.opacity="1"; pn1.textContent=L("p1_note") }
+}
+
+function buildFAQ(){
+  const faqs=L("faqs")||[]
+  document.getElementById("faqList").innerHTML=faqs.map(([q,a])=>`
+    <div class="faq-item">
+      <div class="faq-q"><span>${q}</span><div class="faq-tog">+</div></div>
+      <div class="faq-a"><p>${a}</p></div>
+    </div>`).join("")
+  document.querySelectorAll(".faq-item").forEach(item=>{
+    item.querySelector(".faq-q").addEventListener("click",()=>{
+      const o=item.classList.contains("open")
+      document.querySelectorAll(".faq-item").forEach(i=>i.classList.remove("open"))
+      if(!o) item.classList.add("open")
+    })
+  })
+}
+
+// scroll
+window.addEventListener("scroll",()=>{
+  document.getElementById("nav").classList.toggle("scrolled",scrollY>50)
+})
+
+// reveal
+const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add("in")}),{threshold:0.08,rootMargin:"0px 0px -40px 0px"})
+document.querySelectorAll(".reveal").forEach(el=>obs.observe(el))
+
+// simulator
+function calcEco(){
+  const p=+document.getElementById("personnes").value
+  const b=+document.getElementById("budget").value
+  const l=+document.getElementById("livraisons").value
+  document.getElementById("personnesVal").textContent=p
+  document.getElementById("budgetVal").textContent=b.toLocaleString("fr-FR")+"€/mois"
+  document.getElementById("livraisonsVal").textContent=l+"×"
+  const gaspi=Math.round(b*0.08+p*2.5)
+  const courses=Math.round(b*0.10+p*1.5)
+  const livraison=Math.round(l*14)
+  const abo=Math.round(12+p*1.2)
+  const total=gaspi+courses+livraison+abo
+  document.getElementById("ecoVal").textContent=total
+  document.getElementById("ecoAn").textContent=(total*12).toLocaleString("fr-FR")+"€/an"
+  document.getElementById("brGaspi").textContent="−"+gaspi+"€"
+  document.getElementById("brCourses").textContent="−"+courses+"€"
+  document.getElementById("brLivraison").textContent="−"+livraison+"€"
+  document.getElementById("brAbo").textContent="−"+abo+"€"
+}
+["personnes","budget","livraisons"].forEach(id=>document.getElementById(id).addEventListener("input",calcEco))
+
+// billing toggle
+let annuel=false
+const prices={m:[0,9],a:[0,86]}
+document.getElementById("billingToggle").addEventListener("click",()=>{
+  annuel=!annuel
+  document.getElementById("billingToggle").classList.toggle("monthly",annuel)
+  document.getElementById("labelMensuel").classList.toggle("active",!annuel)
+  document.getElementById("labelAnnuel").classList.toggle("active",annuel)
+  document.getElementById("saveBadge").style.opacity=annuel?"1":"0.4"
+  const p=annuel?prices.a:prices.m
+  // Only plan 2 (Famille) has a toggle price
+  const pp2 = document.getElementById("pp2")
+  if(pp2) pp2.textContent = annuel ? prices.a[1] : prices.m[1]
+  const pn2 = document.getElementById("pn2")
+  if(pn2){
+    pn2.style.opacity = annuel ? "1" : "0"
+    pn2.textContent = annuel ? L("p2_note_annual") : ""
+  }
+})
+
+// lang
+document.getElementById("langBtn").addEventListener("click",()=>document.getElementById("langWrap").classList.toggle("open"))
+document.addEventListener("click",e=>{if(!e.target.closest("#langWrap"))document.getElementById("langWrap").classList.remove("open")})
+document.querySelectorAll(".lang-opt").forEach(o=>o.addEventListener("click",()=>{
+  setLang(o.dataset.lang)
+  document.getElementById("langWrap").classList.remove("open")
+}))
+
+// dm tabs interactive
+document.querySelectorAll(".dm-tab").forEach(t=>t.addEventListener("click",()=>{
+  t.closest(".dm-tabs").querySelectorAll(".dm-tab").forEach(x=>x.classList.remove("on"))
+  t.classList.add("on")
+}))
+document.querySelectorAll(".ph-tab").forEach(t=>t.addEventListener("click",()=>{
+  t.closest(".ph-tabs").querySelectorAll(".ph-tab").forEach(x=>x.classList.remove("on"))
+  t.classList.add("on")
+}))
+
+setLang("fr")
+calcEco()
+
+// ── HAMBURGER MENU ──
+const hamburger = document.getElementById("hamburger")
+const mobileMenu = document.getElementById("mobileMenu")
+const mmClose = document.getElementById("mmClose")
+
+function openMenu(){
+  hamburger.classList.add("open")
+  mobileMenu.classList.add("open")
+  document.body.style.overflow="hidden"
+}
+function closeMenu(){
+  hamburger.classList.remove("open")
+  mobileMenu.classList.remove("open")
+  document.body.style.overflow=""
+}
+hamburger.addEventListener("click", openMenu)
+mmClose.addEventListener("click", closeMenu)
+
+// close on link click
+document.querySelectorAll(".mm-link,.mm-btn-main,.mm-btn-ghost").forEach(el=>{
+  el.addEventListener("click", closeMenu)
+})
+
+// mobile lang switcher
+document.querySelectorAll(".mm-lang-opt").forEach(o=>{
+  o.addEventListener("click",()=>{
+    setLang(o.dataset.lang)
+    // update active state
+    document.querySelectorAll(".mm-lang-opt").forEach(x=>x.classList.toggle("active",x.dataset.lang===o.dataset.lang))
+    // update mm-link texts
+    document.querySelectorAll("[data-t]").forEach(el=>{
+      const v=L(el.dataset.t)
+      if(v!==undefined) el.innerHTML=v
+    })
+  })
+})
+</script>
+</body>
+</html>
