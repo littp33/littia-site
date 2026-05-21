@@ -1,0 +1,1198 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LITTIA — Mon foyer</title>
+<meta http-equiv="X-Frame-Options" content="DENY">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Outfit:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cream:#FAF8F3;--cream2:#F4F0E8;--cream3:#EDE7D9;
+  --ink:#1A1612;--ink-60:rgba(26,22,18,0.6);--ink-30:rgba(26,22,18,0.3);--ink-12:rgba(26,22,18,0.12);--ink-06:rgba(26,22,18,0.06);
+  --forest:#2D5A45;--forest-l:rgba(45,90,69,0.12);--forest-m:rgba(45,90,69,0.06);
+  --sage:#5A8A6E;--sage-l:rgba(90,138,110,0.15);
+  --gold:#B8903A;--gold-l:rgba(184,144,58,0.12);
+  --amber:#C4824A;--amber-l:rgba(196,130,74,0.12);
+  --rose:#C4624A;--rose-l:rgba(196,98,74,0.1);
+  --sky:#4A7EA0;--sky-l:rgba(74,126,160,0.1);
+  --r:14px;--rl:20px;
+}
+html,body{height:100%;background:var(--cream)}
+body{font-family:"Outfit",sans-serif;color:var(--ink);overflow:hidden;display:flex}
+
+/* ── SIDEBAR ── */
+.sb{width:240px;flex-shrink:0;background:#fff;border-right:1px solid var(--ink-12);display:flex;flex-direction:column;height:100vh;position:relative;z-index:10}
+.sb::after{content:"";position:absolute;top:0;right:-1px;bottom:0;width:1px;background:linear-gradient(to bottom,transparent,var(--ink-12) 20%,var(--ink-12) 80%,transparent)}
+.sb-logo{padding:1.4rem 1.4rem 1.1rem;border-bottom:1px solid var(--ink-06)}
+.sb-logo a{text-decoration:none;display:block}
+.sb-user{display:flex;align-items:center;gap:0.7rem;padding:1rem 1.4rem;border-bottom:1px solid var(--ink-06)}
+.sb-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--forest),var(--sage));display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:600;color:#fff;flex-shrink:0;letter-spacing:0.05em}
+.sb-uname{font-size:0.82rem;color:var(--ink);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px}
+.sb-plan-tag{font-size:0.62rem;color:var(--forest);background:var(--forest-l);padding:1px 7px;border-radius:100px;display:inline-block;margin-top:2px;font-weight:500}
+.sb-nav{padding:0.85rem 0.75rem;flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:2px}
+.sb-sec{font-size:0.58rem;text-transform:uppercase;letter-spacing:0.12em;color:var(--ink-30);padding:0.65rem 0.65rem 0.2rem;margin-top:0.5rem;font-weight:600}
+.sb-item{display:flex;align-items:center;gap:0.65rem;padding:0.65rem 0.85rem;border-radius:10px;cursor:pointer;transition:all 0.18s;color:var(--ink-60);font-size:0.83rem;text-decoration:none;border:1px solid transparent;position:relative}
+.sb-item:hover{background:var(--cream);color:var(--ink)}
+.sb-item.on{background:var(--forest-l);color:var(--forest);border-color:rgba(45,90,69,0.15);font-weight:500}
+.sb-item.on .sb-icon{filter:none}
+.sb-icon{font-size:1.05rem;width:20px;text-align:center;flex-shrink:0}
+.sb-item-badge{margin-left:auto;background:var(--amber-l);color:var(--amber);font-size:0.6rem;padding:1px 6px;border-radius:100px;font-weight:600}
+.sb-bottom{padding:0.85rem;border-top:1px solid var(--ink-06)}
+.sb-plan-box{background:linear-gradient(135deg,var(--forest-l),var(--forest-m));border:1px solid rgba(45,90,69,0.15);border-radius:10px;padding:0.75rem;margin-bottom:0.5rem;text-align:center}
+.sb-plan-lbl{font-size:0.6rem;color:var(--ink-30);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:3px;font-weight:600}
+.sb-plan-val{font-size:0.82rem;color:var(--forest);font-weight:600}
+.sb-logout{display:flex;align-items:center;gap:0.5rem;width:100%;padding:0.5rem 0.85rem;border-radius:8px;cursor:pointer;color:var(--ink-30);font-size:0.78rem;background:none;border:none;font-family:"Outfit",sans-serif;transition:all 0.18s}
+.sb-logout:hover{color:var(--rose);background:var(--rose-l)}
+
+/* ── MAIN ── */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;background:var(--cream)}
+
+/* ── TOPBAR ── */
+.topbar{padding:0.9rem 1.75rem;border-bottom:1px solid var(--ink-12);display:flex;align-items:center;justify-content:space-between;background:#fff;flex-shrink:0;gap:1rem}
+.tb-left{display:flex;align-items:center;gap:0.75rem;min-width:0}
+.hamburger-dash{display:none;background:none;border:none;cursor:pointer;flex-direction:column;gap:5px;padding:4px;flex-shrink:0}
+.hamburger-dash span{display:block;width:20px;height:1.5px;background:var(--ink-60);border-radius:1px;transition:all 0.25s}
+.tb-page-title{font-family:"Cormorant Garamond",serif;font-size:1.3rem;color:var(--ink);font-weight:400;white-space:nowrap}
+.tb-date{font-size:0.7rem;color:var(--ink-30);margin-top:1px}
+.tb-right{display:flex;align-items:center;gap:0.6rem;flex-shrink:0}
+.tb-search{display:flex;align-items:center;gap:0.5rem;background:var(--cream);border:1px solid var(--ink-12);border-radius:100px;padding:0.4rem 0.9rem;font-size:0.78rem;color:var(--ink-30);cursor:pointer;transition:all 0.2s}
+.tb-search:hover{border-color:var(--ink-30)}
+.tb-notif{width:34px;height:34px;border-radius:9px;background:var(--cream);border:1px solid var(--ink-12);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:0.9rem;position:relative;transition:all 0.2s;flex-shrink:0}
+.tb-notif:hover{border-color:var(--ink-30)}
+.notif-dot{position:absolute;top:5px;right:5px;width:7px;height:7px;border-radius:50%;background:var(--amber);border:1.5px solid #fff}
+
+/* ── PAGE CONTENT ── */
+.pages{flex:1;overflow:hidden;position:relative}
+.page{position:absolute;inset:0;overflow-y:auto;padding:1.75rem 1.75rem 3rem;opacity:0;transform:translateY(12px);pointer-events:none;transition:opacity 0.3s ease,transform 0.3s ease}
+.page.active{opacity:1;transform:translateY(0);pointer-events:all}
+.page::-webkit-scrollbar{width:4px}
+.page::-webkit-scrollbar-thumb{background:var(--ink-12);border-radius:2px}
+
+/* ── PAGE HEADER ── */
+.page-hdr{margin-bottom:1.75rem}
+.page-eyebrow{font-size:0.65rem;text-transform:uppercase;letter-spacing:0.14em;color:var(--sage);font-weight:600;margin-bottom:0.4rem}
+.page-title{font-family:"Cormorant Garamond",serif;font-size:2rem;color:var(--ink);font-weight:400;line-height:1.1;margin-bottom:0.4rem}
+.page-title em{font-style:italic;color:var(--forest)}
+.page-desc{font-size:0.85rem;color:var(--ink-60);line-height:1.6}
+
+/* ── CARDS ── */
+.card{background:#fff;border:1px solid var(--ink-12);border-radius:var(--rl);overflow:hidden}
+.card-hd{padding:1rem 1.25rem;border-bottom:1px solid var(--ink-06);display:flex;align-items:center;justify-content:space-between;gap:0.75rem}
+.card-t{font-size:0.88rem;color:var(--ink);font-weight:600;display:flex;align-items:center;gap:0.5rem}
+.card-s{font-size:0.7rem;color:var(--ink-30);margin-top:2px}
+.card-bd{padding:1.1rem 1.25rem}
+.badge{font-size:0.62rem;padding:3px 9px;border-radius:100px;font-weight:600;border:1px solid;white-space:nowrap;flex-shrink:0}
+.badge-g{background:var(--forest-l);color:var(--forest);border-color:rgba(45,90,69,0.2)}
+.badge-a{background:var(--amber-l);color:var(--amber);border-color:rgba(196,130,74,0.2)}
+.badge-s{background:var(--sky-l);color:var(--sky);border-color:rgba(74,126,160,0.2)}
+.badge-r{background:var(--rose-l);color:var(--rose);border-color:rgba(196,98,74,0.15)}
+
+/* ── GRIDS ── */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.1rem}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
+.g2a{display:grid;grid-template-columns:3fr 2fr;gap:1.1rem}
+
+/* ── KPIs ── */
+.kpi{background:#fff;border:1px solid var(--ink-12);border-radius:var(--rl);padding:1.1rem;position:relative;overflow:hidden;transition:box-shadow 0.2s}
+.kpi:hover{box-shadow:0 4px 20px rgba(26,22,18,0.06)}
+.kpi::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--rl) var(--rl) 0 0}
+.kpi-g::before{background:linear-gradient(90deg,var(--forest),var(--sage))}
+.kpi-a::before{background:linear-gradient(90deg,var(--amber),var(--gold))}
+.kpi-s::before{background:linear-gradient(90deg,var(--sky),#6AA3C4)}
+.kpi-r::before{background:linear-gradient(90deg,var(--rose),var(--amber))}
+.kpi-icon{font-size:1.4rem;margin-bottom:0.5rem}
+.kpi-v{font-family:"DM Mono",monospace;font-size:2rem;color:var(--ink);font-weight:400;line-height:1;margin-bottom:0.2rem;letter-spacing:-0.03em}
+.kpi-lbl{font-size:0.68rem;color:var(--ink-30);text-transform:uppercase;letter-spacing:0.08em;font-weight:600}
+.kpi-sub{font-size:0.72rem;color:var(--ink-60);margin-top:0.25rem}
+
+/* ── FOOD ILLUSTRATIONS ── */
+.food-illu{width:100%;height:160px;border-radius:12px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;margin-bottom:0.85rem}
+.food-illu-bg{position:absolute;inset:0}
+.food-illu-emoji{font-size:4rem;position:relative;z-index:2;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.15))}
+.food-illu-pattern{position:absolute;inset:0;opacity:0.07;background-image:repeating-linear-gradient(45deg,currentColor 0,currentColor 1px,transparent 0,transparent 50%);background-size:12px 12px}
+
+/* ── MENUS PAGE ── */
+.menu-week-grid{display:flex;flex-direction:column;gap:0.75rem}
+.mday-row{display:grid;grid-template-columns:70px 1fr 1fr;gap:0.75rem;align-items:stretch}
+.mday-label-cell{display:flex;flex-direction:column;justify-content:center;gap:2px}
+.mday-name{font-size:0.82rem;color:var(--ink);font-weight:600}
+.mday-date{font-size:0.65rem;color:var(--ink-30)}
+.mday-name.today{color:var(--forest)}
+.meal-card{background:#fff;border:1px solid var(--ink-12);border-radius:12px;padding:0.75rem 0.9rem;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:0.65rem;min-height:64px}
+.meal-card:hover{border-color:var(--forest);background:var(--forest-m);transform:translateY(-1px);box-shadow:0 4px 16px rgba(45,90,69,0.1)}
+.meal-card.filled{border-color:var(--ink-12)}
+.meal-card.filled:hover{border-color:var(--forest)}
+.meal-type-badge{font-size:0.58rem;color:var(--ink-30);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:2px;font-weight:600}
+.meal-emoji-big{font-size:1.8rem;flex-shrink:0;filter:drop-shadow(0 2px 6px rgba(0,0,0,0.1))}
+.meal-info{flex:1;min-width:0}
+.meal-name{font-size:0.82rem;color:var(--ink);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.meal-empty-txt{font-size:0.78rem;color:var(--ink-30);font-style:italic}
+.meal-add-icon{font-size:1.1rem;color:var(--ink-30);flex-shrink:0}
+
+/* ── TASKS PAGE ── */
+.tasks-grid{display:flex;flex-direction:column;gap:0.6rem}
+.task-item{display:flex;align-items:center;gap:0.85rem;padding:0.85rem 1rem;background:#fff;border-radius:12px;border:1px solid var(--ink-12);transition:all 0.18s;cursor:pointer}
+.task-item:hover{border-color:var(--ink-30);box-shadow:0 2px 8px rgba(26,22,18,0.04)}
+.task-check{width:20px;height:20px;border-radius:6px;border:2px solid var(--ink-12);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:transparent;transition:all 0.2s;flex-shrink:0;background:#fff}
+.task-check.done{background:var(--forest);border-color:var(--forest);color:#fff}
+.task-prio{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.task-text{font-size:0.85rem;color:var(--ink);flex:1;line-height:1.4}
+.task-done-text{text-decoration:line-through;color:var(--ink-30)}
+.task-time{font-size:0.7rem;color:var(--ink-30);font-family:"DM Mono",monospace;flex-shrink:0}
+.task-del{color:var(--ink-30);cursor:pointer;background:none;border:none;font-size:0.85rem;opacity:0;transition:opacity 0.15s;padding:2px 4px;flex-shrink:0}
+.task-item:hover .task-del{opacity:1}
+.task-section-hdr{font-size:0.65rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--ink-30);font-weight:600;padding:0.4rem 0;margin-top:0.25rem}
+
+/* ── COURSES PAGE ── */
+.courses-grid{display:flex;flex-direction:column;gap:0.5rem}
+.course-item{display:flex;align-items:center;gap:0.75rem;padding:0.8rem 1rem;background:#fff;border-radius:12px;border:1px solid var(--ink-12);transition:all 0.18s}
+.course-item:hover{border-color:var(--ink-30)}
+.course-check{width:20px;height:20px;border-radius:50%;border:2px solid var(--ink-12);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:0.65rem;color:transparent;transition:all 0.2s;flex-shrink:0}
+.course-check.done{background:var(--forest);border-color:var(--forest);color:#fff}
+.course-name{font-size:0.84rem;color:var(--ink);flex:1}
+.course-done-name{text-decoration:line-through;color:var(--ink-30)}
+.course-rayon{font-size:0.65rem;color:var(--amber);background:var(--amber-l);padding:2px 7px;border-radius:100px;white-space:nowrap;font-weight:500}
+.course-del{color:var(--ink-30);cursor:pointer;background:none;border:none;font-size:0.8rem;opacity:0;transition:opacity 0.15s;padding:2px 4px}
+.course-item:hover .course-del{opacity:1}
+
+/* ── FRIGO PAGE ── */
+.frigo-grid{display:flex;flex-direction:column;gap:0.5rem}
+.frigo-item{display:flex;align-items:center;gap:0.75rem;padding:0.8rem 1rem;background:#fff;border-radius:12px;border:1px solid var(--ink-12);transition:all 0.18s}
+.frigo-item:hover{border-color:var(--ink-30)}
+.frigo-ic-big{font-size:1.4rem;flex-shrink:0;filter:drop-shadow(0 1px 4px rgba(0,0,0,0.1))}
+.frigo-info{flex:1;min-width:0}
+.frigo-name{font-size:0.84rem;color:var(--ink);font-weight:500}
+.frigo-dlc-row{display:flex;align-items:center;gap:0.4rem;margin-top:2px}
+.frigo-dlc{font-size:0.68rem;font-family:"DM Mono",monospace;font-weight:500}
+.dlc-ok{color:var(--forest)}.dlc-warn{color:var(--amber)}.dlc-urgent{color:var(--rose)}
+.frigo-status{font-size:0.62rem;padding:2px 6px;border-radius:100px;font-weight:600}
+.status-ok{background:var(--forest-l);color:var(--forest)}
+.status-warn{background:var(--amber-l);color:var(--amber)}
+.status-urgent{background:var(--rose-l);color:var(--rose)}
+.frigo-del{color:var(--ink-30);cursor:pointer;background:none;border:none;font-size:0.8rem;opacity:0;transition:opacity 0.15s;padding:2px 4px}
+.frigo-item:hover .frigo-del{opacity:1}
+
+/* ── BUDGET PAGE ── */
+.budget-hero{background:linear-gradient(135deg,var(--forest),var(--sage));border-radius:var(--rl);padding:1.5rem;color:#fff;margin-bottom:1.1rem;position:relative;overflow:hidden}
+.budget-hero::after{content:"";position:absolute;top:-30px;right:-30px;width:150px;height:150px;border-radius:50%;background:rgba(255,255,255,0.06)}
+.budget-hero-lbl{font-size:0.65rem;text-transform:uppercase;letter-spacing:0.12em;opacity:0.65;margin-bottom:0.4rem;font-weight:600}
+.budget-hero-val{font-family:"DM Mono",monospace;font-size:2.8rem;color:#fff;font-weight:400;letter-spacing:-0.03em;line-height:1}
+.budget-hero-sub{font-size:0.8rem;opacity:0.65;margin-top:0.4rem}
+.budget-progress-track{height:6px;background:rgba(255,255,255,0.2);border-radius:3px;margin-top:1rem;overflow:hidden}
+.budget-progress-fill{height:100%;border-radius:3px;background:#fff;transition:width 0.7s ease}
+.budget-obj-row{display:flex;align-items:center;gap:0.6rem;margin-bottom:1rem;background:#fff;border:1px solid var(--ink-12);border-radius:10px;padding:0.65rem 0.9rem}
+.budget-obj-lbl{font-size:0.75rem;color:var(--ink-60);flex:1}
+.budget-obj-input{background:var(--cream);border:1px solid var(--ink-12);border-radius:7px;color:var(--ink);font-family:"DM Mono",monospace;font-size:0.9rem;padding:4px 10px;width:90px;outline:none;text-align:right}
+.budget-obj-input:focus{border-color:var(--forest)}
+.budget-cats{display:flex;flex-direction:column;gap:0.75rem}
+.budget-cat{background:#fff;border:1px solid var(--ink-12);border-radius:12px;padding:0.9rem 1rem}
+.budget-cat-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.6rem}
+.budget-cat-name{font-size:0.84rem;color:var(--ink);font-weight:500;display:flex;align-items:center;gap:0.4rem}
+.budget-cat-input{background:var(--cream);border:1px solid var(--ink-12);border-radius:7px;color:var(--ink);font-family:"DM Mono",monospace;font-size:0.85rem;padding:4px 8px;width:80px;outline:none;text-align:right}
+.budget-cat-input:focus{border-color:var(--forest)}
+.budget-cat-bar{height:5px;background:var(--cream2);border-radius:3px;overflow:hidden}
+.budget-cat-fill{height:100%;border-radius:3px;transition:width 0.5s ease}
+.budget-save-btn{display:flex;align-items:center;gap:0.4rem;padding:0.6rem 1.25rem;background:var(--forest);color:#fff;border:none;border-radius:100px;font-family:"Outfit",sans-serif;font-size:0.82rem;font-weight:500;cursor:pointer;transition:all 0.2s;margin-top:1rem}
+.budget-save-btn:hover{background:#1f4031;transform:translateY(-1px)}
+
+/* ── RECETTES ── */
+.recette-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem}
+.recette-card{background:#fff;border:1px solid var(--ink-12);border-radius:var(--rl);overflow:hidden;transition:all 0.2s;cursor:pointer}
+.recette-card:hover{box-shadow:0 8px 30px rgba(26,22,18,0.08);transform:translateY(-2px)}
+.recette-img{height:140px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.recette-emoji{font-size:4rem;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.15));position:relative;z-index:2}
+.recette-body{padding:0.9rem 1rem}
+.recette-title{font-size:0.9rem;color:var(--ink);font-weight:600;margin-bottom:0.4rem;line-height:1.3}
+.recette-meta{display:flex;gap:0.4rem;flex-wrap:wrap;margin-bottom:0.6rem}
+.recette-tag{font-size:0.62rem;padding:2px 7px;border-radius:100px;background:var(--gold-l);color:var(--gold);border:1px solid rgba(184,144,58,0.2);font-weight:500}
+.recette-ingr{font-size:0.75rem;color:var(--ink-60);line-height:1.6}
+.recette-expand-btn{width:100%;padding:0.6rem;background:var(--cream);border:none;border-top:1px solid var(--ink-06);font-family:"Outfit",sans-serif;font-size:0.75rem;color:var(--forest);cursor:pointer;transition:all 0.18s;font-weight:500}
+.recette-expand-btn:hover{background:var(--forest-l)}
+.recette-steps-panel{padding:1rem;border-top:1px solid var(--ink-06);display:none;background:var(--cream)}
+.recette-step{display:flex;gap:0.6rem;margin-bottom:0.5rem;font-size:0.78rem;color:var(--ink-60);line-height:1.6}
+.recette-step-n{width:20px;height:20px;border-radius:50%;background:var(--forest);color:#fff;font-size:0.62rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;font-weight:600}
+.recette-conseil{background:var(--gold-l);border:1px solid rgba(184,144,58,0.2);border-radius:8px;padding:0.6rem 0.8rem;font-size:0.75rem;color:var(--gold);margin-top:0.5rem;line-height:1.5}
+
+/* ── AI BUTTON ── */
+.ai-btn{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:100px;border:1.5px solid rgba(45,90,69,0.3);background:var(--forest-l);color:var(--forest);cursor:pointer;font-size:0.72rem;font-family:"Outfit",sans-serif;font-weight:600;transition:all 0.2s}
+.ai-btn:hover{background:var(--forest);color:#fff;border-color:var(--forest)}
+.ai-btn:disabled{opacity:0.4;pointer-events:none}
+.ai-btn.am{border-color:rgba(196,130,74,0.3);background:var(--amber-l);color:var(--amber)}
+.ai-btn.am:hover{background:var(--amber);color:#fff}
+.ai-btn-icon{font-size:0.85rem}
+@keyframes spin-ai{to{transform:rotate(360deg)}}
+.ai-btn.loading .ai-btn-icon{animation:spin-ai 0.8s linear infinite;display:inline-block}
+
+/* ── AI PREFS PANEL ── */
+.ai-panel{background:var(--cream);border:1.5px solid rgba(45,90,69,0.2);border-radius:12px;padding:1rem;margin-bottom:1rem;display:none}
+.ai-panel.open{display:block}
+.ai-panel-title{font-size:0.72rem;color:var(--forest);font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.75rem}
+.ai-tags-row{display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:0.6rem}
+.ai-tag{font-size:0.72rem;padding:4px 10px;border-radius:100px;border:1.5px solid var(--ink-12);color:var(--ink-60);cursor:pointer;transition:all 0.15s;background:#fff;font-family:"Outfit",sans-serif;font-weight:500}
+.ai-tag:hover,.ai-tag.on{background:var(--forest-l);color:var(--forest);border-color:rgba(45,90,69,0.25)}
+.ai-tag.am:hover,.ai-tag.am.on{background:var(--amber-l);color:var(--amber);border-color:rgba(196,130,74,0.25)}
+.ai-launch-btn{width:100%;padding:0.7rem;background:var(--forest);color:#fff;border:none;border-radius:100px;font-family:"Outfit",sans-serif;font-size:0.82rem;font-weight:600;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:0.4rem;margin-top:0.75rem}
+.ai-launch-btn:hover{background:#1f4031}
+.ai-launch-btn:disabled{opacity:0.5;pointer-events:none}
+.ai-launch-btn.am{background:var(--amber)}
+.ai-launch-btn.am:hover{background:#a0682c}
+.ai-spin{width:14px;height:14px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin-ai 0.7s linear infinite;display:none}
+.ai-launch-btn.loading .ai-spin{display:block}
+.ai-launch-btn.loading .ai-lbl{display:none}
+
+/* ── SLIDER ── */
+.slider-row{display:flex;align-items:center;gap:0.75rem;margin-bottom:0.65rem;font-size:0.75rem;color:var(--ink-60)}
+.slider-row strong{color:var(--ink)}
+input[type=range]{flex:1;height:4px;background:var(--ink-12);border-radius:2px;outline:none;-webkit-appearance:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--forest);cursor:pointer;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.15)}
+
+/* ── ADD BUTTON ── */
+.add-btn{display:flex;align-items:center;gap:0.5rem;padding:0.7rem 1rem;border-radius:10px;border:1.5px dashed var(--ink-12);cursor:pointer;color:var(--ink-30);font-size:0.8rem;transition:all 0.18s;background:none;font-family:"Outfit",sans-serif;width:100%;margin-top:0.5rem}
+.add-btn:hover{border-color:var(--forest);color:var(--forest);background:var(--forest-m)}
+
+/* ── EMPTY STATE ── */
+.empty{text-align:center;padding:2.5rem 1rem;color:var(--ink-30)}
+.empty-icon{font-size:2.5rem;margin-bottom:0.75rem;opacity:0.5}
+.empty-text{font-size:0.85rem;line-height:1.7}
+.empty-text strong{display:block;color:var(--ink-60);font-size:0.9rem;margin-bottom:0.25rem}
+
+/* ── MODAL ── */
+.overlay{position:fixed;inset:0;background:rgba(26,22,18,0.4);z-index:500;display:none;align-items:flex-end;justify-content:center;padding:0}
+.overlay.open{display:flex}
+@media(min-width:600px){.overlay{align-items:center;padding:1rem}}
+.modal{background:#fff;border-radius:20px 20px 0 0;padding:1.5rem;width:100%;max-height:90vh;overflow-y:auto}
+@media(min-width:600px){.modal{border-radius:20px;max-width:420px}}
+.modal-handle{width:36px;height:4px;background:var(--ink-12);border-radius:2px;margin:0 auto 1.25rem}
+@media(min-width:600px){.modal-handle{display:none}}
+.modal-title{font-family:"Cormorant Garamond",serif;font-size:1.35rem;color:var(--ink);margin-bottom:1.25rem;font-weight:400;display:flex;align-items:center;justify-content:space-between}
+.modal-close{background:var(--cream);border:none;width:28px;height:28px;border-radius:50%;cursor:pointer;color:var(--ink-60);font-size:0.85rem;display:flex;align-items:center;justify-content:center;transition:all 0.18s}
+.modal-close:hover{background:var(--cream2);color:var(--ink)}
+.mf{margin-bottom:0.9rem}
+.mf label{display:block;font-size:0.7rem;color:var(--ink-30);margin-bottom:0.38rem;text-transform:uppercase;letter-spacing:0.07em;font-weight:600}
+.mf input,.mf select,.mf textarea{width:100%;padding:0.7rem 0.9rem;border:1.5px solid var(--ink-12);border-radius:10px;font-size:0.86rem;font-family:"Outfit",sans-serif;color:var(--ink);background:#fff;transition:all 0.2s;outline:none}
+.mf input:focus,.mf select:focus,.mf textarea:focus{border-color:var(--forest);box-shadow:0 0 0 3px rgba(45,90,69,0.08)}
+.mf input::placeholder,.mf textarea::placeholder{color:var(--ink-30)}
+.mf select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23999' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+.mf-row{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem}
+.modal-actions{display:flex;gap:0.6rem;margin-top:1.1rem}
+.mbtn{flex:1;padding:0.75rem;border-radius:100px;border:none;cursor:pointer;font-family:"Outfit",sans-serif;font-size:0.85rem;font-weight:600;transition:all 0.2s}
+.mbtn-cancel{background:var(--cream);color:var(--ink-60);border:1.5px solid var(--ink-12)}
+.mbtn-cancel:hover{background:var(--cream2)}
+.mbtn-ok{background:var(--forest);color:#fff}
+.mbtn-ok:hover{background:#1f4031}
+
+/* ── EMOJI GRID ── */
+.emoji-grid{display:flex;flex-wrap:wrap;gap:5px;padding:0.4rem 0}
+.emoji-opt{width:36px;height:36px;border-radius:8px;background:var(--cream);border:1.5px solid var(--ink-06);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.1rem;transition:all 0.15s}
+.emoji-opt:hover,.emoji-opt.sel{background:var(--forest-l);border-color:rgba(45,90,69,0.25);transform:scale(1.1)}
+
+/* ── SAVING DOT ── */
+.saving-dot{position:fixed;bottom:1rem;right:1rem;font-size:0.72rem;color:var(--forest);background:#fff;border:1px solid rgba(45,90,69,0.2);border-radius:100px;padding:0.35rem 0.85rem;opacity:0;transition:opacity 0.3s;z-index:200;box-shadow:0 2px 10px rgba(0,0,0,0.08)}
+.saving-dot.show{opacity:1}
+
+/* ── TOAST ── */
+#toast{position:fixed;bottom:4rem;left:50%;transform:translateX(-50%);background:var(--ink);border-radius:100px;padding:0.55rem 1.25rem;font-size:0.78rem;color:#fff;z-index:300;transition:opacity 0.3s;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,0.2);opacity:0}
+
+/* ── PAGE LOADER ── */
+.page-loader{position:fixed;inset:0;background:var(--cream);z-index:999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1rem;transition:opacity 0.4s}
+.page-loader.hide{opacity:0;pointer-events:none}
+.loader-spin{width:28px;height:28px;border:2px solid var(--ink-12);border-top-color:var(--forest);border-radius:50%;animation:spin-ai 0.8s linear infinite}
+.loader-logo{font-family:"Cormorant Garamond",serif;font-size:1.1rem;color:var(--ink-30);letter-spacing:0.15em}
+
+/* ── MOBILE ── */
+@media(max-width:900px){
+  .sb{position:fixed;inset:0;right:auto;z-index:400;transform:translateX(-100%);transition:transform 0.3s}
+  .sb.open{transform:translateX(0)}
+  .hamburger-dash{display:flex}
+  .g2,.g2a,.g3,.g4{grid-template-columns:1fr}
+  .pages{overflow:hidden}
+  .page{padding:1.25rem 1.1rem 5rem}
+  .mday-row{grid-template-columns:55px 1fr 1fr}
+}
+@media(max-width:480px){
+  .kpi-v{font-size:1.6rem}
+  .meal-emoji-big{font-size:1.4rem}
+  .recette-grid{grid-template-columns:1fr}
+  .g4{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- LOADER -->
+<div class="page-loader" id="loader"><div class="loader-logo">LITTIA</div><div class="loader-spin"></div></div>
+<div class="saving-dot" id="savingDot">Sauvegarde…</div>
+<div id="toast"></div>
+
+<!-- MODALS -->
+<!-- TASK MODAL -->
+<div class="overlay" id="taskModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title"><span id="taskModalTitle">Ajouter une tâche</span><button class="modal-close" onclick="closeModal('taskModal')">✕</button></div>
+    <div class="mf"><label>Tâche *</label><input type="text" id="taskText" placeholder="Ex : Passer l'aspirateur" maxlength="80"></div>
+    <div class="mf-row">
+      <div class="mf"><label>Heure</label><input type="time" id="taskTime" value="10:00"></div>
+      <div class="mf"><label>Priorité</label><select id="taskPriority"><option value="g">Normale 🟢</option><option value="a">Importante 🟠</option><option value="r">Urgente 🔴</option></select></div>
+    </div>
+    <div class="modal-actions"><button class="mbtn mbtn-cancel" onclick="closeModal('taskModal')">Annuler</button><button class="mbtn mbtn-ok" onclick="saveTask()">Enregistrer</button></div>
+  </div>
+</div>
+
+<!-- COURSE MODAL -->
+<div class="overlay" id="courseModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title"><span>Ajouter un article</span><button class="modal-close" onclick="closeModal('courseModal')">✕</button></div>
+    <div class="mf"><label>Article *</label><input type="text" id="courseName" placeholder="Ex : Tomates 500g" maxlength="60"></div>
+    <div class="mf"><label>Rayon</label><select id="courseRayon"><option value="Légumes">🥦 Légumes & Fruits</option><option value="Viande">🥩 Viande & Poisson</option><option value="Laitiers">🧀 Laitiers</option><option value="Épicerie">🫙 Épicerie</option><option value="Boulangerie">🍞 Boulangerie</option><option value="Surgelés">🧊 Surgelés</option><option value="Hygiène">🧴 Hygiène</option><option value="Entretien">🧹 Entretien</option><option value="Autre">📦 Autre</option></select></div>
+    <div class="modal-actions"><button class="mbtn mbtn-cancel" onclick="closeModal('courseModal')">Annuler</button><button class="mbtn mbtn-ok" onclick="saveCourse()">Ajouter</button></div>
+  </div>
+</div>
+
+<!-- FRIGO MODAL -->
+<div class="overlay" id="frigoModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title"><span>Ajouter au frigo</span><button class="modal-close" onclick="closeModal('frigoModal')">✕</button></div>
+    <div class="mf"><label>Aliment *</label><input type="text" id="frigoName" placeholder="Ex : Yaourts nature" maxlength="60"></div>
+    <div class="mf"><label>Emoji</label><div class="emoji-grid" id="frigoEmojiGrid"></div><input type="hidden" id="frigoEmoji" value="🥛"></div>
+    <div class="mf"><label>Date de péremption</label><input type="date" id="frigoDLC"></div>
+    <div class="modal-actions"><button class="mbtn mbtn-cancel" onclick="closeModal('frigoModal')">Annuler</button><button class="mbtn mbtn-ok" onclick="saveFrigo()">Ajouter</button></div>
+  </div>
+</div>
+
+<!-- MENU MODAL -->
+<div class="overlay" id="menuModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title"><span id="menuModalDay">Modifier le menu</span><button class="modal-close" onclick="closeModal('menuModal')">✕</button></div>
+    <div class="mf"><label>Emoji du plat</label><div class="emoji-grid" id="emojiGrid"></div></div>
+    <div class="mf"><label>Nom du plat</label><input type="text" id="menuDishName" placeholder="Ex : Salade niçoise" maxlength="30"></div>
+    <div class="modal-actions"><button class="mbtn mbtn-cancel" onclick="closeModal('menuModal')">Annuler</button><button class="mbtn mbtn-ok" onclick="saveMenu()">Enregistrer</button></div>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<aside class="sb" id="sidebar">
+  <div class="sb-logo">
+    <a href="/">
+      <svg width="130" height="32" viewBox="0 0 340 72" xmlns="http://www.w3.org/2000/svg">
+        <polyline points="38,6 12,28 64,28" fill="none" stroke="#B8903A" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>
+        <line x1="14" y1="27" x2="14" y2="62" stroke="#B8903A" stroke-width="2.2" stroke-linecap="round"/>
+        <line x1="62" y1="27" x2="62" y2="62" stroke="#B8903A" stroke-width="2.2" stroke-linecap="round"/>
+        <line x1="14" y1="62" x2="62" y2="62" stroke="#B8903A" stroke-width="2.2" stroke-linecap="round"/>
+        <line x1="14" y1="45" x2="62" y2="45" stroke="#B8903A" stroke-width="1.6" stroke-linecap="round"/>
+        <line x1="38" y1="28" x2="38" y2="62" stroke="#B8903A" stroke-width="1.6" stroke-linecap="round"/>
+        <path d="M44 56 Q49 47 56 45 Q54 53 46 58 Z" fill="#2D5A45" opacity="0.9"/>
+        <path d="M45 58 Q51 49 59 48 Q56 56 48 61 Z" fill="#5A8A6E" opacity="0.8"/>
+        <line x1="82" y1="14" x2="82" y2="58" stroke="rgba(26,22,18,0.15)" stroke-width="1"/>
+        <text x="102" y="46" fill="#1A1612" font-family="Georgia,serif" font-size="32" font-weight="400" letter-spacing="8">LITTIA</text>
+        <line x1="102" y1="54" x2="248" y2="54" stroke="#B8903A" stroke-width="1.2" stroke-linecap="round"/>
+      </svg>
+    </a>
+  </div>
+  <div class="sb-user">
+    <div class="sb-av" id="sbAv">?</div>
+    <div>
+      <div class="sb-uname" id="sbName">…</div>
+      <div class="sb-plan-tag" id="sbPlanTag">Plan Famille</div>
+    </div>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-sec">Principal</div>
+    <a class="sb-item on" id="nav-accueil" href="#" onclick="navTo('accueil');return false"><span class="sb-icon">🏠</span>Accueil</a>
+    <a class="sb-item" id="nav-menus" href="#" onclick="navTo('menus');return false"><span class="sb-icon">🍽️</span>Menus</a>
+    <a class="sb-item" id="nav-courses" href="#" onclick="navTo('courses');return false"><span class="sb-icon">🛒</span>Courses</a>
+    <a class="sb-item" id="nav-frigo" href="#" onclick="navTo('frigo');return false"><span class="sb-icon">❄️</span>Mon frigo</a>
+    <a class="sb-item" id="nav-recettes" href="#" onclick="navTo('recettes');return false"><span class="sb-icon">👨‍🍳</span>Recettes</a>
+    <div class="sb-sec">Gestion</div>
+    <a class="sb-item" id="nav-budget" href="#" onclick="navTo('budget');return false"><span class="sb-icon">💰</span>Budget</a>
+    <a class="sb-item" id="nav-taches" href="#" onclick="navTo('taches');return false"><span class="sb-icon">✅</span>Tâches</a>
+    <div class="sb-sec">Compte</div>
+    <a class="sb-item" href="#"><span class="sb-icon">⚙️</span>Paramètres</a>
+  </nav>
+  <div class="sb-bottom">
+    <div class="sb-plan-box"><div class="sb-plan-lbl">Abonnement</div><div class="sb-plan-val" id="sbPlan">Plan Famille ✦</div></div>
+    <button class="sb-logout" onclick="handleLogout()">🚪 Se déconnecter</button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <header class="topbar">
+    <div class="tb-left">
+      <button class="hamburger-dash" id="hbDash" onclick="toggleSidebar()"><span></span><span></span><span></span></button>
+      <div>
+        <div class="tb-page-title" id="tbTitle">Accueil</div>
+        <div class="tb-date" id="tbDate">…</div>
+      </div>
+    </div>
+    <div class="tb-right">
+      <div class="tb-notif">🔔<div class="notif-dot"></div></div>
+    </div>
+  </header>
+
+  <div class="pages">
+
+    <!-- PAGE ACCUEIL -->
+    <div class="page active" id="page-accueil">
+      <div class="page-hdr">
+        <div class="page-eyebrow">Vue d'ensemble</div>
+        <div class="page-title">Bonjour <em id="greetName">…</em> 👋</div>
+        <div class="page-desc" id="aiMsg">Chargement de votre foyer…</div>
+      </div>
+      <div class="g4" id="kpiRow" style="margin-bottom:1.25rem"></div>
+      <div class="g2">
+        <!-- Menus aperçu -->
+        <div class="card">
+          <div class="card-hd">
+            <div><div class="card-t">🍽️ Menus du jour</div></div>
+            <a href="#" onclick="navTo('menus');return false" style="font-size:0.72rem;color:var(--forest);text-decoration:none;font-weight:600">Voir tout →</a>
+          </div>
+          <div class="card-bd" id="accueilMenus"></div>
+        </div>
+        <!-- Tâches aperçu -->
+        <div class="card">
+          <div class="card-hd">
+            <div><div class="card-t">✅ Tâches du jour</div></div>
+            <a href="#" onclick="navTo('taches');return false" style="font-size:0.72rem;color:var(--forest);text-decoration:none;font-weight:600">Voir tout →</a>
+          </div>
+          <div class="card-bd" id="accueilTaches"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE MENUS -->
+    <div class="page" id="page-menus">
+      <div class="page-hdr">
+        <div class="page-eyebrow">Planification</div>
+        <div class="page-title">Menus de <em>la semaine</em></div>
+        <div class="page-desc">Cliquez sur un repas pour le modifier. Utilisez l'IA pour générer la semaine automatiquement.</div>
+      </div>
+      <div class="ai-panel" id="aiMenuPanel">
+        <div class="ai-panel-title">✨ Générer avec l'IA</div>
+        <div class="slider-row">Personnes : <strong id="prefPersonnes">2</strong><input type="range" min="1" max="8" value="2" id="sliderPersonnes" oninput="document.getElementById('prefPersonnes').textContent=this.value"></div>
+        <div style="font-size:0.7rem;color:var(--ink-30);margin-bottom:0.4rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em">Repas à générer</div>
+        <div class="ai-tags-row" id="repasTypeTags">
+          <button class="ai-tag on" data-v="dejeuner">🌤 Déjeuner</button>
+          <button class="ai-tag on" data-v="diner">🌙 Dîner</button>
+        </div>
+        <div style="font-size:0.7rem;color:var(--ink-30);margin-bottom:0.4rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em">Contraintes</div>
+        <div class="ai-tags-row" id="regimeTags">
+          <button class="ai-tag" data-v="sans gluten">Sans gluten</button>
+          <button class="ai-tag" data-v="végétarien">Végétarien</button>
+          <button class="ai-tag" data-v="végétalien">Végétalien</button>
+          <button class="ai-tag" data-v="sans lactose">Sans lactose</button>
+          <button class="ai-tag" data-v="halal">Halal</button>
+          <button class="ai-tag" data-v="rapide (< 30 min)">⚡ Rapide</button>
+          <button class="ai-tag" data-v="économique">💰 Économique</button>
+          <button class="ai-tag" data-v="équilibré">🌿 Équilibré</button>
+        </div>
+        <div style="font-size:0.7rem;color:var(--ink-30);margin-bottom:0.4rem;margin-top:0.5rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em">Saison</div>
+        <div class="ai-tags-row" id="saisonTags">
+          <button class="ai-tag on" data-v="de saison (printemps)">🌸 Printemps</button>
+          <button class="ai-tag" data-v="de saison (été)">☀️ Été</button>
+          <button class="ai-tag" data-v="de saison (automne)">🍂 Automne</button>
+          <button class="ai-tag" data-v="de saison (hiver)">❄️ Hiver</button>
+        </div>
+        <button class="ai-launch-btn" id="aiLaunchMenuBtn" onclick="launchMenuGeneration()">
+          <div class="ai-spin"></div><span class="ai-lbl">✨ Générer les menus</span>
+        </button>
+      </div>
+      <div style="display:flex;justify-content:flex-end;margin-bottom:1rem">
+        <button class="ai-btn" id="aiMenuBtn" onclick="toggleAIPanel('aiMenuPanel','aiMenuBtn')"><span class="ai-btn-icon">✨</span> Générer avec l'IA</button>
+      </div>
+      <div class="card">
+        <div class="card-bd" style="padding:1rem">
+          <div style="display:grid;grid-template-columns:70px 1fr 1fr;gap:0.6rem;margin-bottom:0.6rem">
+            <div></div>
+            <div style="text-align:center;font-size:0.65rem;color:var(--ink-30);font-weight:700;text-transform:uppercase;letter-spacing:0.08em;padding:4px;background:var(--cream);border-radius:7px">🌤 Déjeuner</div>
+            <div style="text-align:center;font-size:0.65rem;color:var(--ink-30);font-weight:700;text-transform:uppercase;letter-spacing:0.08em;padding:4px;background:var(--cream);border-radius:7px">🌙 Dîner</div>
+          </div>
+          <div class="menu-week-grid" id="menuWeek"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE COURSES -->
+    <div class="page" id="page-courses">
+      <div class="page-hdr">
+        <div class="page-eyebrow">Shopping</div>
+        <div class="page-title">Liste de <em>courses</em></div>
+        <div class="page-desc">Cochez les articles au fur et à mesure. Les articles cochés passent en bas automatiquement.</div>
+      </div>
+      <div class="ai-panel" id="aiCoursePanel">
+        <div class="ai-panel-title" style="color:var(--amber)">✨ Générer depuis les menus</div>
+        <div style="font-size:0.78rem;color:var(--ink-60);margin-bottom:0.75rem"><strong id="menusCountForAI">0</strong> repas planifiés détectés.</div>
+        <div class="ai-tags-row" id="courseOptTags">
+          <button class="ai-tag am on" data-v="anti-gaspi">♻️ Anti-gaspi</button>
+          <button class="ai-tag am on" data-v="produits de base inclus">🛒 Produits de base</button>
+          <button class="ai-tag am" data-v="bio de préférence">🌿 Bio</button>
+          <button class="ai-tag am" data-v="marques distributeur">💰 MDD</button>
+        </div>
+        <button class="ai-launch-btn am" id="aiLaunchCourseBtn" onclick="launchCourseGeneration()">
+          <div class="ai-spin"></div><span class="ai-lbl">✨ Générer la liste</span>
+        </button>
+      </div>
+      <div style="display:flex;justify-content:flex-end;margin-bottom:1rem">
+        <button class="ai-btn am" id="aiCourseBtn" onclick="toggleAIPanel('aiCoursePanel','aiCourseBtn',true)"><span class="ai-btn-icon">✨</span> Générer depuis les menus</button>
+      </div>
+      <div class="courses-grid" id="courseList"></div>
+      <button class="add-btn" onclick="openModal('courseModal')">＋ Ajouter un article</button>
+    </div>
+
+    <!-- PAGE FRIGO -->
+    <div class="page" id="page-frigo">
+      <div class="page-hdr">
+        <div class="page-eyebrow">Gestion</div>
+        <div class="page-title">Mon <em>frigo</em></div>
+        <div class="page-desc">Suivez les dates de péremption. Les aliments les plus urgents apparaissent en premier.</div>
+      </div>
+      <div class="frigo-grid" id="frigoList"></div>
+      <button class="add-btn" onclick="initFrigoEmojiGrid();openModal('frigoModal')">＋ Ajouter un aliment</button>
+    </div>
+
+    <!-- PAGE BUDGET -->
+    <div class="page" id="page-budget">
+      <div class="page-hdr">
+        <div class="page-eyebrow">Finances</div>
+        <div class="page-title">Budget <em>maison</em></div>
+        <div class="page-desc">Suivez vos dépenses par catégorie et gardez le contrôle de votre budget mensuel.</div>
+      </div>
+      <div class="budget-hero">
+        <div class="budget-hero-lbl">Dépensé ce mois</div>
+        <div class="budget-hero-val" id="budgetHeroVal">0€</div>
+        <div class="budget-hero-sub" id="budgetHeroSub">sur 500€ d'objectif</div>
+        <div class="budget-progress-track"><div class="budget-progress-fill" id="budgetBar" style="width:0%"></div></div>
+      </div>
+      <div class="budget-obj-row">
+        <span class="budget-obj-lbl">🎯 Objectif mensuel</span>
+        <input class="budget-obj-input" type="number" id="budgetGoal" placeholder="500" min="0" max="9999" onchange="saveBudgetGoal()">
+        <span style="font-size:0.78rem;color:var(--ink-30)">€</span>
+      </div>
+      <div class="budget-cats" id="budgetCats"></div>
+      <button class="budget-save-btn" onclick="saveBudgetData()">💾 Sauvegarder le budget</button>
+    </div>
+
+    <!-- PAGE TACHES -->
+    <div class="page" id="page-taches">
+      <div class="page-hdr">
+        <div class="page-eyebrow">Organisation</div>
+        <div class="page-title">Mes <em>tâches</em></div>
+        <div class="page-desc">Gérez vos tâches du quotidien. Double-cliquez pour modifier.</div>
+      </div>
+      <div class="tasks-grid" id="taskList"></div>
+      <button class="add-btn" onclick="openModal('taskModal')">＋ Ajouter une tâche</button>
+    </div>
+
+    <!-- PAGE RECETTES -->
+    <div class="page" id="page-recettes">
+      <div class="page-hdr">
+        <div class="page-eyebrow">Inspiration culinaire</div>
+        <div class="page-title">Recettes <em>du frigo</em></div>
+        <div class="page-desc">L'IA génère des recettes faciles à partir des produits disponibles dans votre frigo.</div>
+      </div>
+      <div class="ai-panel" id="aiRecettePanel">
+        <div class="ai-panel-title">✨ Générer des recettes</div>
+        <div style="font-size:0.78rem;color:var(--ink-60);margin-bottom:0.75rem"><strong id="frigoCountForAI">0</strong> aliments dans votre frigo détectés.</div>
+        <div class="ai-tags-row" id="recetteTypeTags">
+          <button class="ai-tag on" data-v="rapide (moins de 30 min)">⚡ Rapide</button>
+          <button class="ai-tag" data-v="économique">💰 Économique</button>
+          <button class="ai-tag" data-v="végétarienne">🥦 Végétarienne</button>
+          <button class="ai-tag" data-v="familiale">👨‍👩‍👧 Familiale</button>
+          <button class="ai-tag" data-v="anti-gaspi">♻️ Anti-gaspi</button>
+        </div>
+        <div style="font-size:0.7rem;color:var(--ink-30);margin-bottom:0.35rem;margin-top:0.6rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em">Nombre</div>
+        <div class="ai-tags-row" id="recetteCountTags">
+          <button class="ai-tag" data-v="2">2 recettes</button>
+          <button class="ai-tag on" data-v="3">3 recettes</button>
+          <button class="ai-tag" data-v="5">5 recettes</button>
+        </div>
+        <button class="ai-launch-btn" id="aiLaunchRecetteBtn" onclick="launchRecetteGeneration()">
+          <div class="ai-spin"></div><span class="ai-lbl">✨ Générer les recettes</span>
+        </button>
+      </div>
+      <div style="display:flex;justify-content:flex-end;margin-bottom:1rem">
+        <button class="ai-btn" id="aiRecetteBtn" onclick="toggleAIPanel('aiRecettePanel','aiRecetteBtn',true,'frigo')"><span class="ai-btn-icon">✨</span> Générer des recettes</button>
+      </div>
+      <div class="recette-grid" id="recetteList">
+        <div class="empty" style="grid-column:1/-1">
+          <div class="empty-icon">👨‍🍳</div>
+          <div class="empty-text"><strong>Aucune recette pour le moment</strong>Cliquez sur ✨ Générer pour obtenir des idées basées sur votre frigo.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<script>
+// ── IA via proxy sécurisé (Cloudflare Worker) ─────────────────────────────
+const PROXY='https://littia-proxy.pierre-litt.workers.dev'
+const FRIGO_EMOJIS=['🥛','🧀','🥚','🥩','🐟','🍗','🥕','🥦','🍅','🥬','🧄','🧅','🍋','🍎','🍇','🍓','🫐','🥑','🌽','🥒','🫑','🥝','🍌','🍊','🍞','🧈','🥫','🫙','🥗','🍲','🧃','🥤','🫒','🫛','🥜','🌶️','🫚','🧆','🥣','🍦','🎂','🍰','🥐','🧁','🍫']
+const EMOJIS=['🥗','🍝','🍜','🍛','🍲','🥘','🍳','🥩','🐟','🍗','🥙','🌮','🫕','🥪','🍱','🍚','🥦','🫔','🍕','🥐']
+const DAYS=['Lun','Mar','Mer','Jeu','Ven','Sam','Dim']
+const DAYS_LONG=['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche']
+const today=new Date()
+const todayIdx=today.getDay()===0?6:today.getDay()-1
+
+const {createClient}=supabase
+const sb=createClient(
+  'https://rmbtpduhucsgwljulcct.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJtYnRwZHVodWNzZ3dsanVsY2N0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5NzIwNDYsImV4cCI6MjA5NDU0ODA0Nn0.7ALkxQVrQD_4QS8mdCtnu4QzF8LBUihqX_zwMhnzoi8'
+)
+
+let user=null
+let editingTask=null, editingMenuDay=null, editingMenuType=null
+let DB={
+  tasks:[],courses:[],frigo:[],
+  menus:Array(7).fill(null).map((_,i)=>({day:i,dejeuner:{ic:'🍽️',name:''},diner:{ic:'🍽️',name:''}})),
+  budget:{goal:500,cats:{Alimentaire:0,Hygiène:0,Entretien:0}},
+}
+
+// ── AUTH & INIT ─────────────────────────────────────────────────────────────
+;(async()=>{
+  const {data:{session}}=await sb.auth.getSession()
+  if(!session){window.location.href='/login.html';return}
+  user=session.user
+  await loadData()
+  initUI()
+  setTimeout(()=>document.getElementById('loader').classList.add('hide'),600)
+})()
+
+async function loadData(){
+  const meta=user.user_metadata||{}
+  if(meta.littia_data){
+    try{
+      const s=JSON.parse(meta.littia_data)
+      if(s.tasks) DB.tasks=s.tasks
+      if(s.courses) DB.courses=s.courses
+      if(s.frigo) DB.frigo=s.frigo
+      if(s.menus) DB.menus=s.menus
+      if(s.budget) DB.budget=s.budget
+    }catch(e){console.warn('data parse error',e)}
+  }
+}
+
+let _saveTimer=null
+function scheduleSave(){clearTimeout(_saveTimer);_saveTimer=setTimeout(persistData,1200)}
+async function persistData(){
+  showSaving()
+  try{await sb.auth.updateUser({data:{littia_data:JSON.stringify(DB)}})}catch(e){console.warn('save error',e)}
+  hideSaving()
+}
+function showSaving(){document.getElementById('savingDot').classList.add('show')}
+function hideSaving(){setTimeout(()=>document.getElementById('savingDot').classList.remove('show'),1200)}
+
+function initUI(){
+  const months=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre']
+  const daysLong=['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi']
+  document.getElementById('tbDate').textContent=`${daysLong[today.getDay()]} ${today.getDate()} ${months[today.getMonth()]} ${today.getFullYear()}`
+  const name=user.user_metadata?.full_name||user.email.split('@')[0]
+  const fname=name.split(' ')[0]
+  const init=name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2)
+  document.getElementById('sbAv').textContent=init
+  document.getElementById('sbName').textContent=name
+  document.getElementById('greetName').textContent=fname
+  setupTagListeners()
+  renderAll()
+  updateAI()
+}
+
+function renderAll(){
+  renderMenus();renderTasks();renderCourses();renderFrigo();renderBudget();updateKPIs();renderAccueil()
+}
+
+// ── NAVIGATION ──────────────────────────────────────────────────────────────
+const PAGE_TITLES={accueil:'Accueil',menus:'Menus',courses:'Courses',frigo:'Mon frigo',budget:'Budget',taches:'Tâches',recettes:'Recettes'}
+function navTo(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'))
+  document.querySelectorAll('.sb-item').forEach(i=>i.classList.remove('on'))
+  const pageEl=document.getElementById('page-'+page)
+  if(pageEl) pageEl.classList.add('active')
+  const navEl=document.getElementById('nav-'+page)
+  if(navEl) navEl.classList.add('on')
+  document.getElementById('tbTitle').textContent=PAGE_TITLES[page]||page
+  document.getElementById('sidebar').classList.remove('open')
+  // Refresh page-specific content
+  if(page==='recettes') document.getElementById('frigoCountForAI').textContent=DB.frigo.length
+  if(page==='courses'){
+    const filled=DB.menus.reduce((a,m)=>{if(m.dejeuner?.name)a++;if(m.diner?.name)a++;return a},0)
+    document.getElementById('menusCountForAI').textContent=filled
+  }
+}
+
+// ── ACCUEIL ─────────────────────────────────────────────────────────────────
+function renderAccueil(){
+  // Today's menus
+  const m=DB.menus[todayIdx]||{}
+  const dej=m.dejeuner||{ic:'🍽️',name:''}
+  const din=m.diner||{ic:'🍽️',name:''}
+  document.getElementById('accueilMenus').innerHTML=`
+    <div style="display:flex;flex-direction:column;gap:0.6rem">
+      <div style="display:flex;align-items:center;gap:0.75rem;padding:0.8rem;background:var(--cream);border-radius:10px;cursor:pointer" onclick="navTo('menus')">
+        <span style="font-size:1.6rem;filter:drop-shadow(0 2px 6px rgba(0,0,0,0.1))">${dej.name?dej.ic:'➕'}</span>
+        <div><div style="font-size:0.65rem;color:var(--ink-30);text-transform:uppercase;font-weight:600;letter-spacing:0.08em">🌤 Déjeuner</div><div style="font-size:0.84rem;color:var(--ink);margin-top:1px">${dej.name||'<span style="color:var(--ink-30);font-style:italic">Non planifié</span>'}</div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:0.75rem;padding:0.8rem;background:var(--cream);border-radius:10px;cursor:pointer" onclick="navTo('menus')">
+        <span style="font-size:1.6rem;filter:drop-shadow(0 2px 6px rgba(0,0,0,0.1))">${din.name?din.ic:'➕'}</span>
+        <div><div style="font-size:0.65rem;color:var(--ink-30);text-transform:uppercase;font-weight:600;letter-spacing:0.08em">🌙 Dîner</div><div style="font-size:0.84rem;color:var(--ink);margin-top:1px">${din.name||'<span style="color:var(--ink-30);font-style:italic">Non planifié</span>'}</div></div>
+      </div>
+    </div>`
+  // Today's tasks
+  const activeTasks=DB.tasks.filter(t=>!t.done).slice(0,4)
+  if(activeTasks.length===0){
+    document.getElementById('accueilTaches').innerHTML=`<div class="empty"><div class="empty-icon">✅</div><div class="empty-text">Aucune tâche active</div></div>`
+  } else {
+    const colors={g:'#2D5A45',a:'#C4824A',r:'#C4624A'}
+    document.getElementById('accueilTaches').innerHTML=activeTasks.map(t=>`
+      <div style="display:flex;align-items:center;gap:0.7rem;padding:0.7rem 0.8rem;background:var(--cream);border-radius:10px;margin-bottom:0.5rem;cursor:pointer" onclick="navTo('taches')">
+        <div style="width:8px;height:8px;border-radius:50%;background:${colors[t.priority]||colors.g};flex-shrink:0"></div>
+        <span style="font-size:0.83rem;color:var(--ink);flex:1">${t.text}</span>
+        <span style="font-size:0.68rem;color:var(--ink-30);font-family:'DM Mono',monospace">${t.time||''}</span>
+      </div>`).join('')
+  }
+}
+
+// ── AI MESSAGE ──────────────────────────────────────────────────────────────
+function updateAI(){
+  const active=DB.tasks.filter(t=>!t.done).length
+  const rem=DB.courses.filter(c=>!c.done).length
+  const urgent=DB.frigo.filter(f=>{if(!f.dlc)return false;return(new Date(f.dlc)-new Date())/(86400000)<=1}).length
+  const filled=DB.menus.reduce((a,m)=>{if(m.dejeuner?.name)a++;if(m.diner?.name)a++;return a},0)
+  let msg=''
+  if(filled===0&&DB.tasks.length===0){
+    msg='👋 Bienvenue ! Commencez par planifier vos menus de la semaine ou ajoutez vos premières tâches.'
+  } else {
+    const parts=[]
+    if(active>0) parts.push(`<strong>${active} tâche${active>1?'s':''}</strong> à faire aujourd'hui`)
+    if(rem>0) parts.push(`<strong>${rem} article${rem>1?'s':''}</strong> à acheter`)
+    if(urgent>0) parts.push(`<strong>${urgent} aliment${urgent>1?'s':''}</strong> à consommer rapidement ⚠️`)
+    if(filled<14) parts.push(`${14-filled} repas à planifier`)
+    msg=parts.length>0?'💡 '+parts.join(' · '):'✅ Votre foyer est bien organisé cette semaine. Bravo !'
+  }
+  document.getElementById('aiMsg').innerHTML=msg
+}
+
+// ── KPIs ─────────────────────────────────────────────────────────────────────
+function updateKPIs(){
+  const active=DB.tasks.filter(t=>!t.done).length
+  const done=DB.tasks.filter(t=>t.done).length
+  const rem=DB.courses.filter(c=>!c.done).length
+  const filled=DB.menus.reduce((a,m)=>{if(m.dejeuner?.name)a++;if(m.diner?.name)a++;return a},0)
+  const urgent=DB.frigo.filter(f=>{if(!f.dlc)return false;return(new Date(f.dlc)-new Date())/86400000<=2}).length
+  document.getElementById('kpiRow').innerHTML=[
+    {l:'Tâches actives',v:active,s:`${done} faites`,c:'kpi-a',ic:'✅'},
+    {l:'Repas planifiés',v:`${filled}/14`,s:`${14-filled} restants`,c:'kpi-g',ic:'🍽️'},
+    {l:'Articles courses',v:rem,s:`${DB.courses.filter(c=>c.done).length} cochés`,c:'kpi-s',ic:'🛒'},
+    {l:'Alertes frigo',v:urgent,s:`${DB.frigo.length} aliments`,c:urgent>0?'kpi-r':'kpi-g',ic:'❄️'},
+  ].map(k=>`<div class="kpi ${k.c}">
+    <div class="kpi-icon">${k.ic}</div>
+    <div class="kpi-v">${k.v}</div>
+    <div class="kpi-lbl">${k.l}</div>
+    <div class="kpi-sub">${k.s}</div>
+  </div>`).join('')
+}
+
+// ── MENUS ────────────────────────────────────────────────────────────────────
+function renderMenus(){
+  document.getElementById('menuWeek').innerHTML=DB.menus.map((m,i)=>{
+    const dej=m.dejeuner||{ic:'🍽️',name:''}
+    const din=m.diner||{ic:'🍽️',name:''}
+    return`<div class="mday-row">
+      <div class="mday-label-cell">
+        <div class="mday-name ${i===todayIdx?'today':''}">${DAYS[i]}</div>
+        ${i===todayIdx?'<div class="mday-date" style="color:var(--forest);font-weight:600;font-size:0.6rem">Aujourd\'hui</div>':''}
+      </div>
+      <div class="meal-card ${dej.name?'filled':''}" onclick="openMenuModal(${i},'dejeuner')">
+        <div class="meal-emoji-big">${dej.name?dej.ic:'➕'}</div>
+        <div class="meal-info">
+          <div class="meal-type-badge">Déjeuner</div>
+          ${dej.name?`<div class="meal-name">${dej.name}</div>`:'<div class="meal-empty-txt">Ajouter</div>'}
+        </div>
+      </div>
+      <div class="meal-card ${din.name?'filled':''}" onclick="openMenuModal(${i},'diner')">
+        <div class="meal-emoji-big">${din.name?din.ic:'➕'}</div>
+        <div class="meal-info">
+          <div class="meal-type-badge">Dîner</div>
+          ${din.name?`<div class="meal-name">${din.name}</div>`:'<div class="meal-empty-txt">Ajouter</div>'}
+        </div>
+      </div>
+    </div>`}).join('')
+}
+
+function openMenuModal(dayIdx,type){
+  editingMenuDay=dayIdx;editingMenuType=type
+  const typeLabel=type==='dejeuner'?'🌤 Déjeuner':'🌙 Dîner'
+  document.getElementById('menuModalDay').textContent=`${typeLabel} — ${DAYS_LONG[dayIdx]}`
+  const cur=DB.menus[dayIdx]?.[type]||{ic:'🍽️',name:''}
+  document.getElementById('menuDishName').value=cur.name||''
+  document.getElementById('emojiGrid').innerHTML=EMOJIS.map(e=>`<div class="emoji-opt ${e===cur.ic?'sel':''}" onclick="selectEmoji(this,'${e}')">${e}</div>`).join('')
+  openModal('menuModal')
+  setTimeout(()=>document.getElementById('menuDishName').focus(),100)
+}
+function selectEmoji(el,e){document.querySelectorAll('#emojiGrid .emoji-opt').forEach(x=>x.classList.remove('sel'));el.classList.add('sel')}
+function saveMenu(){
+  const name=document.getElementById('menuDishName').value.trim()
+  const sel=document.querySelector('#emojiGrid .emoji-opt.sel')
+  const ic=sel?sel.textContent:'🍽️'
+  if(!DB.menus[editingMenuDay]) DB.menus[editingMenuDay]={day:editingMenuDay,dejeuner:{ic:'🍽️',name:''},diner:{ic:'🍽️',name:''}}
+  DB.menus[editingMenuDay][editingMenuType]={ic,name}
+  closeModal('menuModal');renderMenus();renderAccueil();updateKPIs();updateAI();scheduleSave()
+}
+
+// ── TASKS ─────────────────────────────────────────────────────────────────────
+function renderTasks(){
+  const colors={g:'#2D5A45',a:'#C4824A',r:'#C4624A'}
+  if(DB.tasks.length===0){
+    document.getElementById('taskList').innerHTML=`<div class="empty"><div class="empty-icon">✅</div><div class="empty-text"><strong>Aucune tâche</strong>Cliquez sur "Ajouter" pour créer votre première tâche.</div></div>`
+    return
+  }
+  const active=DB.tasks.filter(t=>!t.done)
+  const done=DB.tasks.filter(t=>t.done)
+  let html=''
+  if(active.length>0){
+    html+=`<div class="task-section-hdr">À faire (${active.length})</div>`
+    html+=active.map(t=>`<div class="task-item">
+      <div class="task-check" onclick="toggleTask('${t.id}')"></div>
+      <div class="task-prio" style="background:${colors[t.priority]||colors.g}"></div>
+      <span class="task-text" ondblclick="openEditTask('${t.id}')">${t.text}</span>
+      <span class="task-time">${t.time||''}</span>
+      <button class="task-del" onclick="deleteTask('${t.id}')">✕</button>
+    </div>`).join('')
+  }
+  if(done.length>0){
+    html+=`<div class="task-section-hdr" style="margin-top:0.75rem">Terminées (${done.length})</div>`
+    html+=done.map(t=>`<div class="task-item" style="opacity:0.55">
+      <div class="task-check done" onclick="toggleTask('${t.id}')">✓</div>
+      <div class="task-prio" style="background:${colors[t.priority]||colors.g}"></div>
+      <span class="task-text task-done-text">${t.text}</span>
+      <span class="task-time">${t.time||''}</span>
+      <button class="task-del" onclick="deleteTask('${t.id}')">✕</button>
+    </div>`).join('')
+  }
+  document.getElementById('taskList').innerHTML=html
+  document.getElementById('accueilTaches') && renderAccueil()
+}
+
+function openModal(id){document.getElementById(id).classList.add('open')}
+function closeModal(id){
+  document.getElementById(id).classList.remove('open')
+  editingTask=null
+  document.querySelectorAll(`#${id} input[type=text],#${id} input[type=email],#${id} textarea`).forEach(f=>f.value='')
+}
+
+function openEditTask(id){
+  const t=DB.tasks.find(x=>x.id===id);if(!t)return
+  editingTask=id
+  document.getElementById('taskModalTitle').textContent='Modifier la tâche'
+  document.getElementById('taskText').value=t.text
+  document.getElementById('taskTime').value=t.time||''
+  document.getElementById('taskPriority').value=t.priority||'g'
+  openModal('taskModal')
+}
+function saveTask(){
+  const text=document.getElementById('taskText').value.trim();if(!text)return
+  const time=document.getElementById('taskTime').value
+  const priority=document.getElementById('taskPriority').value
+  if(editingTask){
+    const t=DB.tasks.find(x=>x.id===editingTask)
+    if(t){t.text=text;t.time=time;t.priority=priority}
+  } else {
+    DB.tasks.push({id:Date.now().toString(),text,time,priority,done:false})
+  }
+  document.getElementById('taskModalTitle').textContent='Ajouter une tâche'
+  closeModal('taskModal');renderTasks();updateKPIs();updateAI();scheduleSave()
+}
+function toggleTask(id){const t=DB.tasks.find(x=>x.id===id);if(t){t.done=!t.done;renderTasks();updateKPIs();updateAI();scheduleSave()}}
+function deleteTask(id){DB.tasks=DB.tasks.filter(x=>x.id!==id);renderTasks();updateKPIs();updateAI();scheduleSave()}
+
+// ── COURSES ──────────────────────────────────────────────────────────────────
+function renderCourses(){
+  const rem=DB.courses.filter(c=>!c.done).length
+  if(DB.courses.length===0){
+    document.getElementById('courseList').innerHTML=`<div class="empty"><div class="empty-icon">🛒</div><div class="empty-text"><strong>Liste vide</strong>Ajoutez des articles ou générez la liste depuis vos menus.</div></div>`
+    return
+  }
+  const sorted=[...DB.courses.filter(c=>!c.done),...DB.courses.filter(c=>c.done)]
+  document.getElementById('courseList').innerHTML=sorted.map(c=>`
+    <div class="course-item">
+      <div class="course-check ${c.done?'done':''}" onclick="toggleCourse('${c.id}')">${c.done?'✓':''}</div>
+      <span class="${c.done?'course-done-name':'course-name'}">${c.name}</span>
+      <span class="course-rayon">${c.rayon||''}</span>
+      <button class="course-del" onclick="deleteCourse('${c.id}')">✕</button>
+    </div>`).join('')
+}
+function saveCourse(){
+  const name=document.getElementById('courseName').value.trim();if(!name)return
+  DB.courses.push({id:Date.now().toString(),name,rayon:document.getElementById('courseRayon').value,done:false})
+  closeModal('courseModal');renderCourses();updateKPIs();scheduleSave()
+}
+function toggleCourse(id){const c=DB.courses.find(x=>x.id===id);if(c){c.done=!c.done;renderCourses();updateKPIs();scheduleSave()}}
+function deleteCourse(id){DB.courses=DB.courses.filter(x=>x.id!==id);renderCourses();updateKPIs();scheduleSave()}
+
+// ── FRIGO ─────────────────────────────────────────────────────────────────────
+function getDLCStatus(dlc){
+  if(!dlc)return{label:'',cls:'dlc-ok',status:'',scls:''}
+  const d=(new Date(dlc)-new Date())/86400000
+  if(d<0)return{label:'Périmé',cls:'dlc-urgent',status:'Périmé',scls:'status-urgent'}
+  if(d<=1)return{label:'Demain',cls:'dlc-urgent',status:'Urgent',scls:'status-urgent'}
+  if(d<=3)return{label:`J+${Math.ceil(d)}`,cls:'dlc-warn',status:'Bientôt',scls:'status-warn'}
+  return{label:`J+${Math.ceil(d)}`,cls:'dlc-ok',status:'OK',scls:'status-ok'}
+}
+function renderFrigo(){
+  if(DB.frigo.length===0){
+    document.getElementById('frigoList').innerHTML=`<div class="empty"><div class="empty-icon">❄️</div><div class="empty-text"><strong>Frigo vide</strong>Ajoutez vos aliments pour suivre les dates de péremption.</div></div>`
+    return
+  }
+  const sorted=[...DB.frigo].sort((a,b)=>{
+    const da=a.dlc?new Date(a.dlc):new Date('9999');const db=b.dlc?new Date(b.dlc):new Date('9999');return da-db
+  })
+  document.getElementById('frigoList').innerHTML=sorted.map(f=>{
+    const s=getDLCStatus(f.dlc)
+    return`<div class="frigo-item">
+      <span class="frigo-ic-big">${f.ic||'🥗'}</span>
+      <div class="frigo-info">
+        <div class="frigo-name">${f.name}</div>
+        <div class="frigo-dlc-row">
+          <span class="frigo-dlc ${s.cls}">${s.label}</span>
+          ${s.status?`<span class="frigo-status ${s.scls}">${s.status}</span>`:''}
+        </div>
+      </div>
+      <button class="frigo-del" onclick="deleteFrigo('${f.id}')">✕</button>
+    </div>`}).join('')
+}
+function initFrigoEmojiGrid(sel){
+  sel=sel||'🥛'
+  document.getElementById('frigoEmoji').value=sel
+  document.getElementById('frigoEmojiGrid').innerHTML=FRIGO_EMOJIS.map(e=>`<div class="emoji-opt ${e===sel?'sel':''}" onclick="selectFrigoEmoji(this,'${e}')">${e}</div>`).join('')
+}
+function selectFrigoEmoji(el,e){document.querySelectorAll('#frigoEmojiGrid .emoji-opt').forEach(x=>x.classList.remove('sel'));el.classList.add('sel');document.getElementById('frigoEmoji').value=e}
+function saveFrigo(){
+  const name=document.getElementById('frigoName').value.trim();if(!name)return
+  DB.frigo.push({id:Date.now().toString(),name,ic:document.getElementById('frigoEmoji').value||'🥛',dlc:document.getElementById('frigoDLC').value})
+  closeModal('frigoModal');renderFrigo();updateKPIs();updateAI();scheduleSave()
+}
+function deleteFrigo(id){DB.frigo=DB.frigo.filter(x=>x.id!==id);renderFrigo();updateKPIs();scheduleSave()}
+
+// ── BUDGET ────────────────────────────────────────────────────────────────────
+function renderBudget(){
+  const goal=Number(DB.budget.goal)||500
+  const total=Object.values(DB.budget.cats).reduce((a,b)=>a+Number(b),0)
+  const pct=Math.min(100,Math.round(total/goal*100))
+  document.getElementById('budgetGoal').value=goal
+  document.getElementById('budgetHeroVal').textContent=total+'€'
+  document.getElementById('budgetHeroSub').textContent=`sur ${goal}€ d'objectif — ${pct}% utilisé`
+  const bar=document.getElementById('budgetBar')
+  bar.style.width=pct+'%'
+  bar.style.background=pct>90?'rgba(255,100,80,0.9)':pct>75?'rgba(255,200,100,0.9)':'rgba(255,255,255,0.9)'
+  const colors={Alimentaire:'var(--forest)',Hygiène:'var(--amber)',Entretien:'var(--sky)'}
+  const icons={Alimentaire:'🥦',Hygiène:'🧴',Entretien:'🧹'}
+  document.getElementById('budgetCats').innerHTML=Object.entries(DB.budget.cats).map(([cat,val])=>{
+    const p=goal>0?Math.min(100,Math.round(Number(val)/goal*100)):0
+    return`<div class="budget-cat">
+      <div class="budget-cat-hdr">
+        <span class="budget-cat-name">${icons[cat]||'💰'} ${cat}</span>
+        <div style="display:flex;align-items:center;gap:0.5rem">
+          <input class="budget-cat-input" type="number" value="${val}" min="0" max="9999" onchange="updateBudgetCat('${cat}',this.value)">
+          <span style="font-size:0.72rem;color:var(--ink-30)">€</span>
+        </div>
+      </div>
+      <div class="budget-cat-bar"><div class="budget-cat-fill" style="width:${p}%;background:${colors[cat]||'var(--forest)'}"></div></div>
+    </div>`}).join('')
+}
+function updateBudgetCat(cat,val){DB.budget.cats[cat]=Math.max(0,Number(val)||0);renderBudget();scheduleSave()}
+function saveBudgetGoal(){DB.budget.goal=Math.max(0,Number(document.getElementById('budgetGoal').value)||500);renderBudget();scheduleSave()}
+function saveBudgetData(){
+  renderBudget();scheduleSave()
+  const btn=document.querySelector('.budget-save-btn')
+  btn.textContent='✅ Budget sauvegardé !';btn.style.background='var(--sage)'
+  setTimeout(()=>{btn.textContent='💾 Sauvegarder le budget';btn.style.background=''},2200)
+}
+
+// ── AI PANEL TOGGLE ──────────────────────────────────────────────────────────
+function toggleAIPanel(panelId,btnId,isAmber,countSrc){
+  const panel=document.getElementById(panelId)
+  const btn=document.getElementById(btnId)
+  const open=panel.classList.contains('open')
+  panel.classList.toggle('open')
+  if(countSrc==='frigo') document.getElementById('frigoCountForAI').textContent=DB.frigo.length
+  btn.textContent=open?'✨ '+(isAmber?'Générer depuis les menus':'Générer avec l\'IA'):'✕ Fermer'
+}
+
+// ── AI TAG SETUP ─────────────────────────────────────────────────────────────
+function setupTagListeners(){
+  document.querySelectorAll('#repasTypeTags .ai-tag,#regimeTags .ai-tag,#courseOptTags .ai-tag,#recetteTypeTags .ai-tag').forEach(t=>{
+    t.addEventListener('click',()=>t.classList.toggle('on'))
+  })
+  document.querySelectorAll('#saisonTags .ai-tag,#recetteCountTags .ai-tag').forEach(t=>{
+    t.addEventListener('click',()=>{t.closest('.ai-tags-row').querySelectorAll('.ai-tag').forEach(x=>x.classList.remove('on'));t.classList.add('on')})
+  })
+}
+function getSelectedTags(id){return[...document.querySelectorAll(`#${id} .ai-tag.on`)].map(t=>t.dataset.v)}
+
+// ── AI CALL HELPER ────────────────────────────────────────────────────────────
+async function callAI(prompt,maxTokens){
+  const res=await fetch(PROXY,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({model:'llama-3.3-70b-versatile',max_tokens:maxTokens,temperature:0.7,messages:[{role:'user',content:prompt}]})
+  })
+  if(!res.ok){const e=await res.text();throw new Error('Erreur serveur ('+res.status+'): '+e)}
+  const data=await res.json()
+  if(data.error) throw new Error(data.error.message)
+  const text=data.choices?.[0]?.message?.content||''
+  const clean=text.replace(/```json|```/g,'').trim()
+  return JSON.parse(clean)
+}
+
+// ── AI MENUS ──────────────────────────────────────────────────────────────────
+async function launchMenuGeneration(){
+  const btn=document.getElementById('aiLaunchMenuBtn')
+  btn.classList.add('loading');btn.disabled=true
+  const personnes=document.getElementById('sliderPersonnes').value
+  const regimes=getSelectedTags('regimeTags')
+  const saison=getSelectedTags('saisonTags')
+  const repas=getSelectedTags('repasTypeTags')
+  const constraints=[...regimes,...saison].join(', ')||'aucune'
+  const repasLabel=repas.includes('dejeuner')&&repas.includes('diner')?'déjeuner et dîner':repas.includes('dejeuner')?'déjeuner':'dîner'
+  const prompt=`Tu es un chef cuisinier français. Génère les menus (${repasLabel}) pour les 7 jours de la semaine pour ${personnes} personne(s). Contraintes : ${constraints}.
+Réponds UNIQUEMENT en JSON valide sans markdown :
+{"menus":[{"day":0,"dejeuner":{"ic":"emoji","name":"plat"},"diner":{"ic":"emoji","name":"plat"}},{"day":1,"dejeuner":{"ic":"emoji","name":"plat"},"diner":{"ic":"emoji","name":"plat"}},{"day":2,"dejeuner":{"ic":"emoji","name":"plat"},"diner":{"ic":"emoji","name":"plat"}},{"day":3,"dejeuner":{"ic":"emoji","name":"plat"},"diner":{"ic":"emoji","name":"plat"}},{"day":4,"dejeuner":{"ic":"emoji","name":"plat"},"diner":{"ic":"emoji","name":"plat"}},{"day":5,"dejeuner":{"ic":"emoji","name":"plat"},"diner":{"ic":"emoji","name":"plat"}},{"day":6,"dejeuner":{"ic":"emoji","name":"plat"},"diner":{"ic":"emoji","name":"plat"}}]}
+Emojis variés : 🥗🍝🍜🍛🍲🥘🍳🥩🐟🍗🥙🌮🫕🥪🍱. Plats simples français réalistes.`
+  try{
+    const parsed=await callAI(prompt,700)
+    if(parsed.menus?.length===7){
+      DB.menus=parsed.menus.map((m,i)=>({day:i,dejeuner:m.dejeuner||{ic:'🍽️',name:''},diner:m.diner||{ic:'🍽️',name:''}}))
+      renderMenus();renderAccueil();updateKPIs();updateAI();scheduleSave()
+      document.getElementById('aiMenuPanel').classList.remove('open')
+      document.getElementById('aiMenuBtn').textContent='✨ Générer avec l\'IA'
+      showToast('✅ 7 menus générés !')
+    } else showToast('⚠️ Réponse inattendue. Réessayez.')
+  }catch(e){showToast('⚠️ '+e.message)}
+  finally{btn.classList.remove('loading');btn.disabled=false}
+}
+
+// ── AI COURSES ────────────────────────────────────────────────────────────────
+async function launchCourseGeneration(){
+  const btn=document.getElementById('aiLaunchCourseBtn')
+  btn.classList.add('loading');btn.disabled=true
+  const menuList=DB.menus.filter(m=>m.dejeuner?.name||m.diner?.name).map(m=>{
+    const parts=[]
+    if(m.dejeuner?.name) parts.push('déj: '+m.dejeuner.name)
+    if(m.diner?.name) parts.push('dîner: '+m.diner.name)
+    return DAYS_LONG[m.day]+' ('+parts.join(', ')+')'
+  }).join(' | ')
+  const opts=getSelectedTags('courseOptTags').join(', ')||'standard'
+  const prompt=`Liste de courses complète pour ces menus : ${menuList}. Options : ${opts}.
+Réponds UNIQUEMENT en JSON : {"courses":[{"name":"Tomates 500g","rayon":"Légumes"},...]}.
+Rayons : "Légumes","Viande","Laitiers","Épicerie","Boulangerie","Surgelés","Hygiène","Entretien","Autre". Max 25 articles.`
+  try{
+    const parsed=await callAI(prompt,1000)
+    if(parsed.courses?.length>0){
+      const existing=DB.courses.filter(c=>c.done)
+      DB.courses=[...existing,...parsed.courses.map(c=>({id:Date.now().toString()+Math.random(),name:c.name,rayon:c.rayon||'Autre',done:false}))]
+      renderCourses();updateKPIs();scheduleSave()
+      document.getElementById('aiCoursePanel').classList.remove('open')
+      document.getElementById('aiCourseBtn').textContent='✨ Générer depuis les menus'
+      showToast('✅ '+parsed.courses.length+' articles générés !')
+    } else showToast('⚠️ Réponse inattendue. Réessayez.')
+  }catch(e){showToast('⚠️ '+e.message)}
+  finally{btn.classList.remove('loading');btn.disabled=false}
+}
+
+// ── AI RECETTES ───────────────────────────────────────────────────────────────
+async function launchRecetteGeneration(){
+  const btn=document.getElementById('aiLaunchRecetteBtn')
+  btn.classList.add('loading');btn.disabled=true
+  const ingredients=DB.frigo.map(f=>f.name).join(', ')||'ingrédients du quotidien'
+  const types=getSelectedTags('recetteTypeTags').join(', ')||'simple'
+  const nb=getSelectedTags('recetteCountTags')[0]||'3'
+  const prompt=`${nb} recettes faciles avec ces ingrédients : ${ingredients}. Type : ${types}.
+Réponds UNIQUEMENT en JSON : {"recettes":[{"titre":"nom","temps":"20 min","difficulte":"Facile","ic":"emoji","ingredients":["200g de ..."],"etapes":["Étape 1..."],"conseil":"astuce"}]}.`
+  try{
+    const parsed=await callAI(prompt,2000)
+    if(parsed.recettes?.length>0){
+      renderRecettes(parsed.recettes)
+      document.getElementById('aiRecettePanel').classList.remove('open')
+      document.getElementById('aiRecetteBtn').textContent='✨ Générer des recettes'
+      showToast('✅ '+parsed.recettes.length+' recettes générées !')
+    } else showToast('⚠️ Réponse inattendue. Réessayez.')
+  }catch(e){showToast('⚠️ '+e.message)}
+  finally{btn.classList.remove('loading');btn.disabled=false}
+}
+
+function renderRecettes(recettes){
+  const bgs=['linear-gradient(135deg,#E8F0E8,#D4E8D4)','linear-gradient(135deg,#F0E8D8,#E8D8C0)','linear-gradient(135deg,#E8E8F0,#D8D8E8)','linear-gradient(135deg,#F0EBE0,#E8DDD0)','linear-gradient(135deg,#E0EBE8,#D0E0DC)']
+  document.getElementById('recetteList').innerHTML=recettes.map((r,i)=>`
+    <div class="recette-card">
+      <div class="recette-img" style="background:${bgs[i%bgs.length]}">
+        <div style="font-size:4rem;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.12))">${r.ic||'🍽️'}</div>
+      </div>
+      <div class="recette-body">
+        <div class="recette-title">${r.titre}</div>
+        <div class="recette-meta">
+          <span class="recette-tag">⏱ ${r.temps||'?'}</span>
+          <span class="recette-tag">📊 ${r.difficulte||'Facile'}</span>
+        </div>
+        <div class="recette-ingr">${(r.ingredients||[]).slice(0,4).map(i=>'• '+i).join('<br>')}</div>
+      </div>
+      <button class="recette-expand-btn" onclick="toggleRecette(${i},this)">Voir la recette ▼</button>
+      <div class="recette-steps-panel" id="rec-${i}">
+        ${(r.etapes||[]).map((e,j)=>`<div class="recette-step"><div class="recette-step-n">${j+1}</div><div>${e}</div></div>`).join('')}
+        ${r.conseil?`<div class="recette-conseil">💡 ${r.conseil}</div>`:''}
+      </div>
+    </div>`).join('')
+}
+function toggleRecette(i,btn){
+  const el=document.getElementById('rec-'+i)
+  const open=el.style.display==='block'
+  el.style.display=open?'none':'block'
+  btn.textContent=open?'Voir la recette ▼':'Masquer ▲'
+}
+
+// ── SIDEBAR MOBILE ────────────────────────────────────────────────────────────
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open')}
+document.addEventListener('click',e=>{
+  const sb=document.getElementById('sidebar'),hb=document.getElementById('hbDash')
+  if(sb.classList.contains('open')&&!sb.contains(e.target)&&!hb.contains(e.target)) sb.classList.remove('open')
+})
+
+// ── KEYBOARD ──────────────────────────────────────────────────────────────────
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape') ['taskModal','courseModal','frigoModal','menuModal'].forEach(closeModal)
+  if(e.key==='Enter'&&e.target.tagName!=='TEXTAREA'){
+    const open=document.querySelector('.overlay.open')
+    if(!open)return
+    const id=open.id
+    if(id==='taskModal') saveTask()
+    else if(id==='courseModal') saveCourse()
+    else if(id==='frigoModal') saveFrigo()
+    else if(id==='menuModal') saveMenu()
+  }
+})
+document.querySelectorAll('.overlay').forEach(o=>{o.addEventListener('click',e=>{if(e.target===o)closeModal(o.id)})})
+
+// ── TOAST ─────────────────────────────────────────────────────────────────────
+function showToast(msg){
+  const t=document.getElementById('toast')
+  t.textContent=msg;t.style.opacity='1'
+  setTimeout(()=>t.style.opacity='0',3500)
+}
+
+// ── LOGOUT & INACTIVITY ───────────────────────────────────────────────────────
+async function handleLogout(){await sb.auth.signOut();window.location.href='/login.html'}
+let _last=Date.now()
+;['click','keydown','mousemove','touchstart'].forEach(e=>document.addEventListener(e,()=>{_last=Date.now()},{passive:true}))
+setInterval(async()=>{if(Date.now()-_last>30*60*1000){await sb.auth.signOut();window.location.href='/login.html'}},60000)
+
+</script>
+</body>
+</html>
