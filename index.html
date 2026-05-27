@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LITTIA — Votre assistant de vie familiale</title>
+<meta name="description" content="LITTIA planifie vos menus, gère votre frigo, génère votre liste de courses et organise les tâches de toute la famille.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --green: #4A7C59; --green-l: #6B9E79; --green-bg: #EDF5EE;
+  --cream: #F8F6F1; --brown: #2C2416; --brown-mid: #5A4A38;
+  --brown-light: #9E8C74; --border: #EAE4DC; --white: #fff;
+  --orange: #E8834A; --gold: #D4A62A; --red: #E05252; --blue: #3D7EBF;
+}
+body { font-family: 'DM Sans', system-ui, sans-serif; background: var(--cream); color: var(--brown); }
+
+/* NAV */
+nav { position:sticky; top:0; z-index:100; background:rgba(248,246,241,.94); backdrop-filter:blur(16px); border-bottom:1px solid var(--border); padding:0 32px; display:flex; align-items:center; justify-content:space-between; height:64px; }
+.logo { display:flex; align-items:center; gap:10px; text-decoration:none; }
+.logo-box { width:36px; height:36px; background:var(--green); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; }
+.logo-text { font-size:19px; font-weight:800; color:var(--brown); letter-spacing:1px; }
+.nav-r { display:flex; align-items:center; gap:6px; }
+.nav-a { font-size:14px; color:var(--brown-mid); font-weight:500; text-decoration:none; padding:8px 14px; border-radius:10px; }
+.nav-a:hover { background:var(--border); }
+.btn { background:var(--green); color:#fff; font-size:14px; font-weight:700; padding:10px 20px; border-radius:12px; text-decoration:none; display:inline-flex; align-items:center; gap:6px; transition:.15s; border:none; cursor:pointer; font-family:inherit; }
+.btn:hover { transform:translateY(-1px); box-shadow:0 4px 16px rgba(74,124,89,.35); }
+
+/* HERO */
+.hero { max-width:1140px; margin:0 auto; padding:72px 32px 56px; display:flex; align-items:center; gap:64px; }
+.hero-l { flex:1; }
+.badge { display:inline-flex; align-items:center; gap:6px; background:var(--green-bg); color:var(--green); font-size:12px; font-weight:700; padding:5px 13px; border-radius:20px; margin-bottom:18px; letter-spacing:.3px; }
+h1 { font-size:54px; font-weight:800; line-height:1.12; color:var(--brown); margin-bottom:18px; }
+h1 em { color:var(--green); font-style:normal; }
+.hero-sub { font-size:17px; color:var(--brown-mid); line-height:1.75; margin-bottom:34px; max-width:480px; }
+.stores { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:36px; }
+.store-btn { display:flex; align-items:center; gap:10px; background:var(--brown); color:#fff; padding:11px 18px; border-radius:13px; text-decoration:none; transition:.15s; }
+.store-btn:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(44,36,22,.25); }
+.store-icon { font-size:24px; }
+.store-sub { font-size:10px; opacity:.7; font-weight:400; }
+.store-name { font-size:14px; font-weight:700; }
+.stats { display:flex; gap:28px; }
+.stat-n { font-size:26px; font-weight:800; color:var(--green); display:block; }
+.stat-l { font-size:12px; color:var(--brown-light); }
+
+/* ── PHONE MOCKUP — full dashboard ── */
+.hero-r { flex:1; max-width:340px; position:relative; }
+.phone {
+  background:#1a1209;
+  border-radius:44px;
+  padding:14px;
+  box-shadow: 0 40px 100px rgba(44,36,22,.3), 0 0 0 1px rgba(255,255,255,.08), inset 0 1px 0 rgba(255,255,255,.06);
+  position:relative;
+}
+.phone::before { /* notch */
+  content:''; position:absolute; top:14px; left:50%; transform:translateX(-50%);
+  width:80px; height:6px; background:#0a0a0a; border-radius:3px; z-index:10;
+}
+.screen { background:var(--cream); border-radius:32px; overflow:hidden; }
+
+/* status bar */
+.sbar { display:flex; justify-content:space-between; align-items:center; padding:10px 16px 0; }
+.sbar-time { font-size:12px; font-weight:700; color:var(--brown); }
+.sbar-icons { font-size:11px; color:var(--brown-light); display:flex; gap:4px; align-items:center; }
+
+/* app header */
+.app-header { padding:8px 16px 10px; display:flex; align-items:center; justify-content:space-between; }
+.greet { font-size:15px; font-weight:700; color:var(--brown); }
+.greet-sub { font-size:10px; color:var(--brown-light); margin-top:1px; }
+.header-icons { display:flex; gap:6px; }
+.hicon { width:30px; height:30px; border-radius:9px; border:1px solid var(--border); background:var(--white); display:flex; align-items:center; justify-content:center; font-size:13px; }
+.hicon.green { background:var(--green); border-color:var(--green); }
+
+/* day chips */
+.day-chips { display:flex; gap:7px; padding:0 16px 10px; overflow:hidden; }
+.chip { padding:5px 11px; border-radius:16px; font-size:9px; font-weight:600; color:var(--brown-mid); background:var(--white); border:1px solid var(--border); white-space:nowrap; }
+.chip span { display:block; font-size:8px; color:var(--brown-light); font-weight:400; }
+.chip.active { background:var(--green); border-color:var(--green); color:#fff; }
+.chip.active span { color:rgba(255,255,255,.75); }
+
+/* section label */
+.sec-lbl { display:flex; justify-content:space-between; align-items:center; padding:0 16px 6px; }
+.sec-lbl-t { font-size:11px; font-weight:700; color:var(--brown); }
+.sec-lbl-a { font-size:10px; color:var(--green); font-weight:600; }
+
+/* menu card */
+.menu-card { margin:0 16px; background:var(--white); border-radius:14px; overflow:hidden; border:1px solid var(--border); }
+.meal-row { display:flex; align-items:center; gap:9px; padding:9px 11px; }
+.meal-row + .meal-row { border-top:1px solid var(--border); }
+.meal-emo { width:38px; height:38px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:19px; flex-shrink:0; }
+.meal-info { flex:1; min-width:0; }
+.meal-name { font-size:11px; font-weight:700; color:var(--brown); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.meal-meta { font-size:9px; color:var(--brown-light); margin-top:1px; }
+.meal-tag { font-size:8px; font-weight:700; color:var(--green); background:var(--green-bg); padding:2px 6px; border-radius:5px; white-space:nowrap; }
+
+/* stats row */
+.stats-row { display:flex; gap:8px; padding:8px 16px 0; }
+.stat-card { flex:1; background:var(--white); border:1px solid var(--border); border-radius:11px; padding:8px; }
+.stat-card-ico { font-size:14px; margin-bottom:3px; }
+.stat-card-lbl { font-size:8px; color:var(--brown-light); line-height:1.3; }
+.stat-card-val { font-size:12px; font-weight:800; margin-top:2px; }
+
+/* quick row */
+.quick-row { display:flex; gap:8px; padding:8px 16px 0; }
+.quick-card { flex:1; background:var(--white); border:1px solid var(--border); border-radius:11px; padding:9px; }
+.quick-head { font-size:9px; font-weight:700; color:var(--brown); margin-bottom:6px; display:flex; align-items:center; gap:4px; }
+.quick-item { display:flex; align-items:center; gap:5px; margin-bottom:4px; }
+.quick-check { width:13px; height:13px; border-radius:3px; border:1px solid var(--border); flex-shrink:0; }
+.quick-check.done { background:var(--green); border-color:var(--green); display:flex; align-items:center; justify-content:center; color:#fff; font-size:8px; }
+.quick-text { font-size:9px; color:var(--brown); font-weight:500; }
+.quick-link { font-size:9px; color:var(--green); font-weight:600; margin-top:4px; }
+
+/* frigo alert */
+.alert-band { margin:8px 16px 0; background:#FEF0EB; border:1px solid #F09595; border-radius:10px; padding:7px 10px; display:flex; align-items:center; gap:7px; }
+.alert-band-t { font-size:9px; font-weight:700; color:var(--red); flex:1; }
+.alert-band-badge { font-size:8px; font-weight:700; color:var(--red); background:rgba(224,82,82,.12); padding:2px 6px; border-radius:5px; }
+
+/* famille */
+.famille-row { display:flex; align-items:center; gap:8px; padding:8px 16px 0; }
+.famille-lbl { font-size:9px; font-weight:700; color:var(--brown); flex:1; }
+.avatar { width:26px; height:26px; border-radius:13px; background:var(--green-bg); display:flex; align-items:center; justify-content:center; font-size:13px; border:1.5px solid var(--white); margin-left:-6px; }
+.avatar:first-of-type { margin-left:0; }
+.avatar-add { background:var(--cream); border:1.5px dashed var(--border); }
+
+/* bottom nav */
+.bnav { display:flex; justify-content:space-around; align-items:flex-end; padding:8px 6px 10px; border-top:1px solid var(--border); margin-top:8px; }
+.bni { display:flex; flex-direction:column; align-items:center; gap:2px; }
+.bni-ico { font-size:16px; }
+.bni-lbl { font-size:8px; color:var(--brown-light); }
+.bni.on .bni-lbl { color:var(--green); font-weight:700; }
+.bni.on .bni-dot { width:4px; height:4px; background:var(--green); border-radius:2px; }
+.bni-dot { height:4px; }
+.bnav-cart { width:40px; height:40px; background:linear-gradient(135deg,#6B9E79,#3A6B48); border-radius:20px; display:flex; align-items:center; justify-content:center; font-size:18px; margin-bottom:2px; box-shadow:0 4px 12px rgba(74,124,89,.4); }
+
+/* SCREENS SHOWCASE */
+.showcase { max-width:1140px; margin:0 auto; padding:80px 32px; }
+.showcase-title { text-align:center; font-size:38px; font-weight:800; color:var(--brown); margin-bottom:10px; }
+.showcase-sub { text-align:center; font-size:16px; color:var(--brown-mid); margin-bottom:56px; }
+.screens-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
+.screen-item { background:var(--white); border:1px solid var(--border); border-radius:24px; overflow:hidden; transition:.2s; cursor:default; }
+.screen-item:hover { transform:translateY(-4px); box-shadow:0 16px 48px rgba(44,36,22,.1); }
+.screen-preview { padding:20px 16px 0; background:var(--cream); }
+.screen-mini { background:var(--white); border-radius:16px; overflow:hidden; border:1px solid var(--border); }
+.screen-info { padding:20px; }
+.screen-tag { font-size:11px; font-weight:700; color:var(--green); letter-spacing:.4px; margin-bottom:6px; }
+.screen-name { font-size:17px; font-weight:700; color:var(--brown); margin-bottom:6px; }
+.screen-desc { font-size:13px; color:var(--brown-mid); line-height:1.55; }
+
+/* mini menus screen */
+.mini-header { background:var(--cream); padding:10px 12px; display:flex; justify-content:space-between; align-items:center; }
+.mini-title { font-size:12px; font-weight:800; color:var(--brown); }
+.mini-ia { background:linear-gradient(135deg,#6B9E79,#3A6B48); color:#fff; font-size:9px; font-weight:700; padding:3px 8px; border-radius:8px; }
+.mini-tabs { display:flex; border-bottom:1px solid var(--border); }
+.mini-tab { flex:1; padding:7px; text-align:center; font-size:9px; font-weight:600; color:var(--brown-light); }
+.mini-tab.on { color:var(--green); border-bottom:2px solid var(--green); margin-bottom:-1px; }
+.mini-meal-row { display:flex; align-items:center; gap:8px; padding:8px 12px; border-bottom:1px solid var(--border); }
+.mini-meal-emo { width:46px; height:46px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:22px; }
+.mini-meal-tag { font-size:8px; font-weight:700; color:var(--green); background:var(--green-bg); padding:2px 5px; border-radius:4px; }
+.mini-meal-name { font-size:11px; font-weight:700; color:var(--brown); }
+.mini-meal-meta { font-size:9px; color:var(--brown-light); }
+.mini-edit { width:26px; height:26px; border-radius:7px; background:var(--cream); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:12px; }
+
+/* mini courses screen */
+.mini-prog { margin:10px 12px; }
+.mini-prog-top { display:flex; justify-content:space-between; margin-bottom:4px; }
+.mini-prog-lbl { font-size:9px; font-weight:600; color:var(--brown); }
+.mini-prog-val { font-size:9px; font-weight:700; color:var(--green); }
+.mini-prog-bar { height:5px; background:var(--border); border-radius:3px; overflow:hidden; }
+.mini-prog-fill { height:100%; background:var(--green); border-radius:3px; width:65%; }
+.mini-cat { font-size:8px; font-weight:700; color:var(--brown-light); padding:6px 12px 3px; letter-spacing:.3px; }
+.mini-item { display:flex; align-items:center; gap:7px; padding:7px 12px; border-top:1px solid var(--border); }
+.mini-checkbox { width:14px; height:14px; border-radius:3px; border:1px solid var(--border); flex-shrink:0; }
+.mini-checkbox.done { background:var(--green); border-color:var(--green); display:flex; align-items:center; justify-content:center; color:#fff; font-size:8px; }
+.mini-item-emo { font-size:16px; }
+.mini-item-name { font-size:10px; font-weight:600; color:var(--brown); flex:1; }
+.mini-item-qty { font-size:9px; color:var(--brown-light); }
+
+/* mini stock screen */
+.mini-stock-tabs { display:flex; background:var(--cream); }
+.mini-stock-tab { flex:1; padding:8px; text-align:center; font-size:9px; font-weight:600; color:var(--brown-light); }
+.mini-stock-tab.on { background:var(--white); color:var(--green); border-bottom:2px solid var(--green); }
+.mini-stock-item { display:flex; align-items:center; gap:7px; padding:8px 12px; border-bottom:1px solid var(--border); }
+.mini-stock-emo { font-size:20px; }
+.mini-stock-name { font-size:10px; font-weight:600; color:var(--brown); flex:1; }
+.mini-stock-qty { font-size:9px; color:var(--brown-light); }
+.mini-badge-red { font-size:8px; font-weight:700; color:var(--red); background:rgba(224,82,82,.1); padding:2px 6px; border-radius:5px; }
+.mini-badge-orange { font-size:8px; font-weight:700; color:var(--orange); background:rgba(232,131,74,.1); padding:2px 6px; border-radius:5px; }
+.mini-badge-green { font-size:8px; font-weight:700; color:var(--green); background:var(--green-bg); padding:2px 6px; border-radius:5px; }
+
+/* FEATURES */
+.features { background:var(--brown); padding:80px 32px; }
+.features-inner { max-width:1140px; margin:0 auto; }
+.features-top { margin-bottom:48px; }
+.ftag { font-size:12px; font-weight:700; color:rgba(255,255,255,.5); letter-spacing:.6px; text-transform:uppercase; margin-bottom:10px; }
+.ftitle { font-size:38px; font-weight:800; color:#fff; margin-bottom:12px; }
+.fsub { font-size:16px; color:rgba(255,255,255,.6); max-width:520px; }
+.feat-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+.feat-card { background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1); border-radius:20px; padding:24px; transition:.2s; }
+.feat-card:hover { background:rgba(255,255,255,.1); }
+.feat-ico { width:48px; height:48px; border-radius:13px; display:flex; align-items:center; justify-content:center; font-size:24px; margin-bottom:14px; }
+.feat-title { font-size:16px; font-weight:700; color:#fff; margin-bottom:7px; }
+.feat-desc { font-size:13px; color:rgba(255,255,255,.6); line-height:1.6; }
+.ai-pill { display:inline-flex; align-items:center; gap:3px; background:linear-gradient(135deg,#6B9E79,#4A7C59); color:#fff; font-size:10px; font-weight:700; padding:2px 7px; border-radius:7px; margin-left:5px; vertical-align:middle; }
+
+/* HOW */
+.how { max-width:1140px; margin:0 auto; padding:80px 32px; }
+.how-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:24px; margin-top:48px; }
+.how-step { text-align:center; }
+.how-n { width:46px; height:46px; background:var(--green); color:#fff; border-radius:23px; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:800; margin:0 auto 12px; }
+.how-t { font-size:14px; font-weight:700; color:var(--brown); margin-bottom:6px; }
+.how-d { font-size:13px; color:var(--brown-mid); line-height:1.55; }
+
+/* CTA */
+.cta { background:var(--green); padding:80px 32px; text-align:center; }
+.cta h2 { font-size:40px; font-weight:800; color:#fff; margin-bottom:14px; }
+.cta p { font-size:16px; color:rgba(255,255,255,.75); margin-bottom:36px; max-width:460px; margin-left:auto; margin-right:auto; }
+.cta-btns { display:flex; gap:14px; justify-content:center; flex-wrap:wrap; }
+.store-btn-w { background:rgba(255,255,255,.15); border:1px solid rgba(255,255,255,.25); }
+.store-btn-w:hover { background:rgba(255,255,255,.25); box-shadow:0 6px 20px rgba(0,0,0,.2); }
+
+/* FOOTER */
+footer { background:var(--cream); border-top:1px solid var(--border); padding:36px 32px; text-align:center; }
+.f-logo { font-size:20px; font-weight:800; color:var(--brown); letter-spacing:1px; margin-bottom:12px; }
+.f-links { display:flex; gap:20px; justify-content:center; margin-bottom:16px; flex-wrap:wrap; }
+.f-link { font-size:13px; color:var(--brown-light); text-decoration:none; }
+.f-link:hover { color:var(--brown); }
+.f-copy { font-size:12px; color:var(--brown-light); }
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .hero { flex-direction:column; padding:48px 24px 40px; gap:40px; }
+  h1 { font-size:36px; }
+  .hero-r { max-width:100%; }
+  .feat-grid, .screens-grid { grid-template-columns:1fr; }
+  .how-grid { grid-template-columns:repeat(2,1fr); }
+  .nav-r .nav-a { display:none; }
+  .showcase-title, .ftitle { font-size:28px; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="logo" href="#">
+    <div class="logo-box">🏠</div>
+    <span class="logo-text">LITTIA</span>
+  </a>
+  <div class="nav-r">
+    <a class="nav-a" href="#screens">L'application</a>
+    <a class="nav-a" href="#fonctionnalites">Fonctionnalités</a>
+    <a href="#telecharger" class="btn">Créer un compte gratuit →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-l">
+    <div class="badge">✨ Propulsé par l'IA Claude</div>
+    <h1>La vie familiale,<br><em>simplifiée.</em></h1>
+    <p class="hero-sub">Menus, courses, frigo, stocks, tâches et budget — tout ce dont votre famille a besoin, synchronisé en temps réel sur tous vos appareils.</p>
+    <div class="stores" id="telecharger">
+      <a href="https://apps.apple.com/app/littia" class="store-btn">
+        <span class="store-icon">🍎</span>
+        <span><span class="store-sub">Télécharger sur</span><br><span class="store-name">App Store</span></span>
+      </a>
+      <a href="https://play.google.com/store/apps/details?id=fr.littia.app" class="store-btn">
+        <span class="store-icon">▶</span>
+        <span><span class="store-sub">Disponible sur</span><br><span class="store-name">Google Play</span></span>
+      </a>
+    </div>
+    <div class="stats">
+      <div><span class="stat-n">7j</span><span class="stat-l">Menus planifiés</span></div>
+      <div><span class="stat-n">6</span><span class="stat-l">Membres famille</span></div>
+      <div><span class="stat-n">∞</span><span class="stat-l">Recettes disponibles</span></div>
+    </div>
+  </div>
+
+  <!-- PHONE avec vrai dashboard -->
+  <div class="hero-r">
+    <div class="phone">
+      <div class="screen">
+        <!-- Status bar -->
+        <div class="sbar">
+          <span class="sbar-time">9:41</span>
+          <div class="sbar-icons">📶 🔋</div>
+        </div>
+
+        <!-- App header -->
+        <div class="app-header">
+          <div>
+            <div class="greet">Bonjour Pierre 👨</div>
+            <div class="greet-sub">Voici ton aperçu du jour</div>
+          </div>
+          <div class="header-icons">
+            <div class="hicon">🔔</div>
+            <div class="hicon green" style="color:#fff;font-size:16px">＋</div>
+          </div>
+        </div>
+
+        <!-- Day chips -->
+        <div class="day-chips">
+          <div class="chip active">Aujourd'hui<span>27 mai</span></div>
+          <div class="chip">Mer.<span>28 mai</span></div>
+          <div class="chip">Jeu.<span>29 mai</span></div>
+          <div class="chip">Ven.<span>30 mai</span></div>
+        </div>
+
+        <!-- Menu du jour -->
+        <div class="sec-lbl"><span class="sec-lbl-t">Menu du jour</span><span class="sec-lbl-a">Voir la semaine →</span></div>
+        <div class="menu-card">
+          <div class="meal-row">
+            <div class="meal-emo" style="background:#FFF8E1">🥞</div>
+            <div class="meal-info">
+              <div style="display:flex;align-items:center;gap:5px;margin-bottom:2px"><span class="meal-tag">🌅 Petit-déj</span></div>
+              <div class="meal-name">Pancakes moelleux</div>
+              <div class="meal-meta">⏱ 15 min · 🔥 420 kcal</div>
+            </div>
+          </div>
+          <div class="meal-row">
+            <div class="meal-emo" style="background:#E8F5E9">🥗</div>
+            <div class="meal-info">
+              <div style="display:flex;align-items:center;gap:5px;margin-bottom:2px"><span class="meal-tag">☀️ Déjeuner</span></div>
+              <div class="meal-name">Quiche lorraine</div>
+              <div class="meal-meta">⏱ 45 min · 🔥 520 kcal</div>
+            </div>
+          </div>
+          <div class="meal-row">
+            <div class="meal-emo" style="background:#FFF3E0">🍗</div>
+            <div class="meal-info">
+              <div style="display:flex;align-items:center;gap:5px;margin-bottom:2px"><span class="meal-tag">🌙 Dîner</span></div>
+              <div class="meal-name">Poulet rôti</div>
+              <div class="meal-meta">⏱ 1h20 · 🔥 580 kcal</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stats row -->
+        <div class="stats-row">
+          <div class="stat-card"><div class="stat-card-ico">💰</div><div class="stat-card-lbl">Économies semaine</div><div class="stat-card-val" style="color:var(--green)">34 €</div></div>
+          <div class="stat-card"><div class="stat-card-ico">♻️</div><div class="stat-card-lbl">Gaspillage évité</div><div class="stat-card-val" style="color:var(--orange)">2.3 kg</div></div>
+          <div class="stat-card"><div class="stat-card-ico">🔥</div><div class="stat-card-lbl">Calories moy.</div><div class="stat-card-val" style="color:var(--blue)">1520</div></div>
+        </div>
+
+        <!-- Courses + Tâches -->
+        <div class="quick-row">
+          <div class="quick-card">
+            <div class="quick-head">🛒 Courses</div>
+            <div class="quick-item"><div class="quick-check"></div><span class="quick-text">Avocat × 2</span></div>
+            <div class="quick-item"><div class="quick-check"></div><span class="quick-text">Gruyère 100g</span></div>
+            <div class="quick-item"><div class="quick-check done">✓</div><span class="quick-text" style="text-decoration:line-through;opacity:.5">Pain de mie</span></div>
+            <div class="quick-link">Voir la liste →</div>
+          </div>
+          <div class="quick-card">
+            <div class="quick-head">✅ Tâches du jour</div>
+            <div class="quick-item"><div class="quick-check"></div><span class="quick-text">Lessive</span></div>
+            <div class="quick-item"><div class="quick-check"></div><span class="quick-text">Médecin Manon</span></div>
+            <div class="quick-item"><div class="quick-check done">✓</div><span class="quick-text" style="text-decoration:line-through;opacity:.5">Congélateur</span></div>
+            <div class="quick-link">Voir les tâches →</div>
+          </div>
+        </div>
+
+        <!-- Alerte frigo -->
+        <div class="alert-band">
+          <span style="font-size:14px">⚠️</span>
+          <span class="alert-band-t">Jus d'orange · Lait — expirent bientôt</span>
+          <span class="alert-band-badge">J-1 · J-2</span>
+        </div>
+
+        <!-- Famille -->
+        <div class="famille-row">
+          <span class="famille-lbl">👨‍👩‍👧‍👦 Ma famille</span>
+          <div class="avatar">👨</div>
+          <div class="avatar">👩</div>
+          <div class="avatar">👦</div>
+          <div class="avatar">👧</div>
+          <div class="avatar avatar-add">＋</div>
+        </div>
+
+        <!-- Bottom nav -->
+        <div class="bnav">
+          <div class="bni on"><div class="bni-ico">🏠</div><div class="bni-lbl" style="color:var(--green)">Accueil</div><div class="bni-dot"></div></div>
+          <div class="bni"><div class="bni-ico">🗓</div><div class="bni-lbl">Menus</div><div class="bni-dot"></div></div>
+          <div class="bnav-cart">🛒</div>
+          <div class="bni"><div class="bni-ico">✅</div><div class="bni-lbl">Tâches</div><div class="bni-dot"></div></div>
+          <div class="bni"><div class="bni-ico">📦</div><div class="bni-lbl">Stock</div><div class="bni-dot"></div></div>
+          <div class="bni"><div class="bni-ico">👤</div><div class="bni-lbl">Profil</div><div class="bni-dot"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SCREENS SHOWCASE -->
+<section class="showcase" id="screens">
+  <div class="section-tag" style="text-align:center;font-size:12px;font-weight:700;color:var(--green);letter-spacing:.5px;text-transform:uppercase;margin-bottom:10px">Aperçu de l'application</div>
+  <div class="showcase-title">Chaque écran pensé pour vous</div>
+  <div class="showcase-sub">Simple, rapide, beau — LITTIA s'adapte à votre vie familiale.</div>
+  <div class="screens-grid">
+
+    <!-- Menus screen -->
+    <div class="screen-item">
+      <div class="screen-preview">
+        <div class="screen-mini">
+          <div class="mini-header">
+            <span class="mini-title">Menus</span>
+            <span class="mini-ia">✨ IA</span>
+          </div>
+          <div class="mini-tabs">
+            <div class="mini-tab on">📅 Journée</div>
+            <div class="mini-tab">🗓 Semaine</div>
+            <div class="mini-tab">📖 Recettes</div>
+          </div>
+          <div class="mini-meal-row">
+            <div class="mini-meal-emo" style="background:#FFF8E1">🥞</div>
+            <div style="flex:1">
+              <div style="margin-bottom:2px"><span class="mini-meal-tag">🌅 Petit-déjeuner</span></div>
+              <div class="mini-meal-name">Pancakes moelleux</div>
+              <div class="mini-meal-meta">⏱ 15 min · 🔥 420 kcal</div>
+            </div>
+            <div class="mini-edit">✏️</div>
+          </div>
+          <div class="mini-meal-row">
+            <div class="mini-meal-emo" style="background:#EDE7F6">🫕</div>
+            <div style="flex:1">
+              <div style="margin-bottom:2px"><span class="mini-meal-tag">☀️ Déjeuner</span></div>
+              <div class="mini-meal-name">Quiche lorraine</div>
+              <div class="mini-meal-meta">⏱ 45 min · 🔥 520 kcal</div>
+            </div>
+            <div class="mini-edit">✏️</div>
+          </div>
+          <div class="mini-meal-row" style="border-bottom:none">
+            <div class="mini-meal-emo" style="background:#FFF3E0">🍗</div>
+            <div style="flex:1">
+              <div style="margin-bottom:2px"><span class="mini-meal-tag">🌙 Dîner</span></div>
+              <div class="mini-meal-name">Poulet rôti</div>
+              <div class="mini-meal-meta">⏱ 1h20 · 🔥 580 kcal</div>
+            </div>
+            <div class="mini-edit">✏️</div>
+          </div>
+        </div>
+      </div>
+      <div class="screen-info">
+        <div class="screen-tag">MENUS</div>
+        <div class="screen-name">Planification intelligente <span class="ai-pill">✨ IA</span></div>
+        <div class="screen-desc">Vue journée ou semaine. L'IA génère des menus équilibrés selon votre frigo, vos préférences et la saison. Cliquez sur un repas pour voir la recette complète.</div>
+      </div>
+    </div>
+
+    <!-- Courses screen -->
+    <div class="screen-item">
+      <div class="screen-preview">
+        <div class="screen-mini">
+          <div class="mini-header">
+            <span class="mini-title">Liste de courses</span>
+            <span class="mini-ia">✨ IA</span>
+          </div>
+          <div class="mini-prog">
+            <div class="mini-prog-top"><span class="mini-prog-lbl">Progression</span><span class="mini-prog-val">5 / 8</span></div>
+            <div class="mini-prog-bar"><div class="mini-prog-fill"></div></div>
+          </div>
+          <div class="mini-cat">FRUITS & LÉGUMES</div>
+          <div class="mini-item"><div class="mini-checkbox"></div><span class="mini-item-emo">🥑</span><span class="mini-item-name">Avocat</span><span class="mini-item-qty">2 pièces</span></div>
+          <div class="mini-item"><div class="mini-checkbox done">✓</div><span class="mini-item-emo">🍅</span><span class="mini-item-name" style="opacity:.5;text-decoration:line-through">Tomates cerises</span><span class="mini-item-qty" style="opacity:.5">250g</span></div>
+          <div class="mini-cat">VIANDES</div>
+          <div class="mini-item"><div class="mini-checkbox"></div><span class="mini-item-emo">🍗</span><span class="mini-item-name">Poulet entier</span><span class="mini-item-qty">1.5 kg</span></div>
+          <div class="mini-item"><div class="mini-checkbox done">✓</div><span class="mini-item-emo">🥓</span><span class="mini-item-name" style="opacity:.5;text-decoration:line-through">Lardons</span><span class="mini-item-qty" style="opacity:.5">200g</span></div>
+          <div class="mini-cat">PRODUITS LAITIERS</div>
+          <div class="mini-item" style="border-bottom:none"><div class="mini-checkbox"></div><span class="mini-item-emo">🧀</span><span class="mini-item-name">Gruyère râpé</span><span class="mini-item-qty">100g</span></div>
+        </div>
+      </div>
+      <div class="screen-info">
+        <div class="screen-tag">COURSES</div>
+        <div class="screen-name">Liste générée automatiquement</div>
+        <div class="screen-desc">L'IA analyse vos menus de la semaine et génère la liste exacte des ingrédients manquants — en déduisant ce que vous avez déjà dans le frigo et le garde-manger.</div>
+      </div>
+    </div>
+
+    <!-- Stock screen -->
+    <div class="screen-item">
+      <div class="screen-preview">
+        <div class="screen-mini">
+          <div class="mini-header"><span class="mini-title">Mes stocks</span></div>
+          <div class="mini-stock-tabs">
+            <div class="mini-stock-tab on">❄️ Frigo (6)</div>
+            <div class="mini-stock-tab">🏠 Garde-manger (12)</div>
+          </div>
+          <!-- Alert -->
+          <div style="margin:8px;background:#FEF0EB;border:1px solid #F09595;border-radius:8px;padding:6px 9px;display:flex;align-items:center;gap:6px">
+            <span style="font-size:12px">⚠️</span>
+            <span style="font-size:9px;font-weight:700;color:var(--red)">2 produits expirent bientôt !</span>
+          </div>
+          <div class="mini-stock-item"><span class="mini-stock-emo">🍊</span><div style="flex:1"><div class="mini-stock-name">Jus d'orange</div><div class="mini-stock-qty">1 L</div></div><span class="mini-badge-red">J-1</span></div>
+          <div class="mini-stock-item"><span class="mini-stock-emo">🥛</span><div style="flex:1"><div class="mini-stock-name">Lait demi-écrémé</div><div class="mini-stock-qty">1 L</div></div><span class="mini-badge-orange">J-2</span></div>
+          <div class="mini-stock-item"><span class="mini-stock-emo">🥚</span><div style="flex:1"><div class="mini-stock-name">Œufs frais</div><div class="mini-stock-qty">6</div></div><span class="mini-badge-green">J-7</span></div>
+          <div class="mini-stock-item" style="border-bottom:none"><span class="mini-stock-emo">🧈</span><div style="flex:1"><div class="mini-stock-name">Beurre</div><div class="mini-stock-qty">250g</div></div><span class="mini-badge-green">J-20</span></div>
+        </div>
+      </div>
+      <div class="screen-info">
+        <div class="screen-tag">STOCK</div>
+        <div class="screen-name">Frigo & Garde-manger</div>
+        <div class="screen-desc">Scannez vos produits en photo — la date d'expiration est détectée automatiquement. Badges colorés J-X pour ne plus jamais rien jeter.</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FEATURES on dark bg -->
+<section class="features" id="fonctionnalites">
+  <div class="features-inner">
+    <div class="features-top">
+      <div class="ftag">Fonctionnalités</div>
+      <div class="ftitle">Tout en un seul endroit</div>
+      <div class="fsub">De la planification des repas à la gestion du budget familial.</div>
+    </div>
+    <div class="feat-grid">
+      <div class="feat-card"><div class="feat-ico" style="background:rgba(255,243,224,.1)">🗓</div><div class="feat-title">Menus 7 jours <span class="ai-pill">✨ IA</span></div><div class="feat-desc">L'IA génère des menus équilibrés selon votre frigo, vos goûts et votre famille. Menu végétarien, économique, famille — en un tap.</div></div>
+      <div class="feat-card"><div class="feat-ico" style="background:rgba(227,242,253,.1)">🛒</div><div class="feat-title">Courses auto <span class="ai-pill">✨ IA</span></div><div class="feat-desc">Liste de courses générée depuis vos menus. L'IA soustrait automatiquement ce que vous avez déjà en stock.</div></div>
+      <div class="feat-card"><div class="feat-ico" style="background:rgba(237,231,246,.1)">📦</div><div class="feat-title">Frigo & Garde-manger</div><div class="feat-desc">Scan photo pour lire les dates d'expiration. Alertes avant expiration. Catégories Frigo / Épicerie sèche distinctes.</div></div>
+      <div class="feat-card"><div class="feat-ico" style="background:rgba(232,245,233,.1)">✅</div><div class="feat-title">Tâches familiales</div><div class="feat-desc">Assignez les tâches aux membres. Priorités 🔴🟡🟢, dates d'échéance, badge sur l'icône pour les tâches en attente.</div></div>
+      <div class="feat-card"><div class="feat-ico" style="background:rgba(255,248,225,.1)">💰</div><div class="feat-title">Budget courses</div><div class="feat-desc">Budget mensuel avec barre dépensé / restant. Ajout rapide des dépenses. Historique du mois.</div></div>
+      <div class="feat-card"><div class="feat-ico" style="background:rgba(252,228,236,.1)">👨‍👩‍👧‍👦</div><div class="feat-title">Famille en temps réel</div><div class="feat-desc">Invitez jusqu'à 5 membres par email. Synchronisation Supabase — tout le monde voit les mises à jour instantanément.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW -->
+<section class="how">
+  <div style="text-align:center;margin-bottom:12px;font-size:12px;font-weight:700;color:var(--green);letter-spacing:.5px;text-transform:uppercase">Simple comme bonjour</div>
+  <div style="text-align:center;font-size:38px;font-weight:800;color:var(--brown);margin-bottom:10px">Prêt en 2 minutes</div>
+  <div style="text-align:center;font-size:16px;color:var(--brown-mid);max-width:480px;margin:0 auto">Créez votre compte, invitez votre famille, planifiez vos premiers menus.</div>
+  <div class="how-grid">
+    <div class="how-step"><div class="how-n">1</div><div class="how-t">Créez votre compte</div><div class="how-d">Email + photo depuis votre galerie. 30 secondes chrono.</div></div>
+    <div class="how-step"><div class="how-n">2</div><div class="how-t">Invitez la famille</div><div class="how-d">Un email suffit. Le membre reçoit un lien et rejoint automatiquement votre famille.</div></div>
+    <div class="how-step"><div class="how-n">3</div><div class="how-t">Planifiez vos menus</div><div class="how-d">Manuellement ou avec l'IA. Elle propose des menus selon votre frigo et vos préférences.</div></div>
+    <div class="how-step"><div class="how-n">4</div><div class="how-t">Profitez !</div><div class="how-d">Liste de courses prête, tâches assignées, frigo géré. Votre famille est organisée.</div></div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta">
+  <h2>Téléchargez LITTIA</h2>
+  <p>Gratuit, sans pub, sécurisé. Disponible sur iPhone et Android.</p>
+  <div class="cta-btns">
+    <a href="https://apps.apple.com/app/littia" class="store-btn store-btn-w">
+      <span class="store-icon">🍎</span>
+      <span><span class="store-sub">Télécharger sur</span><br><span class="store-name">App Store</span></span>
+    </a>
+    <a href="https://play.google.com/store/apps/details?id=fr.littia.app" class="store-btn store-btn-w">
+      <span class="store-icon">▶</span>
+      <span><span class="store-sub">Disponible sur</span><br><span class="store-name">Google Play</span></span>
+    </a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="f-logo">LITTIA</div>
+  <div class="f-links">
+    <a class="f-link" href="mailto:support@littia.fr">Contact</a>
+    <a class="f-link" href="#">Mentions légales</a>
+    <a class="f-link" href="#">Confidentialité</a>
+  </div>
+  <div class="f-copy">© 2025 LITTIA — Tous droits réservés</div>
+</footer>
+
+</body>
+</html>
